@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Расчёт от сомелье</title>
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Concept: wine-cellar ledger on a phone — burgundy header band, cream paper, gold input fields, a sticky payment bar at the bottom. */
+:root{color-scheme:dark;
+  --bg:#1A090E; --surface:#2A0F17; --ink:#F7ECDC; --muted:#C2A9A3; --line:#4F2430;
+  --wine:#D9B45A; --wine-deep:#1A090E; --on-wine:#2A0F17; --on-wine-soft:#C2A9A3;
+  --field:#1F0A11; --field-ink:#F7ECDC; --field-line:#5A2B38; --gold:#D9B45A; --gold-soft:#E9D3A0; --card2:#340F1B;
+  --ok:#7FD0A0; --ok-bg:#16301F; --warn:#F0C66A; --warn-bg:#3A2C0C; --bad:#FF9A90; --bad-bg:#3E1713;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --font-display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 110px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header.band{margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));background:var(--wine-deep);color:var(--on-wine);
+  padding:22px max(16px,env(safe-area-inset-left,0px)) 20px}
+header.band .inner{max-width:620px;margin:0 auto}
+.brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--on-wine-soft);font-weight:600}
+h1{font-family:var(--font-display);font-weight:700;font-size:34px;line-height:1.05;margin:8px 0 6px;text-wrap:balance}
+.sub{color:var(--on-wine-soft);font-size:13px}
+.note{font-size:12.5px;color:var(--muted)}
+section.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px}
+h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine);margin:0;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.lbl{font-weight:600;font-size:14px}
+.hint{font-size:12.5px;color:var(--muted)}
+input[type=text],input[type=number]{width:100%;min-height:46px;border-radius:8px;border:1.5px solid var(--field-line);background:var(--field);color:var(--field-ink);
+  font:600 17px var(--font-body);padding:8px 12px;font-variant-numeric:tabular-nums}
+input:focus-visible,button:focus-visible{outline:3px solid var(--wine);outline-offset:2px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 0;min-width:52px;min-height:46px;border-radius:8px;border:1.5px solid var(--field-line);background:var(--surface);color:var(--ink);
+  font:600 16px var(--font-body);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--wine);border-color:var(--wine);color:var(--on-wine)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:380px){.row2{grid-template-columns:1fr}}
+.hero{background:var(--wine);color:var(--on-wine);border-radius:10px;padding:18px 16px;display:flex;flex-direction:column;gap:6px}
+.hero .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--on-wine-soft);font-weight:600}
+.hero .big{font-family:var(--font-display);font-weight:700;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.hero .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--on-wine-soft)}
+.hero .meta b{color:var(--on-wine);font-weight:600}
+.status{border-radius:8px;padding:10px 12px;font-size:14px;font-weight:600;display:flex;gap:8px;align-items:flex-start}
+.status.ok{background:var(--ok-bg);color:var(--ok)} .status.warn{background:var(--warn-bg);color:var(--warn)} .status.bad{background:var(--bad-bg);color:var(--bad)}
+.status .t{font-weight:500;color:inherit}
+dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:8px 12px}
+dt{color:var(--muted);font-size:14px;min-width:0}
+dd{margin:0;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+dd.sm{font-weight:600;font-size:13px;white-space:normal}
+.sep{height:1px;background:var(--line);margin:2px 0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{min-height:46px;border-radius:8px;border:1.5px solid var(--wine);background:var(--wine);color:var(--on-wine);font:600 15px var(--font-body);padding:0 16px;cursor:pointer;flex:1 1 200px}
+.btn.ghost{background:transparent;color:var(--wine)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--wine-deep);color:var(--on-wine);z-index:20;
+  padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid #000}
+.bar .in{max-width:620px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bar .p{font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.bar .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-wine-soft)}
+.pill{font-size:12.5px;font-weight:700;border-radius:999px;padding:6px 12px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+details.card summary{cursor:pointer;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine);font-weight:700;min-height:24px}
+footer{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+
+body{background:var(--bg)}
+header.band{background:linear-gradient(180deg,#3A0F1D 0%,var(--bg) 100%);position:relative;overflow:hidden}
+header.band .inner{position:relative}
+header.band .q{position:absolute;right:-4px;top:-34px;font-family:var(--font-display);font-size:190px;line-height:1;color:var(--gold);opacity:.18;pointer-events:none;user-select:none}
+.brand{color:var(--gold)} .sub{color:var(--muted)}
+h1{color:var(--ink)}
+.seg button{background:#1F0A11;border-color:var(--field-line);color:var(--ink)}
+.seg button[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:#2A0F17}
+.hero{background:linear-gradient(160deg,var(--card2),#240A12);border:1px solid var(--gold)}
+.hero .k,.hero .meta{color:var(--muted)} .hero .meta b{color:var(--ink)}
+.hero .big{color:var(--gold)}
+.btn{background:var(--gold);border-color:var(--gold);color:#2A0F17;font-weight:700}
+.btn.ghost{background:transparent;color:var(--gold);border-color:var(--gold)}
+.bar{background:#120609;border-top:1px solid var(--line)}
+.bar .p{color:var(--gold)}
+h2,details.card summary{color:var(--gold)}
+input:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+</style>
+<style>html,body{margin:0}</style></head><body>
+
+<header class="band"><div class="inner"><div class="q" aria-hidden="true">“</div>
+  <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
+  <h1>Расчёт от сомелье</h1>
+  <div class="sub" id="subLine">Семейная ипотека · Новосибирск и регионы · условия с 1 октября 2026</div>
+</div></header>
+
+<main class="wrap">
+  <p class="note" id="sample">Пример на экране. Замените цифры на данные клиента: расчёт обновляется сразу.</p>
+
+  <section class="card" aria-labelledby="h-prog">
+    <h2 id="h-prog">Программа</h2>
+    <div class="seg" id="prog" role="group" aria-labelledby="h-prog"></div>
+    <span class="hint" id="progHint"></span>
+  </section>
+
+  <section class="card" id="mktCard" aria-labelledby="h-mkt" hidden>
+    <h2 id="h-mkt">Ставка застройщика</h2>
+    <div class="row2">
+      <div class="field"><label for="mrate">Субсидированная ставка, %</label><input type="text" id="mrate" inputmode="decimal"></div>
+      <div class="field"><label for="myrs">Действует, лет</label><input type="text" id="myrs" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label for="mafter">Ставка после субсидии, %</label><input type="text" id="mafter" inputmode="decimal">
+      <span class="hint">Подходит любому заёмщику, дети не нужны. Лимита кредита нет. Если субсидия на весь срок, поставьте срок субсидии равным сроку кредита. Ставку после субсидии уточните у застройщика и банка.</span></div>
+  </section>
+
+  <section class="card" id="famCard" aria-labelledby="h-fam">
+    <h2 id="h-fam">Семья и программа</h2>
+    <div class="field"><span class="lbl" id="l-kids">Детей в семье</span>
+      <div class="seg" id="kids" role="group" aria-labelledby="l-kids"></div>
+      <span class="hint">Считаются все дети основного заёмщика, включая совершеннолетних. «5» — пять и более. Нужен ребёнок младше 7 лет.</span></div>
+    <div class="field"><span class="lbl" id="l-half">Первоначальный взнос от 50 % стоимости?</span>
+      <div class="seg" id="half" role="group" aria-labelledby="l-half"></div>
+      <span class="hint">«Да» — ставка не выше 6 %.</span></div>
+    <div class="field"><label for="subsidy">Ставка по предложению застройщика, % годовых</label>
+      <input type="text" id="subsidy" inputmode="decimal" placeholder="0 — нет">
+      <span class="hint">Впишите, если застройщик снижает ставку ниже программной. 0 или пусто — не применяется.</span></div>
+  </section>
+
+  <section class="card" aria-labelledby="h-obj">
+    <h2 id="h-obj">Объект и ремонт</h2>
+    <div class="field"><label for="price">Стоимость квартиры по договору, ₽</label>
+      <input type="text" id="price" inputmode="numeric"></div>
+    <div class="field"><span class="lbl" id="l-ddu">Ремонт зашит в ДДУ?</span>
+      <div class="seg" id="ddu" role="group" aria-labelledby="l-ddu"></div>
+      <span class="hint" id="dduHint"></span></div>
+    <div class="row2">
+      <div class="field"><label for="area">Площадь, м²</label><input type="text" id="area" inputmode="decimal" placeholder="0 — без ремонта"></div>
+      <div class="field"><label for="rub">Ремонт, ₽ за м²</label><input type="text" id="rub" inputmode="numeric"></div>
+    </div>
+  </section>
+
+  <section class="card" aria-labelledby="h-pv">
+    <h2 id="h-pv">Взнос и срок</h2>
+    <div class="row2">
+      <div class="field"><label for="norm">Норматив ПВ банка, %</label><input type="text" id="norm" inputmode="decimal"></div>
+      <div class="field"><label for="years">Срок, лет</label><input type="text" id="years" inputmode="numeric"></div>
+    </div>
+    <div class="field"><label for="mat">Материнский капитал, ₽</label><input type="text" id="mat" inputmode="numeric"></div>
+    <div class="field"><label for="own">Свои средства клиента, ₽</label><input type="text" id="own" inputmode="numeric"></div>
+  </section>
+
+  <div class="hero" aria-live="polite">
+    <div class="k" id="heroK">Платёж в месяц · первые 15 лет</div>
+    <div class="big" id="payment">—</div>
+    <div class="meta" id="heroMeta"></div>
+  </div>
+
+  <div id="statuses" style="display:flex;flex-direction:column;gap:8px"></div>
+
+  <section class="card" aria-labelledby="h-res">
+    <h2 id="h-res">Взнос и кредит</h2>
+    <dl id="resDl"></dl>
+  </section>
+
+  <details class="card" id="maxCard">
+    <summary>Подбор по моему ПВ: до какой цены хватит</summary>
+    <dl id="maxDl" style="margin-top:12px"></dl>
+    <span class="hint" id="maxHint">Максимум по трём ограничениям: норматив ПВ, лимит кредита и условие «взнос от 50 %».</span>
+  </details>
+
+  <section class="card" aria-labelledby="h-after">
+    <h2 id="h-after">Что будет после 15 лет</h2>
+    <div class="field" id="keyField"><label for="key">Ваш прогноз ключевой ставки ЦБ на конец 15-го года, %</label>
+      <input type="text" id="key" inputmode="decimal"></div>
+    <dl id="afterDl"></dl>
+    <span class="hint" id="afterHint"></span>
+  </section>
+
+  <section class="card" aria-labelledby="h-rep">
+    <h2 id="h-rep">Отчёт клиенту</h2>
+    <div class="field"><label for="cname">Имя клиента (необязательно)</label><input type="text" id="cname" autocomplete="off"></div>
+    <button class="btn" id="mkrep" type="button">Скопировать ссылку на отчёт</button>
+    <span class="hint">Клиент откроет красивую страницу с итогом расчёта. Ссылка содержит цифры расчёта и имя, если вы его указали.</span>
+  </section>
+
+  <div class="actions">
+    <button class="btn" id="apply" type="button">Оставить заявку</button>
+    <button class="btn ghost" id="copy" type="button">Скопировать расчёт</button>
+    <button class="btn ghost" id="reset" type="button">Вернуть пример</button>
+  </div>
+  <p class="note" id="copyMsg" role="status"></p>
+
+  <footer>
+    <span>Расчёт предварительный и не является офертой банка. Ставка и платёж после 15 лет — оценка по вашему прогнозу ключевой ставки. Окончательные условия определяет банк.</span>
+    <span>Калашников Николай Анатольевич · +7 913 001 90 41 · <a href="card.html" style="color:inherit">Об агенте и контакты</a></span>
+  </footer>
+</main>
+
+<div class="bar"><div class="in">
+  <div><div class="l">Платёж в месяц</div><div class="p" id="barPay">—</div></div>
+  <span class="pill ok" id="barPill">—</span>
+</div></div>
+
+<script>
+(function(){
+'use strict';
+var RATES={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
+var DEF={cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14'};
+var KEY='ke-calc-v1', S=Object.assign({},DEF);
+try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){S=Object.assign({},DEF,p);document.getElementById('sample').hidden=true;}}}catch(e){}
+
+var nf=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0});
+function rub(x){return nf.format(Math.round(x))+' ₽'}
+function pct(x){var v=Math.round(x*10000)/100;return String(v).replace('.',',')+' %'}
+function num(s){if(typeof s==='number')return s;s=String(s==null?'':s).replace(/\s| /g,'').replace(',','.');var v=parseFloat(s);return isFinite(v)?v:0}
+function pmt(r,n,pv){if(n<=0)return 0;if(r===0)return pv/n;return pv*r/(1-Math.pow(1+r,-n))}
+function $(id){return document.getElementById(id)}
+
+function seg(id,opts,get,set){var el=$(id);el.innerHTML='';opts.forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o.t;b.dataset.v=o.v;
+  b.addEventListener('click',function(){set(o.v);sync();calc();save()});el.appendChild(b)});
+  el._get=get}
+function sync(){['prog','kids','half','ddu'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
+seg('prog',[{t:'Семейная ипотека',v:'fam'},{t:'Рыночная, субсидия застройщика',v:'mkt'}],null,function(v){S.prog=v});
+seg('kids',[1,2,3,4,5].map(function(n){return{t:String(n),v:n}}),null,function(v){S.kids=+v});
+seg('half',[{t:'Да',v:'Да'},{t:'Нет',v:'Нет'}],null,function(v){S.half=v});
+seg('ddu',[{t:'Да, в ДДУ',v:'Да'},{t:'Нет, вторым договором',v:'Нет'}],null,function(v){S.ddu=v});
+
+var money=['price','rub','mat','own','years'], dec=['mrate','myrs','mafter','subsidy','area','norm','key'];
+function fmtField(id){var v=S[id];if(money.indexOf(id)>-1){$(id).value=(v===''||v==null)?'':nf.format(num(v))}else{$(id).value=String(v==null?'':v).replace('.',',')}}
+money.concat(dec).forEach(function(id){var el=$(id);fmtField(id);
+  el.addEventListener('focus',function(){if(money.indexOf(id)>-1)el.value=String(num(el.value)||'').replace(/\s/g,'');el.select&&el.select()});
+  el.addEventListener('input',function(){S[id]=el.value;calc();save()});
+  el.addEventListener('blur',function(){S[id]=el.value;fmtField(id);calc();save()})});
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));$('sample').hidden=true}catch(e){}}
+
+var last='';
+function calc(){
+  var mk=S.prog==='mkt';
+  var kids=+S.kids||1, rate=mk?num(S.mrate)/100:RATES[kids][0], limit=mk?Infinity:RATES[kids][1];
+  var half=!mk&&S.half==='Да', sub=mk?0:num(S.subsidy)/100;
+  var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
+  $('famCard').hidden=mk;$('mktCard').hidden=!mk;$('keyField').hidden=mk;
+  $('progHint').textContent=mk?'Рыночная ипотека с пониженной ставкой от застройщика. Семейная ипотека отключена: дети и лимит кредита не учитываются.':'Ставка и лимит зависят от числа детей.';
+  $('subLine').textContent=mk?'Ипотека со ставкой застройщика · для всех заёмщиков':'Семейная ипотека · Новосибирск и регионы · условия с 1 октября 2026';
+  $('maxHint').textContent=mk?'Максимум по нормативу ПВ банка: лимита кредита в этой программе нет.':'Максимум по трём ограничениям: норматив ПВ, лимит кредита и условие «взнос от 50 %».';
+  $('h-after').textContent=mk?'Что будет после субсидии':'Что будет после 15 лет';
+  var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
+  var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
+  var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
+  var years=Math.min(Math.max(Math.round(num(S.years))||1,1),30), n=years*12;
+  var need=Math.max(T*norm,T-limit,(half&&rate>0.06)?T*0.5:0,0);
+  var cash=Math.max(need-mat,0);
+  var loan=T-total, pay=loan>0?pmt(eff/12,n,loan):0;
+  var pvOk=total>=need-0.5, limOk=loan<=limit+0.5 && loan>=0;
+  var econ=(mk||rate<=0.06)?0:Math.max(pmt(rate/12,n,loan)-pmt(Math.min(rate,0.06)/12,n,loan),0);
+  var Tmax=total<=0?0:Math.min(total/norm,total+limit,(half&&rate>0.06)?total/0.5:Infinity);
+  var aptMax=Math.max(Tmax-repair,0);
+  var perM2=(area>0&&price>0)?(price/area+(ddu?rpm:0)):0, areaMax=perM2>0?Tmax/perM2:0;
+
+  $('dduHint').textContent=ddu?'Ремонт входит в цену: ПВ и кредит считаются от суммы «квартира + ремонт».':'Ремонт вторым договором: вне ипотеки, платится отдельно, в кредит и ПВ не входит.';
+  $('payment').textContent=loan>0?rub(pay):'—';
+  $('barPay').textContent=loan>0?rub(pay):'—';
+  var meta=[['Ставка',pct(eff)],['Срок',years+' лет'],['Кредит',rub(Math.max(loan,0))]];
+  $('heroMeta').innerHTML=meta.map(function(m){return '<span>'+m[0]+' <b>'+m[1]+'</b></span>'}).join('');
+
+  var st=[];
+  if(loan<0)st.push(['bad','Взнос больше стоимости','Уменьшите свои средства или маткапитал.']);
+  else{
+    if(!pvOk)st.push(['warn','Не хватает '+rub(need-total)+' до норматива ПВ','Нужен взнос '+rub(need)+' ('+pct(T>0?need/T:0)+' от стоимости).']);
+    if(!limOk)st.push(['bad',(repair>0?'С ремонтом выходим':'Выходим')+' за рамки лимита программы','Кредит больше лимита ('+rub(limit)+') на '+rub(loan-limit)+'. Увеличьте ПВ на эту сумму'+(repair>0?', либо уменьшите ремонт':', либо выберите объект дешевле')+'.']);
+    if(pvOk&&limOk)st.push(['ok','Условия программы выполнены',mk?'Взнос достаточен'+(repair>0?' (с ремонтом)':'')+'.':'Взнос достаточен, кредит в пределах лимита '+rub(limit)+(repair>0?' (с ремонтом)':'')+'.']);
+  }
+  if(!ddu&&repairAll>0)st.push(['warn','Ремонт '+rub(repairAll)+' оплачивается отдельно','Вторым договором, вне ипотеки: в кредит и в ПВ не входит.']);
+  $('statuses').innerHTML=st.map(function(s){return '<div class="status '+s[0]+'"><span>'+(s[0]==='ok'?'✔':'⚠')+'</span><span>'+s[1]+'<br><span class="t">'+s[2]+'</span></span></div>'}).join('');
+  var worst=loan<0||!limOk?'bad':(!pvOk?'warn':'ok');
+  var pill=$('barPill');pill.className='pill '+worst;pill.textContent=worst==='ok'?'Проходит':(worst==='warn'?'Не хватает ПВ':'Вне лимита');
+
+  var rows=[['Стоимость объекта',rub(T)+(repair>0?'':'')]];
+  if(repair>0)rows.push(['в том числе ремонт',rub(repair)]);
+  rows.push(['Требуется ПВ',rub(need)+' · '+pct(T>0?need/T:0)]);
+  rows.push(['Нужно довнести сверх маткапитала',rub(cash)]);
+  rows.push(['Итого взнос',rub(total)+' · '+pct(T>0?total/T:0)]);
+  rows.push(['Сумма кредита',rub(Math.max(loan,0))]);
+  if(!mk)rows.push(['Лимит кредита ('+kids+(kids===5?' и более':'')+' дет.)',rub(limit)]);
+  if(econ>0.5)rows.push(['Экономия при взносе от 50 %',rub(econ)+' в мес']);
+  $('resDl').innerHTML=rows.map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('');
+
+  var mrows=[['Объект с ремонтом, до',rub(Tmax)]];
+  if(repair>0)mrows.push(['Квартира, до',rub(aptMax)]);
+  if(areaMax>0)mrows.push(['Площадь при вашей цене за м², до',(Math.round(areaMax*10)/10).toString().replace('.',',')+' м²']);
+  $('maxDl').innerHTML=total>0?mrows.map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join(''):'<dt>Введите взнос</dt><dd></dd>';
+
+  var after=null;
+  function balAt(r,n,k,L){return r===0?L*(1-k/n):L*((Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1))}
+  if(mk){var sy=Math.max(Math.round(num(S.myrs))||0,0);
+    if(sy>0&&sy<years&&loan>0){var rm=num(S.mafter)/100,bm=balAt(eff/12,n,sy*12,loan);after={bal:bm,rate:rm,pay:pmt(rm/12,n-sy*12,bm),k:sy*12,mk:true,sy:sy}}}
+  else if(n>180&&loan>0){var r=eff/12,bal=balAt(r,n,180,loan);
+    var ra=eff+0.04, rb=num(S.key)/100+0.03, rn=Math.min(ra,rb);
+    after={bal:bal,rate:rn,pay:pmt(rn/12,n-180,bal),ra:ra,rb:rb,k:180};}
+  var firstTxt=mk?(after?'первые '+after.sy+' '+(after.sy%10===1&&after.sy!==11?'год':(after.sy%10>=2&&after.sy%10<=4&&(after.sy<10||after.sy>20)?'года':'лет')):'весь срок'):'первые 15 лет';
+  $('heroK').textContent='Платёж в месяц · '+firstTxt;
+  if(after){$('afterDl').innerHTML=[[mk?'Остаток долга после субсидии':'Остаток долга на конец 15-го года',rub(after.bal)],[mk?'Ставка после субсидии':'Ставка после 15 лет',pct(after.rate)],[mk?'Платёж после субсидии':'Платёж после 15 лет',rub(after.pay)+' / мес']].map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('');
+    $('afterHint').textContent=mk?'Ставка после субсидии взята из вашего ввода. Уточните её у застройщика и банка.':'Берётся меньшее из «ставка по договору + 4 п.п.» ('+pct(after.ra)+') и «ключевая + 3 п.п.» ('+pct(after.rb)+'). Это оценка: ключевую ставку на тот момент знать нельзя.';}
+  else{$('afterDl').innerHTML=mk?'<dt>Субсидия на весь срок</dt><dd>ставка не меняется</dd>':'<dt>Срок до 15 лет</dt><dd>льгота на весь срок</dd>';$('afterHint').textContent='';}
+
+  var tot=loan>0?(after?pay*after.k+after.pay*(n-after.k):pay*n):0;
+  last=['🍷 Расчёт от сомелье · '+(mk?'ипотека со ставкой застройщика':'семейная ипотека'),'',
+    '🏠 Объект: '+rub(T)+(repair>0?' (с ремонтом '+rub(repair)+')':''),
+    '💰 Взнос '+rub(total)+' ('+pct(T>0?total/T:0)+')',
+    '📊 Кредит '+rub(Math.max(loan,0))+' · ставка '+pct(eff)+' · срок '+years+' лет',
+    '💳 Платёж: '+(loan>0?rub(pay):'—')+' в месяц, '+firstTxt,
+    after?'⚠️ '+(mk?'После субсидии':'После 15 лет')+': ставка '+pct(after.rate)+', платёж '+rub(after.pay)+' (оценка)':'',
+    loan>0?'Всего банку за срок: '+rub(tot)+', из них проценты '+rub(tot-loan):'',
+    '',pvOk&&limOk&&loan>=0?'✔ Условия программы выполнены':'⚠ Нужна корректировка: '+(!limOk?'кредит выше лимита':'не хватает ПВ'),
+    'Расчёт предварительный, не является офертой банка.','Калашников Николай · +7 913 001 90 41'].filter(function(x,i,a){return !(x===''&&a[i-1]==='')}).join('\n');
+}
+
+$('apply').addEventListener('click',function(){location.href='card.html?calc='+encodeURIComponent(last)+'#zayavka'});
+$('copy').addEventListener('click',function(){
+  var m=$('copyMsg');
+  function fallback(){var t=document.createElement('textarea');t.value=last;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0';document.body.appendChild(t);t.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(t);m.textContent=ok?'Расчёт скопирован. Вставьте в мессенджер.':'Не удалось скопировать. Выделите текст расчёта вручную.'}
+  try{navigator.clipboard.writeText(last).then(function(){m.textContent='Расчёт скопирован. Вставьте в мессенджер.'},fallback)}catch(e){fallback()}
+});
+$('reset').addEventListener('click',function(){S=Object.assign({},DEF);money.concat(dec).forEach(fmtField);sync();calc();try{localStorage.removeItem(KEY)}catch(e){}$('sample').hidden=false;$('copyMsg').textContent='';$('cname').value=''});
+$('cname').value=S.cname||'';
+$('cname').addEventListener('input',function(){S.cname=$('cname').value;save()});
+$('mkrep').addEventListener('click',function(){
+  var m=$('copyMsg');
+  var o={};Object.keys(S).forEach(function(k){o[k]=S[k]});o.name=S.cname||'';o.date=new Date().toISOString();delete o.cname;
+  var b=btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  var url=new URL('report.html?d='+b,location.href).href;
+  function fallback(){var t=document.createElement('textarea');t.value=url;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0';document.body.appendChild(t);t.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(t);m.textContent=ok?'Ссылка на отчёт скопирована. Отправьте её клиенту.':'Не удалось скопировать: '+url}
+  try{navigator.clipboard.writeText(url).then(function(){m.textContent='Ссылка на отчёт скопирована. Отправьте её клиенту.'},fallback)}catch(e){fallback()}
+});
+sync();calc();
+})();
+</script>
+</body></html>

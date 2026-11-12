@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Расчёт ипотеки · Николай Калашников</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#1A090E;--card:#2A0F17;--card2:#340F1B;--line:#4F2430;--gold:#D9B45A;--gold-soft:#E9D3A0;--ink:#F7ECDC;--muted:#C2A9A3;--ok:#7FD0A0;--ok-bg:#16301F;--warn:#F0C66A;--warn-bg:#3A2C0C;--bad:#FF9A90;--bad-bg:#3E1713;
+--font-body:'Inter',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;--font-display:'Cormorant Garamond',Georgia,serif}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font-body);padding:0 max(16px,env(safe-area-inset-left)) 48px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{margin:0 calc(-1*max(16px,env(safe-area-inset-left)));padding:26px max(16px,env(safe-area-inset-left)) 26px;background:linear-gradient(180deg,#3A0F1D 0%,var(--bg) 100%);position:relative;overflow:hidden}
+header .in{max-width:620px;margin:0 auto;position:relative}
+.q{position:absolute;right:-4px;top:-34px;font-family:var(--font-display);font-size:190px;line-height:1;color:var(--gold);opacity:.18;pointer-events:none;user-select:none}
+.brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{font-family:var(--font-display);font-size:38px;line-height:1.05;margin:14px 0 6px;font-weight:700;text-wrap:balance}
+.sub{color:var(--muted);font-size:13.5px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 16px;display:flex;flex-direction:column;gap:12px}
+.hero{background:linear-gradient(160deg,var(--card2),#240A12);border:1px solid var(--gold);border-radius:10px;padding:20px 16px;display:flex;flex-direction:column;gap:6px}
+.hero .k{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.hero .big{font-family:var(--font-display);font-weight:700;font-size:56px;line-height:1;color:var(--gold);font-variant-numeric:tabular-nums}
+.hero .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--muted)}.hero .meta b{color:var(--ink)}
+h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:0;font-weight:700}
+dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:9px 12px}
+dt{color:var(--muted);font-size:14px;min-width:0}dd{margin:0;font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.sep{grid-column:1/-1;height:1px;background:var(--line)}
+.status{border-radius:8px;padding:11px 12px;font-size:14px;font-weight:600;display:flex;gap:8px}
+.status.ok{background:var(--ok-bg);color:var(--ok)}.status.warn{background:var(--warn-bg);color:var(--warn)}.status.bad{background:var(--bad-bg);color:var(--bad)}
+.status .t{font-weight:500}
+p{margin:0}.muted{color:var(--muted);font-size:13px}
+.btn{display:flex;align-items:center;justify-content:center;min-height:50px;border-radius:8px;border:1.5px solid var(--gold);background:var(--gold);color:#2A0F17;font:700 15px var(--font-body);text-decoration:none;padding:0 16px;width:100%}
+.btn.ghost{background:transparent;color:var(--gold)}
+.btns{display:flex;flex-direction:column;gap:8px}
+.who{font-family:var(--font-display);font-size:22px;line-height:1.2;color:var(--gold-soft)}
+a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+</style></head><body>
+<header><div class="in"><div class="q" aria-hidden="true">“</div>
+  <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
+  <h1 id="ttl">Расчёт ипотеки</h1>
+  <div class="sub" id="sub"></div>
+</div></header>
+<main class="wrap" id="app"></main>
+<script>
+(function(){
+'use strict';
+var RATES={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
+var nf=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0});
+function rub(x){return nf.format(Math.round(x))+' ₽'}
+function pct(x){return String(Math.round(x*10000)/100).replace('.',',')+' %'}
+function num(s){if(typeof s==='number')return s;s=String(s==null?'':s).replace(/\s| /g,'').replace(',','.');var v=parseFloat(s);return isFinite(v)?v:0}
+function pmt(r,n,pv){if(n<=0)return 0;if(r===0)return pv/n;return pv*r/(1-Math.pow(1+r,-n))}
+function balAt(r,n,k,L){return r===0?L*(1-k/n):L*((Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1))}
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var app=document.getElementById('app'),S=null;
+try{var d=new URLSearchParams(location.search).get('d');
+  d=d.replace(/-/g,'+').replace(/_/g,'/');S=JSON.parse(decodeURIComponent(escape(atob(d))))}catch(e){S=null}
+if(!S||typeof S!=='object'||!num(S.price)){
+  app.innerHTML='<section><h2>Ссылка не открылась</h2><p>Расчёт не удалось прочитать. Попросите отправить ссылку ещё раз.</p><div class="btns"><a class="btn" href="tel:+79130019041">Позвонить +7 913 001 90 41</a></div></section>';return}
+var mk=S.prog==='mkt', kids=+S.kids||1;
+var rate=mk?num(S.mrate)/100:RATES[kids][0], limit=mk?Infinity:RATES[kids][1];
+var half=!mk&&S.half==='Да', sub=mk?0:num(S.subsidy)/100;
+var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
+var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
+var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
+var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
+var years=Math.min(Math.max(Math.round(num(S.years))||1,1),30), n=years*12;
+var need=Math.max(T*norm,T-limit,(half&&rate>0.06)?T*0.5:0,0);
+var loan=T-total, pay=loan>0?pmt(eff/12,n,loan):0;
+var pvOk=total>=need-0.5, limOk=loan<=limit+0.5&&loan>=0;
+var after=null;
+if(mk){var sy=Math.max(Math.round(num(S.myrs))||0,0);
+  if(sy>0&&sy<years&&loan>0){var rm=num(S.mafter)/100,bm=balAt(eff/12,n,sy*12,loan);after={bal:bm,rate:rm,pay:pmt(rm/12,n-sy*12,bm),k:sy*12,sy:sy}}}
+else if(n>180&&loan>0){var bal=balAt(eff/12,n,180,loan),rn=Math.min(eff+0.04,num(S.key)/100+0.03);after={bal:bal,rate:rn,pay:pmt(rn/12,n-180,bal),k:180,sy:15}}
+var tot=loan>0?(after?pay*after.k+after.pay*(n-after.k):pay*n):0;
+
+var who=S.name?String(S.name).slice(0,60):'';
+document.getElementById('ttl').textContent=who?'Расчёт для '+who:'Расчёт ипотеки';
+document.title=who?'Расчёт для '+who:'Расчёт ипотеки · Николай Калашников';
+var dt=S.date?new Date(S.date):null;
+document.getElementById('sub').textContent=(mk?'Ипотека со ставкой застройщика':'Семейная ипотека')+(dt&&isFinite(dt)?' · '+dt.toLocaleDateString('ru-RU'):'');
+
+var firstTxt=mk?(after?'первые '+after.sy+' '+(after.sy%10===1&&after.sy!==11?'год':(after.sy%10>=2&&after.sy%10<=4&&(after.sy<10||after.sy>20)?'года':'лет')):'весь срок'):(after?'первые 15 лет':'весь срок');
+function row(a,b){return '<dt>'+a+'</dt><dd>'+b+'</dd>'}
+var h='';
+if(loan>0)h+='<div class="hero"><div class="k">Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>Ставка <b>'+pct(eff)+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
+var st=[];
+if(loan<0)st.push(['bad','Взнос больше стоимости','Проверьте исходные данные.']);
+else{
+  if(!pvOk)st.push(['warn','Не хватает '+rub(need-total)+' до нужного взноса','Для этой программы нужен взнос '+rub(need)+' ('+pct(T>0?need/T:0)+' от стоимости).']);
+  if(!limOk)st.push(['bad','Кредит выше лимита программы','Лимит '+rub(limit)+'. Нужно увеличить взнос на '+rub(loan-limit)+(repair>0?' либо пересмотреть ремонт':' либо выбрать объект дешевле')+'.']);
+  if(pvOk&&limOk)st.push(['ok','Условия программы выполняются','Взнос достаточен'+(mk?'':', кредит в пределах лимита '+rub(limit))+'.']);
+}
+h+=st.map(function(s){return '<div class="status '+s[0]+'"><span>'+(s[0]==='ok'?'✔':'⚠')+'</span><span>'+s[1]+'<br><span class="t">'+s[2]+'</span></span></div>'}).join('');
+var r=[row('Стоимость квартиры',rub(price))];
+if(repair>0)r.push(row('Ремонт в договоре',rub(repair)),row('Итого объект',rub(T)));
+r.push('<div class="sep"></div>',row('Первоначальный взнос',rub(total)+' · '+pct(T>0?total/T:0)));
+if(mat>0)r.push(row('из них маткапитал',rub(mat)));
+if(own>0)r.push(row('из них свои средства',rub(own)));
+r.push('<div class="sep"></div>',row('Сумма кредита',rub(Math.max(loan,0))));
+if(loan>0)r.push(row('Платёж в месяц',rub(pay)));
+h+='<section><h2>Из чего состоит расчёт</h2><dl>'+r.join('')+'</dl>'+(!ddu&&repairAll>0?'<p class="muted">Ремонт '+rub(repairAll)+' оплачивается отдельно, вторым договором. В кредит и взнос он не входит.</p>':'')+'</section>';
+if(loan>0){
+  var a=[];
+  if(after){
+    a.push(row(mk?'После субсидии ('+after.sy+' лет)':'После 15 лет','')+'',row('Остаток долга',rub(after.bal)),row('Ставка',pct(after.rate)),row('Платёж в месяц',rub(after.pay)));
+    a.push('<div class="sep"></div>');
+  }
+  a.push(row('Всего банку за срок',rub(tot)),row('из них проценты',rub(tot-loan)));
+  h+='<section><h2>'+(after?'Что будет дальше':'Итого за срок')+'</h2><dl>'+a.join('')+'</dl>'+(after?'<p class="muted">'+(mk?'Ставка после субсидии указана по условиям застройщика и может отличаться.':'Ставка после 15 лет оценочная: она зависит от ключевой ставки ЦБ на тот момент.')+'</p>':'')+'</section>';
+}
+h+='<section><h2>Что дальше</h2><p class="who">Я проверю условия у застройщика и банка и подберу вариант под вашу задачу.</p><div class="btns"><a class="btn" href="card.html#zayavka">Оставить заявку</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div></section>';
+h+='<p class="muted">Расчёт предварительный и не является офертой банка. Окончательные условия определяет банк. Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>';
+app.innerHTML=h;
+})();
+</script></body></html>

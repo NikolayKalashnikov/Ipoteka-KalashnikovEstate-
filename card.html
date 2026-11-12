@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Николай Калашников · Сомелье недвижимости</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+:root{color-scheme:dark;--bg:#1A090E;--card:#2A0F17;--card2:#340F1B;--line:#4F2430;--gold:#D9B45A;--gold-soft:#E9D3A0;--ink:#F7ECDC;--muted:#C2A9A3;--wine:#7A1A2E;
+--font-body:'Inter',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;--font-display:'Cormorant Garamond',Georgia,serif}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font-body);padding:0 max(16px,env(safe-area-inset-left)) 48px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header{margin:0 calc(-1*max(16px,env(safe-area-inset-left)));padding:26px max(16px,env(safe-area-inset-left)) 28px;background:linear-gradient(180deg,#3A0F1D 0%,var(--bg) 100%);position:relative;overflow:hidden}
+header .in{max-width:620px;margin:0 auto;position:relative}
+.q{position:absolute;right:-4px;top:-34px;font-family:var(--font-display);font-size:190px;line-height:1;color:var(--gold);opacity:.18;pointer-events:none;user-select:none}
+.brand{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{font-family:var(--font-display);font-size:42px;line-height:1.02;margin:14px 0 8px;font-weight:700;text-wrap:balance}
+.role{color:var(--muted);font-size:14px}
+.lead{font-family:var(--font-display);font-size:23px;line-height:1.25;margin-top:18px;color:var(--gold-soft);text-wrap:balance}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+.stats div{border:1px solid var(--line);border-radius:8px;padding:10px 8px;background:rgba(0,0,0,.18)}
+.stats b{display:block;font-family:var(--font-display);font-size:24px;line-height:1.1;color:var(--gold)}
+.stats span{font-size:11.5px;color:var(--muted);line-height:1.25;display:block;margin-top:2px}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px 16px;display:flex;flex-direction:column;gap:12px}
+section.hl{background:linear-gradient(160deg,var(--card2),#240A12);border-color:var(--gold)}
+h2{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin:0;font-weight:700}
+h3{font-family:var(--font-display);font-size:26px;line-height:1.1;margin:0;font-weight:700;text-wrap:balance}
+p{margin:0}.muted{color:var(--muted);font-size:13.5px}
+ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px}
+.svc li{display:grid;grid-template-columns:34px 1fr;gap:10px;align-items:start}
+.n{font-family:var(--font-display);font-size:26px;line-height:1;color:var(--gold)}
+li b{display:block}li span{color:var(--muted);font-size:14px}
+.perks li{padding-left:20px;position:relative}
+.perks li::before{content:"";position:absolute;left:2px;top:8px;width:8px;height:8px;background:var(--gold);transform:rotate(45deg)}
+.btn{display:flex;align-items:center;justify-content:center;min-height:50px;border-radius:8px;border:1.5px solid var(--gold);background:var(--gold);color:#2A0F17;font:700 15px var(--font-body);text-decoration:none;cursor:pointer;padding:0 16px;width:100%}
+.btn.ghost{background:transparent;color:var(--gold)}
+.btns{display:flex;flex-direction:column;gap:8px}
+label{font-weight:600;font-size:14px}
+.f{display:flex;flex-direction:column;gap:6px}
+input,select,textarea{width:100%;min-height:46px;border-radius:8px;border:1.5px solid var(--line);background:#1F0A11;color:var(--ink);font:500 16px var(--font-body);padding:8px 12px}
+textarea{min-height:110px;resize:vertical}
+input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.back{font-size:13.5px;color:var(--gold);text-decoration:none;font-weight:600}
+#msg{font-size:13px;color:var(--gold-soft);min-height:18px}
+</style></head><body>
+<header><div class="in">
+  <div class="q" aria-hidden="true">“</div>
+  <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
+  <h1>Николай Калашников</h1>
+  <div class="role">Агент по недвижимости · Новосибирск</div>
+  <div class="lead">Расчёт, подбор, покупка и переговоры. Всё в одних руках.</div>
+  <div class="stats">
+    <div><b>17 лет</b><span>в недвижимости</span></div>
+    <div><b>≈100</b><span>сделок разного уровня</span></div>
+    <div><b>5 млн – 1 млрд ₽</b><span>объекты от и до</span></div>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <a class="back" href="./">← Калькулятор ипотеки</a>
+
+  <section>
+    <h2>Обращайтесь ко мне за</h2>
+    <ul class="svc">
+      <li><div class="n">01</div><div><b>Расчётом</b><span>Платёж, взнос, лимиты, ремонт в ДДУ и жизнь после льготного периода. Вы знаете цифры до того, как выберете квартиру.</span></div></li>
+      <li><div class="n">02</div><div><b>Подбором</b><span>Короткий список объектов под вашу задачу с честным разбором плюсов и минусов, без бесконечных каталогов.</span></div></li>
+      <li><div class="n">03</div><div><b>Покупкой</b><span>Проверка документов, договор, ипотека и расчёты. Сопровождаю до получения ключей.</span></div></li>
+      <li><div class="n">04</div><div><b>Переговорами</b><span>С застройщиком и продавцом: цена, условия, рассрочка, ремонт, сроки.</span></div></li>
+    </ul>
+  </section>
+
+  <section class="hl">
+    <h2>Преимущество клиента</h2>
+    <h3>Через меня: условия прямого сотрудничества с застройщиком</h3>
+    <ul class="perks">
+      <li><b>Скидки и специальные цены</b><span>Предложения, доступные при работе через партнёра застройщика.</span></li>
+      <li><b>Преференции по программам</b><span>Субсидированные ставки, рассрочки, варианты по взносу и ремонту.</span></li>
+      <li><b>Прозрачные условия</b><span>Что именно и на каком основании вы получаете, я называю заранее, до решения о покупке, и фиксирую в договоре.</span></li>
+    </ul>
+    <p class="muted">Конкретные условия зависят от застройщика и жилого комплекса. По каждому объекту я называю их отдельно.</p>
+  </section>
+
+  <section>
+    <h2>Как работаем</h2>
+    <ul class="svc">
+      <li><div class="n">1</div><div><b>Знакомство и задача</b><span>Бюджет, семья, сроки, ипотека или собственные средства.</span></div></li>
+      <li><div class="n">2</div><div><b>Расчёт</b><span>Платёж, взнос и риски до выбора объекта.</span></div></li>
+      <li><div class="n">3</div><div><b>Подбор и просмотры</b><span>Короткий список с разбором каждого объекта.</span></div></li>
+      <li><div class="n">4</div><div><b>Сделка</b><span>Условия застройщика, документы, договор, расчёты.</span></div></li>
+    </ul>
+  </section>
+
+  <section id="zayavka">
+    <h2>Оставить заявку</h2>
+    <p class="muted">Заполните форму, и сообщение уйдёт мне в мессенджер. Если вы рассчитали ипотеку в калькуляторе, расчёт добавится автоматически.</p>
+    <div class="f"><label for="nm">Имя</label><input id="nm" autocomplete="name"></div>
+    <div class="f"><label for="ph">Телефон</label><input id="ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7"></div>
+    <div class="f"><label for="tp">Что нужно</label>
+      <select id="tp"><option>Расчёт семейной ипотеки</option><option>Подбор квартиры</option><option>Покупка у застройщика</option><option>Переговоры и условия застройщика</option><option>Продажа квартиры</option><option>Консультация</option></select></div>
+    <div class="f"><label for="cm">Комментарий</label><textarea id="cm"></textarea></div>
+    <div class="btns">
+      <button class="btn" id="wa" type="button">Отправить в WhatsApp</button>
+      <button class="btn" id="tg" type="button" hidden>Отправить в Telegram</button>
+      <button class="btn ghost" id="cp" type="button">Скопировать текст заявки</button>
+    </div>
+    <p id="msg" role="status"></p>
+  </section>
+
+  <section>
+    <h2>Контакты</h2>
+    <div class="btns">
+      <a class="btn" href="tel:+79130019041">Позвонить +7 913 001 90 41</a>
+      <a class="btn ghost" href="https://wa.me/79130019041">WhatsApp</a>
+    </div>
+    <p class="muted">Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>
+  </section>
+</main>
+<script>
+(function(){
+// ВПИШИТЕ свой Telegram без @ (например 'kalashnikov_estate'). Пусто — кнопка Telegram скрыта.
+var TG_USER='';
+var WA='79130019041';
+function $(i){return document.getElementById(i)}
+var q=new URLSearchParams(location.search).get('calc');
+if(q){$('cm').value=q;$('tp').value='Расчёт семейной ипотеки'}
+if(TG_USER)$('tg').hidden=false;
+function text(){var t='Заявка с сайта KalashnikovEstate\nИмя: '+($('nm').value||'—')+'\nТелефон: '+($('ph').value||'—')+'\nЗапрос: '+$('tp').value;var c=$('cm').value.trim();if(c)t+='\n\n'+c;return t}
+function ok(){if(!$('nm').value.trim()||!$('ph').value.trim()){$('msg').textContent='Укажите имя и телефон.';return false}$('msg').textContent='';return true}
+$('wa').onclick=function(){if(ok())location.href='https://wa.me/'+WA+'?text='+encodeURIComponent(text())};
+$('tg').onclick=function(){if(ok())location.href='https://t.me/'+TG_USER+'?text='+encodeURIComponent(text())};
+$('cp').onclick=function(){if(!ok())return;var t=text();function fb(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');$('msg').textContent='Скопировано.'}catch(e){}document.body.removeChild(a)}
+try{navigator.clipboard.writeText(t).then(function(){$('msg').textContent='Скопировано.'},fb)}catch(e){fb()}};
+})();
+</script></body></html>
