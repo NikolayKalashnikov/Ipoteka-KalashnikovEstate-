@@ -96,6 +96,7 @@ var mk=S.prog==='mkt', kids=+S.kids||1;
 var rate=mk?num(S.mrate)/100:RATES[kids][0], limit=mk?Infinity:RATES[kids][1];
 var half=!mk&&S.half==='Да', sub=mk?0:num(S.subsidy)/100;
 var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
+var fixedWhole=!mk&&half&&rate>0.06&&!(sub>0);
 var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
 var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
 var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
@@ -106,7 +107,7 @@ var pvOk=total>=need-0.5, limOk=loan<=limit+0.5&&loan>=0;
 var after=null;
 if(mk){var sy=Math.max(Math.round(num(S.myrs))||0,0);
   if(sy>0&&sy<years&&loan>0){var rm=num(S.mafter)/100,bm=balAt(eff/12,n,sy*12,loan);after={bal:bm,rate:rm,pay:pmt(rm/12,n-sy*12,bm),k:sy*12,sy:sy}}}
-else if(n>180&&loan>0){var bal=balAt(eff/12,n,180,loan),rn=Math.min(eff+0.04,num(S.key)/100+0.03);after={bal:bal,rate:rn,pay:pmt(rn/12,n-180,bal),k:180,sy:15}}
+else if(n>180&&loan>0&&!fixedWhole){var bal=balAt(eff/12,n,180,loan),rn=Math.min(eff+0.04,num(S.key)/100+0.03);after={bal:bal,rate:rn,pay:pmt(rn/12,n-180,bal),k:180,sy:15}}
 var tot=loan>0?(after?pay*after.k+after.pay*(n-after.k):pay*n):0;
 
 var who=S.name?String(S.name).slice(0,60):'';
@@ -121,7 +122,7 @@ var h='';
 if(loan>0)h+='<div class="hero"><div class="k">Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>Ставка <b>'+pct(eff)+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
 var pvShare=T>0?total/T:0, needShare=T>0?need/T:0, ch=[];
 if(mk){ch.push(['Программа','Ставка от застройщика'],['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После субсидии',after?pct(after.rate):'ставка не меняется'])}
-else{ch.push(['Программа','Семейная ипотека'],['Детей в семье',kids>=5?'5 и более':String(kids)],[sub>0?'Ставка застройщика':'Ставка',pct(eff)],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)]);
+else{ch.push(['Программа','Семейная ипотека'],['Детей в семье',kids>=5?'5 и более':String(kids)],[sub>0?'Ставка застройщика':'Ставка',pct(eff)+(fixedWhole?' · весь срок':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)]);
   if(half&&rate>0.06)ch.push(['Условие','взнос от 50 % стоимости'],['Лимит кредита',rub(limit)]);else ch.push(['Лимит кредита',rub(limit)],['Срок',years+' лет'])}
 h+='<section><h2>Условия расчёта</h2><div class="chips">'+ch.map(function(c){return '<div class="chip"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join('')+'</div></section>';
 var st=[];
@@ -147,7 +148,8 @@ if(loan>0){
     a.push('<div class="sep"></div>');
   }
   a.push(row('Всего банку за срок',rub(tot)),row('из них проценты',rub(tot-loan)));
-  h+='<section><h2>'+(after?'Что будет дальше':'Итого за срок')+'</h2><dl>'+a.join('')+'</dl>'+(after?'<p class="muted">'+(mk?'Ставка после субсидии указана по условиям застройщика и может отличаться.':'Ставка после 15 лет оценочная: она зависит от ключевой ставки ЦБ на тот момент.')+'</p>':'')+'</section>';
+  if(fixedWhole&&!after)a.unshift(row('Ставка',pct(eff)+' на весь срок'),row('Платёж в месяц',rub(pay)+' · не меняется'),'<div class="sep"></div>');
+  h+='<section><h2>'+(after?'Что будет дальше':(fixedWhole?'Ставка на весь срок':'Итого за срок'))+'</h2><dl>'+a.join('')+'</dl>'+(fixedWhole?'<p class="muted">Взнос от 50 % стоимости: ставка не выше 6 % действует на весь срок кредита и после 15 лет не повышается.</p>':after?'<p class="muted">'+(mk?'Ставка после субсидии указана по условиям застройщика и может отличаться.':'Ставка после 15 лет оценочная: она зависит от ключевой ставки ЦБ на тот момент.')+'</p>':'')+'</section>';
 }
 h+='<section><h2>Что дальше</h2><p class="who">Я проверю условия у застройщика и банка и подберу вариант под вашу задачу.</p><div class="btns"><a class="btn" href="card.html#zayavka">Оставить заявку</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div></section>';
 h+='<p class="muted">Расчёт предварительный и не является офертой банка. Окончательные условия определяет банк. Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>';
