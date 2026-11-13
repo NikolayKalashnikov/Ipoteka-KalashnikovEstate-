@@ -46,6 +46,42 @@ textarea{min-height:110px;resize:vertical}
 input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .back{font-size:13.5px;color:var(--gold);text-decoration:none;font-weight:600}
 #msg{font-size:13px;color:var(--gold-soft);min-height:18px}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.qgrid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.qgrid3 .btn{padding:0 6px}.center{text-align:center}.or{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.7);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}.or::before,.or::after{content:"";flex:1;height:1px;background:rgba(255,255,255,.22)}
+
+/* === Burgundy glass theme (matches the agent badge) === */
+:root{color-scheme:dark;--bg:#4A0A1B;--surface:rgba(255,255,255,.09);--card:rgba(255,255,255,.09);--card2:rgba(255,255,255,.13);--line:rgba(255,255,255,.2);
+--ink:#FFFFFF;--muted:rgba(255,255,255,.74);--gold:#FFFFFF;--gold-soft:#F6EFE8;--wine:#FFFFFF;--wine-deep:#4A0A1B;--on-wine:#5A0F22;--on-wine-soft:rgba(255,255,255,.74);
+--field:rgba(255,255,255,.1);--field-ink:#FFFFFF;--field-line:rgba(255,255,255,.3);
+--ok:#B4F0CD;--ok-bg:rgba(70,170,110,.30);--warn:#FFE292;--warn-bg:rgba(230,180,50,.26);--bad:#FFC8C0;--bad-bg:rgba(230,80,70,.30)}
+html{background:#4A0A1B}
+body{background:transparent!important;color:#fff}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(155deg,#7A1A2D 0%,#5E1124 48%,#430816 100%)}
+header,header.band{background:transparent!important}
+header .q,header.band .q{position:absolute;left:auto;right:8px;top:-6px;font-family:var(--font-display);font-size:150px;line-height:1;color:#3A0615;opacity:.5;z-index:0;pointer-events:none;user-select:none}
+.brand{color:rgba(255,255,255,.85)!important}
+h2,details.card summary{color:rgba(255,255,255,.88)!important}
+section,section.card,details.card{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.22)!important;-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);box-shadow:0 8px 28px rgba(30,0,10,.28),inset 0 1px 0 rgba(255,255,255,.2)}
+section.hl{background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.4)!important}
+.hero{background:rgba(255,255,255,.15)!important;border:1px solid rgba(255,255,255,.38)!important;-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);box-shadow:0 10px 30px rgba(30,0,10,.3),inset 0 1px 0 rgba(255,255,255,.25)}
+.hero .big,.hero .meta b,.bar .p{color:#fff!important}
+.stats div{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.22)!important}
+.stats b,.n{color:#fff!important}
+.lead,.who{color:#F6EFE8!important}
+.btn{background:#fff!important;border:1.5px solid #fff!important;color:#5A0F22!important;font-weight:700}
+.btn.ghost{background:rgba(255,255,255,.1)!important;color:#fff!important;border-color:rgba(255,255,255,.5)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.seg button{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.3)!important;color:#fff!important}
+.seg button[aria-pressed=true]{background:#fff!important;border-color:#fff!important;color:#5A0F22!important}
+input,select,textarea,input[type=text],input[type=number]{background:rgba(255,255,255,.1)!important;color:#fff!important;border:1.5px solid rgba(255,255,255,.3)!important}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.5)}
+option{color:#2A0F17;background:#fff}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible,.btn:focus-visible{outline:3px solid #fff!important;outline-offset:2px}
+.bar{background:rgba(58,6,21,.62)!important;-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);border-top:1px solid rgba(255,255,255,.22)!important}
+.back{color:#fff!important}
+.pt::before{background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.26),rgba(255,255,255,0) 68%)!important}
+.pt img{filter:drop-shadow(0 0 1px rgba(255,255,255,.7))!important}
+.perks li::before{background:#fff!important}
+.sep{background:rgba(255,255,255,.2)!important}
+#msg{color:#F6EFE8!important}
 </style></head><body>
 <header><div class="in">
   <div class="q" aria-hidden="true">“</div>
@@ -98,31 +134,28 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visib
   </section>
 
   <section id="zayavka">
-    <h2>Оставить заявку</h2>
-    <p class="muted">Выберите мессенджер, и заявка отправится мне. Если вы рассчитали ипотеку в калькуляторе, расчёт добавится автоматически.</p>
+    <h2>Связаться со мной</h2>
+    <div class="qgrid">
+      <a class="btn" href="tel:+79130019041">Позвонить</a>
+      <a class="btn ghost" href="https://wa.me/79130019041">WhatsApp</a>
+      <a class="btn ghost" id="cTg" href="https://t.me/+79130019041">Telegram</a>
+      <a class="btn ghost" id="cMx" href="#">MAX</a>
+    </div>
+    <p class="muted center">+7 913 001 90 41 · Калашников Николай Анатольевич</p>
+    <div class="or"><span>или оставьте заявку</span></div>
     <div class="f"><label for="nm">Имя</label><input id="nm" autocomplete="name"></div>
     <div class="f"><label for="ph">Телефон</label><input id="ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7"></div>
     <div class="f"><label for="tp">Что нужно</label>
       <select id="tp"><option>Расчёт семейной ипотеки</option><option>Подбор квартиры</option><option>Покупка у застройщика</option><option>Переговоры и условия застройщика</option><option>Продажа квартиры</option><option>Консультация</option></select></div>
     <div class="f"><label for="cm">Комментарий</label><textarea id="cm"></textarea></div>
-    <div class="btns">
-      <button class="btn" id="wa" type="button">Отправить в WhatsApp</button>
-      <button class="btn" id="tg" type="button">Отправить в Telegram</button>
-      <button class="btn" id="mx" type="button">Отправить в MAX</button>
-      <button class="btn ghost" id="cp" type="button">Скопировать текст заявки</button>
+    <div class="qgrid3">
+      <button class="btn" id="wa" type="button">WhatsApp</button>
+      <button class="btn" id="tg" type="button">Telegram</button>
+      <button class="btn" id="mx" type="button">MAX</button>
     </div>
+    <p class="muted center">Выберите мессенджер, и заявка отправится мне.</p>
+    <button class="btn ghost" id="cp" type="button">Скопировать текст заявки</button>
     <p id="msg" role="status"></p>
-  </section>
-
-  <section>
-    <h2>Контакты</h2>
-    <div class="btns">
-      <a class="btn" href="tel:+79130019041">Позвонить +7 913 001 90 41</a>
-      <a class="btn ghost" id="cTg" href="https://t.me/+79130019041">Telegram</a>
-      <a class="btn ghost" id="cMx" href="#">MAX: найти по номеру</a>
-      <a class="btn ghost" href="https://wa.me/79130019041">WhatsApp</a>
-    </div>
-    <p class="muted">Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>
   </section>
 </main>
 <script>
@@ -136,13 +169,13 @@ function $(i){return document.getElementById(i)}
 var q=new URLSearchParams(location.search).get('calc');
 if(q){$('cm').value=q;$('tp').value='Расчёт семейной ипотеки'}
 if(TG_USER)$('cTg').href='https://t.me/'+TG_USER;
-if(MAX_URL){$('cMx').href=MAX_URL;$('cMx').textContent='MAX'}
+if(MAX_URL){$('cMx').href=MAX_URL}
 var PHONE='+79130019041';
 function copySync(t){var r=false;try{var a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(a);a.select();a.setSelectionRange(0,t.length);r=document.execCommand('copy');document.body.removeChild(a)}catch(e){}
   try{if(navigator.clipboard)navigator.clipboard.writeText(t).catch(function(){})}catch(e){}return r}
 function say(html){var m=$('msg');m.innerHTML=html;try{m.scrollIntoView({block:'center'})}catch(e){}}
 function go(url,note){say((note?note+' ':'')+'Если чат не открылся сам, нажмите: <a href="'+url+'" style="color:inherit;font-weight:700">открыть</a>.');location.href=url}
-$('cMx').addEventListener('click',function(e){if(MAX_URL)return;e.preventDefault();copySync(PHONE);say('Номер +7 913 001 90 41 скопирован. В MAX: Контакты → Найти по номеру.')});
+$('cMx').addEventListener('click',function(e){if(MAX_URL)return;e.preventDefault();copySync(PHONE);say('MAX не открывается по номеру. Номер +7 913 001 90 41 скопирован: в MAX нажмите Контакты → Найти по номеру.')});
 function text(){var t='Заявка с сайта KalashnikovEstate\nИмя: '+($('nm').value.trim()||'—')+'\nТелефон: '+($('ph').value.trim()||'—')+'\nЗапрос: '+$('tp').value;var c=$('cm').value.trim();if(c)t+='\n\n'+c;return t}
 $('wa').onclick=function(){go('https://wa.me/'+WA+'?text='+encodeURIComponent(text()),'')};
 $('tg').onclick=function(){var t=text();

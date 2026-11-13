@@ -83,6 +83,41 @@ h1{color:var(--ink)}
 .bar .p{color:var(--gold)}
 h2,details.card summary{color:var(--gold)}
 input:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* === Burgundy glass theme (matches the agent badge) === */
+:root{color-scheme:dark;--bg:#4A0A1B;--surface:rgba(255,255,255,.09);--card:rgba(255,255,255,.09);--card2:rgba(255,255,255,.13);--line:rgba(255,255,255,.2);
+--ink:#FFFFFF;--muted:rgba(255,255,255,.74);--gold:#FFFFFF;--gold-soft:#F6EFE8;--wine:#FFFFFF;--wine-deep:#4A0A1B;--on-wine:#5A0F22;--on-wine-soft:rgba(255,255,255,.74);
+--field:rgba(255,255,255,.1);--field-ink:#FFFFFF;--field-line:rgba(255,255,255,.3);
+--ok:#B4F0CD;--ok-bg:rgba(70,170,110,.30);--warn:#FFE292;--warn-bg:rgba(230,180,50,.26);--bad:#FFC8C0;--bad-bg:rgba(230,80,70,.30)}
+html{background:#4A0A1B}
+body{background:transparent!important;color:#fff}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(155deg,#7A1A2D 0%,#5E1124 48%,#430816 100%)}
+header,header.band{background:transparent!important}
+header .q,header.band .q{position:absolute;left:auto;right:8px;top:-6px;font-family:var(--font-display);font-size:150px;line-height:1;color:#3A0615;opacity:.5;z-index:0;pointer-events:none;user-select:none}
+.brand{color:rgba(255,255,255,.85)!important}
+h2,details.card summary{color:rgba(255,255,255,.88)!important}
+section,section.card,details.card{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.22)!important;-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);box-shadow:0 8px 28px rgba(30,0,10,.28),inset 0 1px 0 rgba(255,255,255,.2)}
+section.hl{background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.4)!important}
+.hero{background:rgba(255,255,255,.15)!important;border:1px solid rgba(255,255,255,.38)!important;-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);box-shadow:0 10px 30px rgba(30,0,10,.3),inset 0 1px 0 rgba(255,255,255,.25)}
+.hero .big,.hero .meta b,.bar .p{color:#fff!important}
+.stats div{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.22)!important}
+.stats b,.n{color:#fff!important}
+.lead,.who{color:#F6EFE8!important}
+.btn{background:#fff!important;border:1.5px solid #fff!important;color:#5A0F22!important;font-weight:700}
+.btn.ghost{background:rgba(255,255,255,.1)!important;color:#fff!important;border-color:rgba(255,255,255,.5)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.seg button{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.3)!important;color:#fff!important}
+.seg button[aria-pressed=true]{background:#fff!important;border-color:#fff!important;color:#5A0F22!important}
+input,select,textarea,input[type=text],input[type=number]{background:rgba(255,255,255,.1)!important;color:#fff!important;border:1.5px solid rgba(255,255,255,.3)!important}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.5)}
+option{color:#2A0F17;background:#fff}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible,.btn:focus-visible{outline:3px solid #fff!important;outline-offset:2px}
+.bar{background:rgba(58,6,21,.62)!important;-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);border-top:1px solid rgba(255,255,255,.22)!important}
+.back{color:#fff!important}
+.pt::before{background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.26),rgba(255,255,255,0) 68%)!important}
+.pt img{filter:drop-shadow(0 0 1px rgba(255,255,255,.7))!important}
+.perks li::before{background:#fff!important}
+.sep{background:rgba(255,255,255,.2)!important}
+#msg{color:#F6EFE8!important}
 </style>
 <style>html,body{margin:0}</style></head><body>
 
