@@ -35,43 +35,46 @@ p{margin:0}.muted{color:var(--muted);font-size:13px}
 .who{font-family:var(--font-display);font-size:22px;line-height:1.2;color:var(--gold-soft)}
 a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 
-/* === Burgundy glass theme (matches the agent badge) === */
-:root{color-scheme:dark;--bg:#4A0A1B;--surface:rgba(255,255,255,.09);--card:rgba(255,255,255,.09);--card2:rgba(255,255,255,.13);--line:rgba(255,255,255,.2);
---ink:#FFFFFF;--muted:rgba(255,255,255,.74);--gold:#FFFFFF;--gold-soft:#F6EFE8;--wine:#FFFFFF;--wine-deep:#4A0A1B;--on-wine:#5A0F22;--on-wine-soft:rgba(255,255,255,.74);
---field:rgba(255,255,255,.1);--field-ink:#FFFFFF;--field-line:rgba(255,255,255,.3);
---ok:#B4F0CD;--ok-bg:rgba(70,170,110,.30);--warn:#FFE292;--warn-bg:rgba(230,180,50,.26);--bad:#FFC8C0;--bad-bg:rgba(230,80,70,.30)}
-html{background:#4A0A1B}
+/* === Burgundy glass theme (colours sampled from the agent badge) === */
+:root{color-scheme:dark;--bg:#4A0B1A;--surface:rgba(255,255,255,.055);--card:rgba(255,255,255,.055);--card2:rgba(255,255,255,.09);--line:rgba(255,255,255,.17);
+--ink:#FFFFFF;--muted:rgba(255,255,255,.72);--gold:#FFFFFF;--gold-soft:#F6ECE3;--wine:#FFFFFF;--wine-deep:#4A0B1A;--on-wine:#5A0F20;--on-wine-soft:rgba(255,255,255,.72);
+--field:rgba(255,255,255,.07);--field-ink:#FFFFFF;--field-line:rgba(255,255,255,.26);
+--ok:#B4F0CD;--ok-bg:rgba(40,150,90,.30);--warn:#FFE292;--warn-bg:rgba(220,170,40,.24);--bad:#FFC8C0;--bad-bg:rgba(220,70,60,.30)}
+html{background:#4A0B1A}
 body{background:transparent!important;color:#fff}
-body::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(155deg,#7A1A2D 0%,#5E1124 48%,#430816 100%)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(120% 55% at 12% 0%,rgba(255,255,255,.07),rgba(255,255,255,0) 60%),linear-gradient(160deg,#78192D 0%,#6B1527 30%,#5A0F20 65%,#480A19 100%)}
 header,header.band{background:transparent!important}
-header .q,header.band .q{position:absolute;left:auto;right:8px;top:-6px;font-family:var(--font-display);font-size:150px;line-height:1;color:#3A0615;opacity:.5;z-index:0;pointer-events:none;user-select:none}
+header .q,header.band .q{position:absolute;left:auto;right:-8px;top:-12px;font-family:Georgia,'DejaVu Serif',serif;font-weight:700;font-size:190px;line-height:1;color:#5A1021;opacity:1;z-index:0;pointer-events:none;user-select:none}
+.qs{position:relative;z-index:1;font-family:Georgia,'DejaVu Serif',serif;font-weight:700;font-size:96px;line-height:.7;height:48px;color:#F6ECE3;margin:14px 0 6px}
 .brand{color:rgba(255,255,255,.85)!important}
 h2,details.card summary{color:rgba(255,255,255,.88)!important}
-section,section.card,details.card{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.22)!important;-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);box-shadow:0 8px 28px rgba(30,0,10,.28),inset 0 1px 0 rgba(255,255,255,.2)}
-section.hl{background:rgba(255,255,255,.14)!important;border-color:rgba(255,255,255,.4)!important}
-.hero{background:rgba(255,255,255,.15)!important;border:1px solid rgba(255,255,255,.38)!important;-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);box-shadow:0 10px 30px rgba(30,0,10,.3),inset 0 1px 0 rgba(255,255,255,.25)}
+section,section.card,details.card{background:rgba(255,255,255,.055)!important;border:1px solid rgba(255,255,255,.17)!important;-webkit-backdrop-filter:blur(18px) saturate(130%);backdrop-filter:blur(18px) saturate(130%);box-shadow:0 8px 28px rgba(25,0,8,.32),inset 0 1px 0 rgba(255,255,255,.16)}
+section.hl{background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.34)!important}
+.hero{background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.3)!important;-webkit-backdrop-filter:blur(18px) saturate(130%);backdrop-filter:blur(18px) saturate(130%);box-shadow:0 10px 30px rgba(25,0,8,.35),inset 0 1px 0 rgba(255,255,255,.22)}
 .hero .big,.hero .meta b,.bar .p{color:#fff!important}
-.stats div{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.22)!important}
+.stats div{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.18)!important}
+.chip{background:rgba(255,255,255,.04)!important;border-color:rgba(255,255,255,.18)!important}
 .stats b,.n{color:#fff!important}
-.lead,.who{color:#F6EFE8!important}
-.btn{background:#fff!important;border:1.5px solid #fff!important;color:#5A0F22!important;font-weight:700}
-.btn.ghost{background:rgba(255,255,255,.1)!important;color:#fff!important;border-color:rgba(255,255,255,.5)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.seg button{background:rgba(255,255,255,.08)!important;border-color:rgba(255,255,255,.3)!important;color:#fff!important}
-.seg button[aria-pressed=true]{background:#fff!important;border-color:#fff!important;color:#5A0F22!important}
-input,select,textarea,input[type=text],input[type=number]{background:rgba(255,255,255,.1)!important;color:#fff!important;border:1.5px solid rgba(255,255,255,.3)!important}
+.lead,.who{color:#F6ECE3!important}
+.btn{background:#F6ECE3!important;border:1.5px solid #F6ECE3!important;color:#5A0F20!important;font-weight:700}
+.btn.ghost{background:rgba(255,255,255,.07)!important;color:#fff!important;border-color:rgba(255,255,255,.4)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.seg button{background:rgba(255,255,255,.06)!important;border-color:rgba(255,255,255,.26)!important;color:#fff!important}
+.seg button[aria-pressed=true]{background:#F6ECE3!important;border-color:#F6ECE3!important;color:#5A0F20!important}
+input,select,textarea,input[type=text],input[type=number]{background:rgba(255,255,255,.07)!important;color:#fff!important;border:1.5px solid rgba(255,255,255,.26)!important}
 input::placeholder,textarea::placeholder{color:rgba(255,255,255,.5)}
 option{color:#2A0F17;background:#fff}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible,.btn:focus-visible{outline:3px solid #fff!important;outline-offset:2px}
-.bar{background:rgba(58,6,21,.62)!important;-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);border-top:1px solid rgba(255,255,255,.22)!important}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible,.btn:focus-visible{outline:3px solid #F6ECE3!important;outline-offset:2px}
+.bar{background:rgba(58,6,21,.6)!important;-webkit-backdrop-filter:blur(18px) saturate(130%);backdrop-filter:blur(18px) saturate(130%);border-top:1px solid rgba(255,255,255,.18)!important}
 .back{color:#fff!important}
-.pt::before{background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.26),rgba(255,255,255,0) 68%)!important}
-.pt img{filter:drop-shadow(0 0 1px rgba(255,255,255,.7))!important}
-.perks li::before{background:#fff!important}
-.sep{background:rgba(255,255,255,.2)!important}
-#msg{color:#F6EFE8!important}
+.pt::before{background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.2),rgba(255,255,255,0) 68%)!important}
+.pt img{filter:drop-shadow(0 0 1px rgba(255,255,255,.6))!important}
+.perks li::before{background:#F6ECE3!important}
+.sep{background:rgba(255,255,255,.18)!important}
+#msg{color:#F6ECE3!important}
 </style></head><body>
 <header><div class="in"><div class="q" aria-hidden="true">“</div>
   <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
+  <div class="qs" aria-hidden="true">“</div>
   <h1 id="ttl">Расчёт ипотеки</h1>
   <div class="sub" id="sub"></div>
 </div></header>
@@ -96,13 +99,13 @@ var mk=S.prog==='mkt', kids=+S.kids||1;
 var rate=mk?num(S.mrate)/100:RATES[kids][0], limit=mk?Infinity:RATES[kids][1];
 var half=!mk&&S.half==='Да', sub=mk?0:num(S.subsidy)/100;
 var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
-var fixedWhole=!mk&&half&&rate>0.06&&!(sub>0);
 var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
 var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
 var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
 var years=Math.min(Math.max(Math.round(num(S.years))||1,1),30), n=years*12;
 var need=Math.max(T*norm,T-limit,(half&&rate>0.06)?T*0.5:0,0);
 var loan=T-total, pay=loan>0?pmt(eff/12,n,loan):0;
+var fixedWhole=!mk&&half&&!(sub>0)&&T>0&&total>=T*0.5-0.5;
 var pvOk=total>=need-0.5, limOk=loan<=limit+0.5&&loan>=0;
 var after=null;
 if(mk){var sy=Math.max(Math.round(num(S.myrs))||0,0);
@@ -123,7 +126,7 @@ if(loan>0)h+='<div class="hero"><div class="k">Платёж в месяц · '+f
 var pvShare=T>0?total/T:0, needShare=T>0?need/T:0, ch=[];
 if(mk){ch.push(['Программа','Ставка от застройщика'],['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После субсидии',after?pct(after.rate):'ставка не меняется'])}
 else{ch.push(['Программа','Семейная ипотека'],['Детей в семье',kids>=5?'5 и более':String(kids)],[sub>0?'Ставка застройщика':'Ставка',pct(eff)+(fixedWhole?' · весь срок':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)]);
-  if(half&&rate>0.06)ch.push(['Условие','взнос от 50 % стоимости'],['Лимит кредита',rub(limit)]);else ch.push(['Лимит кредита',rub(limit)],['Срок',years+' лет'])}
+  if(fixedWhole)ch.push(['Условие','взнос от 50 % стоимости'],['Лимит кредита',rub(limit)]);else ch.push(['Лимит кредита',rub(limit)],['Срок',years+' лет'])}
 h+='<section><h2>Условия расчёта</h2><div class="chips">'+ch.map(function(c){return '<div class="chip"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join('')+'</div></section>';
 var st=[];
 if(loan<0)st.push(['bad','Взнос больше стоимости','Проверьте исходные данные.']);
