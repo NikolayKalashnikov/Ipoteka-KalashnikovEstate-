@@ -99,7 +99,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,.btn:focus-visib
 
   <section id="zayavka">
     <h2>Оставить заявку</h2>
-    <p class="muted">Заполните форму, и сообщение уйдёт мне в мессенджер. Если вы рассчитали ипотеку в калькуляторе, расчёт добавится автоматически.</p>
+    <p class="muted">Выберите мессенджер, и заявка отправится мне. Если вы рассчитали ипотеку в калькуляторе, расчёт добавится автоматически.</p>
     <div class="f"><label for="nm">Имя</label><input id="nm" autocomplete="name"></div>
     <div class="f"><label for="ph">Телефон</label><input id="ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="+7"></div>
     <div class="f"><label for="tp">Что нужно</label>
@@ -138,19 +138,19 @@ if(q){$('cm').value=q;$('tp').value='Расчёт семейной ипотек�
 if(TG_USER)$('cTg').href='https://t.me/'+TG_USER;
 if(MAX_URL){$('cMx').href=MAX_URL;$('cMx').textContent='MAX'}
 var PHONE='+79130019041';
-function copyTxt(t,done){function fb(){var a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');document.body.appendChild(a);a.select();var r=false;try{r=document.execCommand('copy')}catch(e){}document.body.removeChild(a);done(r)}
-  try{navigator.clipboard.writeText(t).then(function(){done(true)},fb)}catch(e){fb()}}
-$('cMx').addEventListener('click',function(e){if(MAX_URL)return;e.preventDefault();copyTxt(PHONE,function(){$('msg').textContent='Номер +7 913 001 90 41 скопирован. В MAX: Контакты → Найти по номеру.';$('msg').scrollIntoView({block:'center'})})});
-function text(){var t='Заявка с сайта KalashnikovEstate\nИмя: '+($('nm').value||'—')+'\nТелефон: '+($('ph').value||'—')+'\nЗапрос: '+$('tp').value;var c=$('cm').value.trim();if(c)t+='\n\n'+c;return t}
-function ok(){if(!$('nm').value.trim()||!$('ph').value.trim()){$('msg').textContent='Укажите имя и телефон.';return false}$('msg').textContent='';return true}
-$('wa').onclick=function(){if(ok())location.href='https://wa.me/'+WA+'?text='+encodeURIComponent(text())};
-$('tg').onclick=function(){if(!ok())return;var t=text();
-  if(TG_USER){location.href='https://t.me/'+TG_USER+'?text='+encodeURIComponent(t);return}
-  copyTxt(t,function(){$('msg').textContent='Текст заявки скопирован. Вставьте его в чат Telegram.';setTimeout(function(){location.href='https://t.me/'+PHONE},900)})};
-$('mx').onclick=function(){if(!ok())return;var t=text();
-  copyTxt(t,function(){if(MAX_URL){$('msg').textContent='Текст заявки скопирован. Вставьте его в чат MAX.';setTimeout(function(){location.href=MAX_URL},900)}
-    else $('msg').textContent='Текст заявки скопирован. В MAX: Контакты → Найти по номеру +7 913 001 90 41, затем вставьте текст.'})};
-$('cp').onclick=function(){if(!ok())return;var t=text();function fb(){var a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');$('msg').textContent='Скопировано.'}catch(e){}document.body.removeChild(a)}
-try{navigator.clipboard.writeText(t).then(function(){$('msg').textContent='Скопировано.'},fb)}catch(e){fb()}};
+function copySync(t){var r=false;try{var a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(a);a.select();a.setSelectionRange(0,t.length);r=document.execCommand('copy');document.body.removeChild(a)}catch(e){}
+  try{if(navigator.clipboard)navigator.clipboard.writeText(t).catch(function(){})}catch(e){}return r}
+function say(html){var m=$('msg');m.innerHTML=html;try{m.scrollIntoView({block:'center'})}catch(e){}}
+function go(url,note){say((note?note+' ':'')+'Если чат не открылся сам, нажмите: <a href="'+url+'" style="color:inherit;font-weight:700">открыть</a>.');location.href=url}
+$('cMx').addEventListener('click',function(e){if(MAX_URL)return;e.preventDefault();copySync(PHONE);say('Номер +7 913 001 90 41 скопирован. В MAX: Контакты → Найти по номеру.')});
+function text(){var t='Заявка с сайта KalashnikovEstate\nИмя: '+($('nm').value.trim()||'—')+'\nТелефон: '+($('ph').value.trim()||'—')+'\nЗапрос: '+$('tp').value;var c=$('cm').value.trim();if(c)t+='\n\n'+c;return t}
+$('wa').onclick=function(){go('https://wa.me/'+WA+'?text='+encodeURIComponent(text()),'')};
+$('tg').onclick=function(){var t=text();
+  if(TG_USER){go('https://t.me/'+TG_USER+'?text='+encodeURIComponent(t),'');return}
+  copySync(t);go('https://t.me/'+PHONE,'Текст заявки скопирован, вставьте его в чат.')};
+$('mx').onclick=function(){var t=text();copySync(t);
+  if(MAX_URL)go(MAX_URL,'Текст заявки скопирован, вставьте его в чат.');
+  else say('Текст заявки скопирован. В MAX: Контакты → Найти по номеру +7 913 001 90 41, затем вставьте текст.')};
+$('cp').onclick=function(){copySync(text());say('Текст заявки скопирован.')};
 })();
 </script></body></html>
