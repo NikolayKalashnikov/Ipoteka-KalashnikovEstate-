@@ -153,7 +153,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
       <span class="hint">Считаются все дети основного заёмщика, включая совершеннолетних. «5» — пять и более. Нужен ребёнок младше 7 лет.</span></div>
     <div class="field"><span class="lbl" id="l-half">Первоначальный взнос от 50 % стоимости?</span>
       <div class="seg" id="half" role="group" aria-labelledby="l-half"></div>
-      <span class="hint">«Да» — ставка не выше 6 %.</span></div>
+      <span class="hint" id="halfHint">«Да» — ставка не выше 6 %.</span></div>
     <div class="field"><label for="subsidy">Ставка по предложению застройщика, % годовых</label>
       <input type="text" id="subsidy" inputmode="decimal" placeholder="0 — нет">
       <span class="hint">Впишите, если застройщик снижает ставку ниже программной. 0 или пусто — не применяется.</span></div>
@@ -286,6 +286,13 @@ function calc(){
   var loan=T-total, pay=loan>0?pmt(eff/12,n,loan):0;
   var pvOk=total>=need-0.5, limOk=loan<=limit+0.5 && loan>=0;
   var econ=(mk||rate<=0.06)?0:Math.max(pmt(rate/12,n,loan)-pmt(Math.min(rate,0.06)/12,n,loan),0);
+  (function(){var el=$('halfHint');if(mk||!el)return;var t,warn=false,pc=function(x){return String(Math.round(x*10000)/100).replace('.',',')+' %'};
+    if(rate<=0.06){t='При '+kids+(kids===1?' ребёнке':(kids===5?' и более детях':' детях'))+' ставка уже '+pc(rate)+(rate<0.06?', ниже 6 %':'')+'. Условие «взнос от 50 %» ничего не даёт: переплачивать ПВ не нужно.';warn=S.half==='Да'}
+    else if(S.half==='Да')t='Экономия: ставка 6 % вместо '+pc(rate)+' на весь срок.';
+    else if(T>0&&total>=T*0.5)t='Взнос уже от 50 %. Выберите «Да», и ставка станет 6 % вместо '+pc(rate)+'.';
+    else if(T>0)t='Нужен взнос от 50 %: ещё '+rub(T*0.5-total)+'. Ставка снизится с '+pc(rate)+' до 6 %.';
+    else t='«Да» — ставка не выше 6 %.';
+    el.textContent=(warn?'⚠ ':'')+t;el.style.color=warn?'var(--warn)':'';el.style.fontWeight=warn?'600':''})();
   var Tmax=total<=0?0:Math.min(total/norm,total+limit,(half&&rate>0.06)?total/0.5:Infinity);
   var aptMax=Math.max(Tmax-repair,0);
   var perM2=(area>0&&price>0)?(price/area+(ddu?rpm:0)):0, areaMax=perM2>0?Tmax/perM2:0;

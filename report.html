@@ -122,7 +122,7 @@ if(loan>0)h+='<div class="hero"><div class="k">Платёж в месяц · '+f
 var pvShare=T>0?total/T:0, needShare=T>0?need/T:0, ch=[];
 if(mk){ch.push(['Программа','Ставка от застройщика'],['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После субсидии',after?pct(after.rate):'ставка не меняется'])}
 else{ch.push(['Программа','Семейная ипотека'],['Детей в семье',kids>=5?'5 и более':String(kids)],[sub>0?'Ставка застройщика':'Ставка',pct(eff)],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)]);
-  if(half)ch.push(['Условие','взнос от 50 % стоимости'],['Лимит кредита',rub(limit)]);else ch.push(['Лимит кредита',rub(limit)],['Срок',years+' лет'])}
+  if(half&&rate>0.06)ch.push(['Условие','взнос от 50 % стоимости'],['Лимит кредита',rub(limit)]);else ch.push(['Лимит кредита',rub(limit)],['Срок',years+' лет'])}
 h+='<section><h2>Условия расчёта</h2><div class="chips">'+ch.map(function(c){return '<div class="chip"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join('')+'</div></section>';
 var st=[];
 if(loan<0)st.push(['bad','Взнос больше стоимости','Проверьте исходные данные.']);
