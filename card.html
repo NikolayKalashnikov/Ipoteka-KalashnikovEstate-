@@ -2,13 +2,13 @@
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Николай Калашников · Сомелье недвижимости</title>
 <!-- seo:start -->
-<meta name="description" content="Расчёт, подбор, покупка и переговоры. 17 лет в недвижимости, прямое сотрудничество с застройщиками. Новосибирск.">
+<meta name="description" content="Расчёт, подбор, покупка и переговоры. в недвижимости с 2017 года, более 400 сделок, прямое сотрудничество с застройщиками. Новосибирск.">
 <meta name="theme-color" content="#6B1527">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KalashnikovEstate · Сомелье недвижимости">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:title" content="Николай Калашников · Сомелье недвижимости">
-<meta property="og:description" content="Расчёт, подбор, покупка и переговоры. 17 лет в недвижимости, прямое сотрудничество с застройщиками. Новосибирск.">
+<meta property="og:description" content="Расчёт, подбор, покупка и переговоры. в недвижимости с 2017 года, более 400 сделок, прямое сотрудничество с застройщиками. Новосибирск.">
 <meta property="og:image" content="https://nikolaykalashnikov.github.io/calc-ipoteka.KalashnikovEstate/og-image.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
@@ -18,7 +18,7 @@
 <link rel="canonical" href="https://nikolaykalashnikov.github.io/calc-ipoteka.KalashnikovEstate/card.html">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Николай Калашников · Сомелье недвижимости">
-<meta name="twitter:description" content="Расчёт, подбор, покупка и переговоры. 17 лет в недвижимости, прямое сотрудничество с застройщиками. Новосибирск.">
+<meta name="twitter:description" content="Расчёт, подбор, покупка и переговоры. в недвижимости с 2017 года, более 400 сделок, прямое сотрудничество с застройщиками. Новосибирск.">
 <meta name="twitter:image" content="https://nikolaykalashnikov.github.io/calc-ipoteka.KalashnikovEstate/og-image.jpg">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -125,8 +125,8 @@ a{color:inherit}
   </div>
   <div class="lead">Расчёт, подбор, покупка и переговоры. Всё в одних руках.</div>
   <div class="stats">
-    <div><b>17 лет</b><span>в недвижимости</span></div>
-    <div><b>≈100</b><span>сделок разного уровня</span></div>
+    <div><b>с 2017</b><span>в недвижимости</span></div>
+    <div><b>400+</b><span>проведённых сделок</span></div>
     <div><b>5 млн – 1 млрд ₽</b><span>объекты от и до</span></div>
   </div>
 </div></header>
@@ -200,6 +200,7 @@ var WA='79130019041';
 function $(i){return document.getElementById(i)}
 var q=new URLSearchParams(location.search).get('calc');
 if(q){$('cm').value=q;$('tp').value='Расчёт семейной ипотеки'}
+if(new URLSearchParams(location.search).get('t')==='podbor')$('tp').value='Подбор квартиры'
 if(TG_USER)$('cTg').href='https://t.me/'+TG_USER;
 if(MAX_URL){$('cMx').href=MAX_URL}
 var PHONE='+79130019041';
