@@ -415,10 +415,11 @@ function core(S){
     return {f:a.f+ph,a:x,tot:a.tot+ph*k,lo:limit,hi:hiL,plo:a.f,phi:ph,combo:true}
   }
   var cur=loan>0?plan(years,loan):{f:0,a:null,tot:0,lo:0,hi:0,plo:0,phi:0};
+  var combo=cur.hi>0&&loan>0, needMin=T*norm, needShow=(combo&&!it)?needMin:need, altL=it?IT_L:limit, altNeed=combo?Math.max(T-altL,0):0, altPay=combo?plan1(years,altL).f:0;
   return {prog:prog,reg:reg,mk:mk,it:it,fam:fam,iz:iz,ms:ms,kids:kids,rate:rate,limit:limit,half:half,sub:sub,eff:eff,itm:itm,
     price:price,ddu:ddu,area:area,rpm:rpm,repairAll:repairAll,repair:repair,T:T,norm:norm,mat:mat,own:own,total:total,years:years,n:n,
     need:need,loan:loan,pay:cur.f,after:cur.a,tot:cur.tot,cur:cur,fixedWhole:fixedWhole,key:key,spread:spread,step:step,plan:plan,
-    mrk:mrk,pvOk:total>=need-0.5,limOk:loan<=limit+0.5&&loan>=0,ins:num(S.ins),inc:num(S.inc),
+    mrk:mrk,combo:combo,needShow:needShow,altNeed:altNeed,altPay:altPay,altL:altL,pvOk:total>=needShow-0.5,limOk:combo&&!it?loan>=0:(loan<=limit+0.5&&loan>=0),ins:num(S.ins),inc:num(S.inc),
     name:mk?'Ипотека со ставкой застройщика':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
 }
 
@@ -500,7 +501,7 @@ function renderOver(M){
 }
 function calc(){
   var M=core(S), mk=M.mk, it=M.it, iz=M.iz, ms=M.ms, fam=M.fam, kids=M.kids, rate=M.rate, limit=M.limit, half=M.half, sub=M.sub, eff=M.eff,
-      T=M.T, price=M.price, ddu=M.ddu, repairAll=M.repairAll, repair=M.repair, mat=M.mat, total=M.total, years=M.years, n=M.n, need=M.need,
+      T=M.T, price=M.price, ddu=M.ddu, repairAll=M.repairAll, repair=M.repair, mat=M.mat, total=M.total, years=M.years, n=M.n, need=M.needShow,
       loan=M.loan, pay=M.pay, fixedWhole=M.fixedWhole, pvOk=M.pvOk, limOk=M.limOk, after=M.after, cur=M.cur, rpm=M.rpm;
   var cash=Math.max(need-mat,0);
   $('famCard').hidden=mk; $('regF').hidden=!fam; $('kidsF').hidden=!fam||iz; $('halfF').hidden=!fam||iz;
@@ -508,7 +509,7 @@ function calc(){
   $('h-fam').textContent=fam?'Семья и программа':'Предложение застройщика';
   $('progHint').textContent=mk?'Рыночная ипотека с пониженной ставкой от застройщика. Семейная ипотека отключена: дети и лимит кредита не учитываются.':(it?'ИТ-ипотека: 6 % на льготную часть, остальное по рыночной ставке. Лимиты настраиваются ниже. Дети не нужны.':'Ставка и лимит зависят от числа детей.');
   $('regHint').textContent=iz?'ИЖС и земля под ИЖС: ставка 6 % не зависит от числа детей. Единого лимита нет, впишите по банку.':(ms?'Москва, Санкт-Петербург, Московская и Ленинградская области: свои ставки и лимиты.':'Новосибирск и остальные регионы.');
-  $('subLine').textContent=mk?'Ипотека со ставкой застройщика · для всех заёмщиков':(it?'ИТ-ипотека · условия 2026 года':(iz?'Семейная ипотека 6 % · ИЖС и земля под ИЖС':(ms?'Семейная ипотека · Москва, СПб, МО, ЛО · условия с 1 октября 2026':'Семейная ипотека · Новосибирск и регионы · условия с 1 октября 2026')));
+  $('subLine').textContent=(M.combo?'Комбо-ипотека · ':'')+(mk?'Ипотека со ставкой застройщика · для всех заёмщиков':(it?'ИТ-ипотека · условия 2026 года':(iz?'Семейная ипотека 6 % · ИЖС и земля под ИЖС':(ms?'Семейная ипотека · Москва, СПб, МО, ЛО · условия с 1 октября 2026':'Семейная ипотека · Новосибирск и регионы · условия с 1 октября 2026'))));
   $('lPrice').textContent=iz?'Стоимость дома или участка по договору, ₽':'Стоимость квартиры по договору, ₽';
   $('h-after').textContent=mk?'Что будет после субсидии':(fixedWhole?'Ставка на весь срок':'Что будет после 15 лет');
   var econ=(!fam||iz||rate<=0.06)?0:Math.max(pmt(rate/12,n,loan)-pmt(Math.min(rate,0.06)/12,n,loan),0);
@@ -523,25 +524,27 @@ function calc(){
   $('dduHint').textContent=ddu?'Ремонт входит в цену: ПВ и кредит считаются от суммы «квартира + ремонт».':'Ремонт вторым договором: вне ипотеки, платится отдельно, в кредит и ПВ не входит.';
   $('payment').textContent=loan>0?rub(pay):'—';
   $('barPay').textContent=loan>0?rub(pay):'—';
-  var meta=[[it?'Ставка льготной':'Ставка',pct(eff)],['Срок',years+' лет'],['Кредит',rub(Math.max(loan,0))]];
+  var meta=[[cur.hi>0?'Ставки':'Ставка',cur.hi>0?pct(eff)+' + '+pct(it?M.itm:M.mrk):pct(eff)],['Срок',years+' лет'],['Кредит',rub(Math.max(loan,0))]];
   $('heroMeta').innerHTML=meta.map(function(m){return '<span>'+m[0]+' <b>'+m[1]+'</b></span>'}).join('');
 
   var st=[];
   if(loan<0)st.push(['bad','Взнос больше стоимости','Уменьшите свои средства или маткапитал.']);
   else{
+    var hiRate=it?M.itm:M.mrk;
     if(!pvOk)st.push(['warn','Не хватает '+rub(need-total)+' до норматива ПВ','Нужен взнос '+rub(need)+' ('+pct(T>0?need/T:0)+' от стоимости).']);
-    if(!limOk)st.push([cur.combo?'warn':'bad',(repair>0?'С ремонтом выходим':'Выходим')+' за рамки лимита программы','Кредит больше лимита ('+rub(limit)+') на '+rub(loan-limit)+'. '+(cur.combo?'В расчёте комбо: до лимита по '+pct(eff)+', остаток '+rub(cur.hi)+' по рыночной ставке '+pct(M.mrk)+' (берётся из поля «Рыночная ставка» в блоке «Сравнение»). Либо увеличьте ПВ на '+rub(loan-limit)+(repair>0?' или уменьшите ремонт':'')+', чтобы весь кредит был льготным.':'Увеличьте ПВ на эту сумму'+(repair>0?', либо уменьшите ремонт':'')+'.')]);
-    if(pvOk&&limOk)st.push(['ok','Условия программы выполнены',mk?'Взнос достаточен'+(repair>0?' (с ремонтом)':'')+'.':'Взнос достаточен, кредит в пределах лимита '+rub(limit)+(repair>0?' (с ремонтом)':'')+'.']);
+    if(!limOk)st.push(['bad',(repair>0?'С ремонтом выходим':'Выходим')+' за рамки лимита программы','Кредит больше лимита ('+rub(limit)+') на '+rub(loan-limit)+'. Увеличьте ПВ на эту сумму'+(repair>0?', либо уменьшите ремонт':'')+'.']);
+    if(pvOk&&limOk&&!M.combo)st.push(['ok','Условия программы выполнены',mk?'Взнос достаточен'+(repair>0?' (с ремонтом)':'')+'.':'Взнос достаточен, кредит в пределах лимита '+rub(limit)+(repair>0?' (с ремонтом)':'')+'.']);
+    if(M.combo&&limOk){st.push(['ok','Комбо-ипотека: кредит делится на две части',rub(cur.lo)+' по '+pct(eff)+' (льготная часть, до лимита) и '+rub(cur.hi)+' по '+pct(hiRate)+' (рыночная). Платёж — сумма двух частей: '+rub(cur.plo)+' + '+rub(cur.phi)+'.']);
+      if(M.altNeed>total)st.push(['ok','Хотите платить меньше?','При взносе от '+rub(M.altNeed)+' (ещё '+rub(M.altNeed-total)+') весь кредит будет по '+pct(eff)+', платёж около '+rub(M.altPay)+' в месяц.'])}
   }
   if(fixedWhole&&pvOk&&loan>0)st.push(['ok','Ставка '+pct(eff)+' на весь срок','Взнос от 50 %: платёж '+rub(pay)+' в месяц не меняется до конца срока.']);
-  if(it&&loan>IT_L){var need6=Math.max(T*M.norm,T-IT_L);st.push(['warn','Льготная ставка только до '+rub(IT_L),'Сверх этой суммы кредит идёт по рыночной ставке '+pct(M.itm)+' (комбо), платёж складывается из двух частей. Чтобы весь кредит был по '+pct(eff)+', нужен взнос от '+rub(need6)+(need6>total?': ещё '+rub(need6-total):'')+'.'])}
   if(it&&M.inc>0&&M.inc<150000)st.push(['warn','Доход ниже типового порога 150 000 ₽','Банк может отказать или снизить сумму. Уточните у банка.']);
   if(it)st.push(['warn','Условия ИТ-ипотеки меняются','Нужна работа в аккредитованной ИТ-компании весь срок. В Москве и СПб не действует. Возможно досрочное закрытие программы, уточняйте в банке.']);
   if(!ddu&&repairAll>0)st.push(['warn','Ремонт '+rub(repairAll)+' оплачивается отдельно','Вторым договором, вне ипотеки: в кредит и в ПВ не входит.']);
   $('statuses').innerHTML=st.map(function(s){return '<div class="status '+s[0]+'"><span>'+(s[0]==='ok'?'✔':'⚠')+'</span><span>'+s[1]+'<br><span class="t">'+s[2]+'</span></span></div>'}).join('');
-  var worst=loan<0?'bad':(!limOk&&!cur.combo?'bad':((cur.combo||!pvOk)?'warn':'ok'));
+  var worst=loan<0||!limOk?'bad':(!pvOk?'warn':'ok');
   var pill=$('barPill');pill.className='pill '+worst;pill.textContent=worst==='ok'?'Проходит':(worst==='warn'?'Не хватает ПВ':'Вне лимита');
-  if(cur.combo||(it&&loan>IT_L&&worst==='ok')){pill.className='pill warn';pill.textContent='Комбо'}
+  if(M.combo&&worst==='ok')pill.textContent='Комбо';
 
   var rows=[['Стоимость объекта',rub(T)]];
   if(repair>0)rows.push(['в том числе ремонт',rub(repair)]);
@@ -559,7 +562,7 @@ function calc(){
   $('resDl').innerHTML=rows.map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('');
 
   var firstTxt=mk?(after?'первые '+after.sy+' '+(after.sy%10===1&&after.sy!==11?'год':(after.sy%10>=2&&after.sy%10<=4&&(after.sy<10||after.sy>20)?'года':'лет')):'весь срок'):(after?'первые 15 лет':'весь срок');
-  $('heroK').textContent='Платёж в месяц · '+firstTxt;
+  $('heroK').textContent='Платёж в месяц · '+(M.combo?'комбо-ипотека, ':'')+firstTxt;
   var spreadTxt=iz?'3,5':'3';
   if(after){$('afterDl').innerHTML=[[mk?'Остаток долга после субсидии':'Остаток долга на конец 15-го года',rub(after.bal)],[mk?'Ставка после субсидии':'Ставка после 15 лет',pct(after.rate)],[mk?'Платёж после субсидии':'Платёж после 15 лет',rub(after.pay)+' / мес']].map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('');
     $('afterHint').textContent=mk?'Ставка после субсидии взята из вашего ввода. Уточните её у застройщика и банка.':'Берётся меньшее из «ставка по договору + 4 п.п.» ('+pct(after.ra)+') и «ключевая + '+spreadTxt+' п.п.» ('+pct(after.rb)+'). Это оценка: ключевую ставку на тот момент знать нельзя.';}

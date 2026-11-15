@@ -197,10 +197,11 @@ function core(S){
     return {f:a.f+ph,a:x,tot:a.tot+ph*k,lo:limit,hi:hiL,plo:a.f,phi:ph,combo:true}
   }
   var cur=loan>0?plan(years,loan):{f:0,a:null,tot:0,lo:0,hi:0,plo:0,phi:0};
+  var combo=cur.hi>0&&loan>0, needMin=T*norm, needShow=(combo&&!it)?needMin:need, altL=it?IT_L:limit, altNeed=combo?Math.max(T-altL,0):0, altPay=combo?plan1(years,altL).f:0;
   return {prog:prog,reg:reg,mk:mk,it:it,fam:fam,iz:iz,ms:ms,kids:kids,rate:rate,limit:limit,half:half,sub:sub,eff:eff,itm:itm,
     price:price,ddu:ddu,area:area,rpm:rpm,repairAll:repairAll,repair:repair,T:T,norm:norm,mat:mat,own:own,total:total,years:years,n:n,
     need:need,loan:loan,pay:cur.f,after:cur.a,tot:cur.tot,cur:cur,fixedWhole:fixedWhole,key:key,spread:spread,step:step,plan:plan,
-    mrk:mrk,pvOk:total>=need-0.5,limOk:loan<=limit+0.5&&loan>=0,ins:num(S.ins),inc:num(S.inc),
+    mrk:mrk,combo:combo,needShow:needShow,altNeed:altNeed,altPay:altPay,altL:altL,pvOk:total>=needShow-0.5,limOk:combo&&!it?loan>=0:(loan<=limit+0.5&&loan>=0),ins:num(S.ins),inc:num(S.inc),
     name:mk?'Ипотека со ставкой застройщика':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
 }
 
@@ -228,18 +229,18 @@ try{var d=new URLSearchParams(location.search).get('d');
   d=d.replace(/-/g,'+').replace(/_/g,'/');S=JSON.parse(decodeURIComponent(escape(atob(d))))}catch(e){S=null}
 if(!S||typeof S!=='object'||!num(S.price)){
   app.innerHTML='<section><h2>Ссылка не открылась</h2><p>Расчёт не удалось прочитать. Попросите отправить ссылку ещё раз.</p><div class="btns"><a class="btn" href="tel:+79130019041">Позвонить +7 913 001 90 41</a></div></section>';return}
-var M=core(S), mk=M.mk,it=M.it,iz=M.iz,fam=M.fam,kids=M.kids,rate=M.rate,limit=M.limit,half=M.half,sub=M.sub,eff=M.eff,price=M.price,ddu=M.ddu,repairAll=M.repairAll,repair=M.repair,T=M.T,mat=M.mat,own=M.own,total=M.total,years=M.years,n=M.n,need=M.need,loan=M.loan,pay=M.pay,fixedWhole=M.fixedWhole,pvOk=M.pvOk,limOk=M.limOk,after=M.after,tot=M.tot,cur=M.cur;
+var M=core(S), mk=M.mk,it=M.it,iz=M.iz,fam=M.fam,kids=M.kids,rate=M.rate,limit=M.limit,half=M.half,sub=M.sub,eff=M.eff,price=M.price,ddu=M.ddu,repairAll=M.repairAll,repair=M.repair,T=M.T,mat=M.mat,own=M.own,total=M.total,years=M.years,n=M.n,need=M.needShow,loan=M.loan,pay=M.pay,fixedWhole=M.fixedWhole,pvOk=M.pvOk,limOk=M.limOk,after=M.after,tot=M.tot,cur=M.cur;
 
 var who=S.name?String(S.name).slice(0,60):'';
 document.getElementById('ttl').textContent=who?'Расчёт для '+who:'Расчёт ипотеки';
 document.title=who?'Расчёт для '+who:'Расчёт ипотеки · Николай Калашников';
 var dt=S.date?new Date(S.date):null;
-document.getElementById('sub').textContent=M.name+(dt&&isFinite(dt)?' · '+dt.toLocaleDateString('ru-RU'):'');
+document.getElementById('sub').textContent=M.name+(M.combo?' · комбо':'')+(dt&&isFinite(dt)?' · '+dt.toLocaleDateString('ru-RU'):'');
 
 var firstTxt=mk?(after?'первые '+after.sy+' '+(after.sy%10===1&&after.sy!==11?'год':(after.sy%10>=2&&after.sy%10<=4&&(after.sy<10||after.sy>20)?'года':'лет')):'весь срок'):(after?'первые 15 лет':'весь срок');
 function row(a,b){return '<dt>'+a+'</dt><dd>'+b+'</dd>'}
 var h='',H={hero:'',st:'',cmp:'',top:'',chips:'',comp:'',after:'',term:'',tax:'',cta:'',foot:''};
-if(loan>0)H.hero+='<div class="hero"><div class="k">Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>Ставка <b>'+pct(eff)+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
+if(loan>0)H.hero+='<div class="hero"><div class="k">'+(M.combo?'Комбо-ипотека · ':'')+'Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>'+(cur.hi>0?'Ставки':'Ставка')+' <b>'+(cur.hi>0?pct(eff)+' + '+pct(it?M.itm:M.mrk):pct(eff))+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
 var pvShare=T>0?total/T:0, needShare=T>0?need/T:0, ch=[];
 if(mk){ch.push(['Программа','Ставка от застройщика'],['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После субсидии',after?pct(after.rate):'ставка не меняется'])}
 else if(it){ch.push(['Программа','ИТ-ипотека'],['Ставка льготной части',pct(eff)+' · весь срок'],['Ставка сверх '+rub(IT_L),cur.hi>0?pct(M.itm):'не нужна'],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['Лимит кредита',rub(limit)+' всего'],['Срок',years+' лет'])}
@@ -247,13 +248,16 @@ else{ch.push(['Программа',iz?'Семейная ипотека · ИЖС
   if(!iz)ch.push(['Детей в семье',kids>=5?'5 и более':String(kids)]);
   ch.push([sub>0?'Ставка застройщика':'Ставка',pct(eff)+(fixedWhole?' · весь срок':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)]);
   if(fixedWhole)ch.push(['Условие','взнос от 50 % стоимости'],['Лимит кредита',rub(limit)]);else ch.push(['Лимит кредита',rub(limit)],['Срок',years+' лет'])}
-H.chips+='<section><h2>Условия расчёта</h2><div class="chips">'+ch.map(function(c){return '<div class="chip"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join('')+'</div>'+(it&&cur.hi>0?'<p class="muted">Льготная ставка действует только на первые '+rub(IT_L)+' кредита. Сверх этой суммы банк кредитует по рыночной ставке '+pct(M.itm)+', платёж складывается из двух частей. Чтобы весь кредит был по '+pct(eff)+', взнос должен быть от '+rub(Math.max(T*M.norm,T-IT_L))+'.</p>':'')+(it?'<p class="muted">Нужна работа в аккредитованной ИТ-компании весь срок кредита. В Москве и Санкт-Петербурге программа не действует. Возможно досрочное закрытие программы: условия уточняйте в банке.</p>':'')+'</section>';
+H.chips+='<section><h2>Условия расчёта</h2><div class="chips">'+ch.map(function(c){return '<div class="chip"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join('')+'</div>'+(cur.hi>0?'<p class="muted"><b>Что такое комбо-ипотека.</b> Ставка программы действует только на первые '+rub(M.altL)+' кредита. Остаток банк кредитует по рыночной ставке '+pct(it?M.itm:M.mrk)+'. Платёж складывается из двух частей.'+(after?' После 15 лет платёж по льготной части пересчитывается по более высокой ставке, рыночная часть не меняется.':'')+'</p>':'')+(it?'<p class="muted">Нужна работа в аккредитованной ИТ-компании весь срок кредита. В Москве и Санкт-Петербурге программа не действует. Возможно досрочное закрытие программы: условия уточняйте в банке.</p>':'')+'</section>';
 var st=[];
 if(loan<0)st.push(['bad','Взнос больше стоимости','Проверьте исходные данные.']);
 else{
+  var hiRate=it?M.itm:M.mrk;
   if(!pvOk)st.push(['warn','Не хватает '+rub(need-total)+' до нужного взноса','Для этой программы нужен взнос '+rub(need)+' ('+pct(T>0?need/T:0)+' от стоимости).']);
-  if(!limOk)st.push([cur.combo?'warn':'bad','Кредит выше лимита программы','Лимит '+rub(limit)+'. '+(cur.combo?'Часть кредита '+rub(cur.hi)+' сверх лимита идёт по рыночной ставке '+pct(M.mrk)+' (комбо). Чтобы весь кредит был по ставке программы, нужно увеличить взнос на '+rub(loan-limit)+(repair>0?' либо пересмотреть ремонт':' либо выбрать объект дешевле')+'.':'Нужно увеличить взнос на '+rub(loan-limit)+(repair>0?' либо пересмотреть ремонт':' либо выбрать объект дешевле')+'.')]);
-  if(pvOk&&limOk)st.push(['ok','Условия программы выполняются','Взнос достаточен'+(mk?'':', кредит в пределах лимита '+rub(limit))+'.']);
+  if(!limOk)st.push(['bad','Кредит выше лимита программы','Лимит '+rub(limit)+'. Нужно увеличить взнос на '+rub(loan-limit)+(repair>0?' либо пересмотреть ремонт':' либо выбрать объект дешевле')+'.']);
+  if(pvOk&&limOk&&!M.combo)st.push(['ok','Условия программы выполняются','Взнос достаточен'+(mk?'':', кредит в пределах лимита '+rub(limit))+'.']);
+  if(M.combo&&limOk){st.push(['ok','Комбо-ипотека: кредит делится на две части',rub(cur.lo)+' по '+pct(eff)+' (льготная часть, до лимита) и '+rub(cur.hi)+' по '+pct(hiRate)+' (рыночная). Платёж — сумма двух частей.']);
+    if(M.altNeed>total)st.push(['ok','Хотите платить меньше?','При взносе от '+rub(M.altNeed)+' (ещё '+rub(M.altNeed-total)+') весь кредит будет по '+pct(eff)+', платёж около '+rub(M.altPay)+' в месяц.'])}
 }
 H.st+=st.map(function(s){return '<div class="status '+s[0]+'"><span>'+(s[0]==='ok'?'✔':'⚠')+'</span><span>'+s[1]+'<br><span class="t">'+s[2]+'</span></span></div>'}).join('');
 var r=[row('Стоимость квартиры',rub(price))];
