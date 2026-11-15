@@ -157,6 +157,7 @@ var RN={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
 var RM={1:[0.12,12e6],2:[0.10,15e6],3:[0.08,18e6],4:[0.06,18e6],5:[0.04,18e6]};
 var IT_L=9e6, IT_MAX=18e6;
 function core(S){
+  IT_L=num(S.itl)>0?num(S.itl):9e6; IT_MAX=Math.max(num(S.itmax)>0?num(S.itmax):18e6,IT_L);
   var prog=S.prog||'fam', reg=S.reg||'nsk';
   var mk=prog==='mkt', it=prog==='it', fam=prog==='fam', iz=fam&&reg==='izhs', ms=fam&&reg==='msk';
   var kids=Math.min(Math.max(Math.round(+S.kids)||1,1),5);
@@ -179,7 +180,7 @@ function core(S){
   var key=num(S.key)/100, spread=iz?0.035:0.03, step=!mk&&!it&&!fixedWhole;
   function pm(r,k,L){if(k<=0||L<=0)return 0;return r===0?L/k:L*r/(1-Math.pow(1+r,-k))}
   function ba(r,k,j,L){return r===0?L*(1-j/k):L*((Math.pow(1+r,k)-Math.pow(1+r,j))/(Math.pow(1+r,k)-1))}
-  function plan(t,L){
+  function plan1(t,L){
     var k=t*12,f,a=null,tot,lo=0,hi=0,plo=0,phi=0;
     if(it){lo=Math.min(L,IT_L);hi=Math.max(L-IT_L,0);plo=pm(eff/12,k,lo);phi=pm(itm/12,k,hi);f=plo+phi;tot=f*k}
     else{f=pm(eff/12,k,L);tot=f*k;
@@ -188,11 +189,18 @@ function core(S){
       else if(step&&t>15){var ra=eff+0.04,rb=key+spread,rn=Math.min(ra,rb),b2=ba(eff/12,k,180,L),ap2=pm(rn/12,k-180,b2);tot=f*180+ap2*(k-180);a={bal:b2,rate:rn,pay:ap2,p:ap2,k:180,sy:15,y:15,ra:ra,rb:rb}}}
     return {f:f,a:a,tot:tot,lo:lo,hi:hi,plo:plo,phi:phi}
   }
+  var mrk=num(S.cmp!=null&&S.cmp!==''?S.cmp:'18,8')/100;
+  function plan(t,L){
+    if(it||mk||!(L>limit+0.5))return plan1(t,L);
+    var k=t*12,a=plan1(t,limit),hiL=L-limit,ph=pm(mrk/12,k,hiL),x=null;
+    if(a.a){var bh=ba(mrk/12,k,a.a.k,hiL);x={bal:a.a.bal+bh,rate:a.a.rate,pay:a.a.pay+ph,p:a.a.pay+ph,k:a.a.k,sy:a.a.sy,y:a.a.y,ra:a.a.ra,rb:a.a.rb}}
+    return {f:a.f+ph,a:x,tot:a.tot+ph*k,lo:limit,hi:hiL,plo:a.f,phi:ph,combo:true}
+  }
   var cur=loan>0?plan(years,loan):{f:0,a:null,tot:0,lo:0,hi:0,plo:0,phi:0};
   return {prog:prog,reg:reg,mk:mk,it:it,fam:fam,iz:iz,ms:ms,kids:kids,rate:rate,limit:limit,half:half,sub:sub,eff:eff,itm:itm,
     price:price,ddu:ddu,area:area,rpm:rpm,repairAll:repairAll,repair:repair,T:T,norm:norm,mat:mat,own:own,total:total,years:years,n:n,
     need:need,loan:loan,pay:cur.f,after:cur.a,tot:cur.tot,cur:cur,fixedWhole:fixedWhole,key:key,spread:spread,step:step,plan:plan,
-    pvOk:total>=need-0.5,limOk:loan<=limit+0.5&&loan>=0,ins:num(S.ins),inc:num(S.inc),
+    mrk:mrk,pvOk:total>=need-0.5,limOk:loan<=limit+0.5&&loan>=0,ins:num(S.ins),inc:num(S.inc),
     name:mk?'Ипотека со ставкой застройщика':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
 }
 
@@ -234,7 +242,7 @@ var h='',H={hero:'',st:'',cmp:'',top:'',chips:'',comp:'',after:'',term:'',tax:''
 if(loan>0)H.hero+='<div class="hero"><div class="k">Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>Ставка <b>'+pct(eff)+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
 var pvShare=T>0?total/T:0, needShare=T>0?need/T:0, ch=[];
 if(mk){ch.push(['Программа','Ставка от застройщика'],['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После субсидии',after?pct(after.rate):'ставка не меняется'])}
-else if(it){ch.push(['Программа','ИТ-ипотека'],['Ставка льготной части',pct(eff)+' · весь срок'],['Ставка сверх 9 млн ₽',cur.hi>0?pct(M.itm):'не нужна'],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['Лимит кредита',rub(limit)+' всего'],['Срок',years+' лет'])}
+else if(it){ch.push(['Программа','ИТ-ипотека'],['Ставка льготной части',pct(eff)+' · весь срок'],['Ставка сверх '+rub(IT_L),cur.hi>0?pct(M.itm):'не нужна'],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['Лимит кредита',rub(limit)+' всего'],['Срок',years+' лет'])}
 else{ch.push(['Программа',iz?'Семейная ипотека · ИЖС':(M.ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека')]);
   if(!iz)ch.push(['Детей в семье',kids>=5?'5 и более':String(kids)]);
   ch.push([sub>0?'Ставка застройщика':'Ставка',pct(eff)+(fixedWhole?' · весь срок':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)]);
@@ -244,7 +252,7 @@ var st=[];
 if(loan<0)st.push(['bad','Взнос больше стоимости','Проверьте исходные данные.']);
 else{
   if(!pvOk)st.push(['warn','Не хватает '+rub(need-total)+' до нужного взноса','Для этой программы нужен взнос '+rub(need)+' ('+pct(T>0?need/T:0)+' от стоимости).']);
-  if(!limOk)st.push(['bad','Кредит выше лимита программы','Лимит '+rub(limit)+'. Нужно увеличить взнос на '+rub(loan-limit)+(repair>0?' либо пересмотреть ремонт':' либо выбрать объект дешевле')+'.']);
+  if(!limOk)st.push([cur.combo?'warn':'bad','Кредит выше лимита программы','Лимит '+rub(limit)+'. '+(cur.combo?'Часть кредита '+rub(cur.hi)+' сверх лимита идёт по рыночной ставке '+pct(M.mrk)+' (комбо). Чтобы весь кредит был по ставке программы, нужно увеличить взнос на '+rub(loan-limit)+(repair>0?' либо пересмотреть ремонт':' либо выбрать объект дешевле')+'.':'Нужно увеличить взнос на '+rub(loan-limit)+(repair>0?' либо пересмотреть ремонт':' либо выбрать объект дешевле')+'.')]);
   if(pvOk&&limOk)st.push(['ok','Условия программы выполняются','Взнос достаточен'+(mk?'':', кредит в пределах лимита '+rub(limit))+'.']);
 }
 H.st+=st.map(function(s){return '<div class="status '+s[0]+'"><span>'+(s[0]==='ok'?'✔':'⚠')+'</span><span>'+s[1]+'<br><span class="t">'+s[2]+'</span></span></div>'}).join('');
@@ -254,7 +262,7 @@ r.push('<div class="sep"></div>',row('Первоначальный взнос',r
 if(mat>0)r.push(row('из них маткапитал',rub(mat)));
 if(own>0)r.push(row('из них свои средства',rub(own)));
 r.push('<div class="sep"></div>',row('Сумма кредита',rub(Math.max(loan,0))));
-if(it&&loan>0){r.push(row('Льготная часть, '+pct(eff),rub(cur.lo)+' · '+rub(cur.plo)+'/мес'));if(cur.hi>0)r.push(row('Рыночная часть, '+pct(M.itm),rub(cur.hi)+' · '+rub(cur.phi)+'/мес'))}
+if((it||cur.combo)&&loan>0){r.push(row('Льготная часть, '+pct(eff),rub(cur.lo)+' · '+rub(cur.plo)+'/мес'));if(cur.hi>0)r.push(row('Рыночная часть, '+pct(it?M.itm:M.mrk),rub(cur.hi)+' · '+rub(cur.phi)+'/мес'))}
 if(loan>0)r.push(row('Платёж в месяц',rub(pay)));
 if(loan>0&&M.ins>0)r.push(row('Платёж со страховкой',rub(pay+M.ins/12)+' в мес'));
 H.comp+='<section><h2>Из чего состоит расчёт</h2><dl>'+r.join('')+'</dl>'+(!ddu&&repairAll>0?'<p class="muted">Ремонт '+rub(repairAll)+' оплачивается отдельно, вторым договором. В кредит и взнос он не входит.</p>':'')+'</section>';
