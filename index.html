@@ -178,17 +178,22 @@ a{color:inherit}
 
 section.card>.btn{flex:none}
 
-#cOver{gap:12px}#cOver>summary{margin-bottom:0}
 .ovt{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
 .ovt th{font-weight:600;color:var(--muted);text-align:right;padding:4px 0 6px;font-size:11.5px}
 .ovt td{padding:6px 0;border-top:1px solid var(--line);text-align:right;white-space:nowrap}
 .ovt td:first-child,.ovt th:first-child{text-align:left;white-space:normal;padding-right:6px;color:var(--muted)}
 .ovt tr.st td{font-weight:700;color:var(--ink)}
 
-#prog button{font-size:14.5px;padding:0 6px}
-#cOver{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
-#cOver>*:not(summary){margin-top:12px}
-#cOver>summary{line-height:1.4}
+#prog button,#reg button{font-size:14.5px;padding:0 6px}
+details.card{display:block;padding:16px}
+details.card>*:not(summary){margin-top:12px}
+details.card>summary{list-style:none;display:flex;align-items:center;gap:10px;line-height:1.4}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary>span:first-child{flex:1}
+details.card>summary::after{content:"+";font-size:20px;line-height:1;color:#6B1527}
+details.card[open]>summary::after{content:"–"}
+details.card .sv{flex:none;letter-spacing:0;text-transform:none;font-size:13px;font-weight:700;color:var(--ink)}
+details.card>.row2{display:grid}
 .ovt{font-size:12px}.ovt td,.ovt th{padding-left:10px}.ovt td:first-child,.ovt th:first-child{padding-left:0}
 </style>
 <style>html,body{margin:0}</style></head><body>
@@ -202,6 +207,14 @@ section.card>.btn{flex:none}
 
 <main class="wrap">
   <p class="note" id="sample">Пример на экране. Замените цифры на данные клиента: расчёт обновляется сразу.</p>
+
+  <div class="hero" aria-live="polite">
+    <div class="k" id="heroK">Платёж в месяц · первые 15 лет</div>
+    <div class="big" id="payment">—</div>
+    <div class="meta" id="heroMeta"></div>
+  </div>
+
+  <div id="statuses" style="display:flex;flex-direction:column;gap:8px"></div>
 
   <section class="card" aria-labelledby="h-prog">
     <h2 id="h-prog">Программа</h2>
@@ -275,40 +288,32 @@ section.card>.btn{flex:none}
       <span class="hint">Автоматически не считается: зависит от банка и страховой. Введите сумму из их предложения.</span></div>
   </section>
 
-  <div class="hero" aria-live="polite">
-    <div class="k" id="heroK">Платёж в месяц · первые 15 лет</div>
-    <div class="big" id="payment">—</div>
-    <div class="meta" id="heroMeta"></div>
-  </div>
-
-  <div id="statuses" style="display:flex;flex-direction:column;gap:8px"></div>
-
-  <section class="card" aria-labelledby="h-res">
-    <h2 id="h-res">Взнос и кредит</h2>
+  <details class="card" id="cRes" open>
+    <summary><span>Взнос и кредит</span></summary>
     <dl id="resDl"></dl>
-  </section>
+  </details>
 
-  <section class="card" id="cTerm" aria-labelledby="h-term"><h2 id="h-term">Платёж по срокам</h2><div id="vzTerm"></div><span class="hint">Чем короче срок, тем выше платёж и меньше переплата.</span></section>
+  <details class="card" id="cTerm"><summary><span id="h-term">Платёж по срокам</span></summary><div id="vzTerm"></div><span class="hint">Чем короче срок, тем выше платёж и меньше переплата.</span></details>
 
-  <section class="card" id="cDonut" aria-labelledby="h-don"><h2 id="h-don">Куда уходят выплаты</h2><div id="vzDonut"></div></section>
+  <details class="card" id="cDonut"><summary><span id="h-don">Куда уходят выплаты</span></summary><div id="vzDonut"></div></details>
 
-  <section class="card" id="cCmp" aria-labelledby="h-cmp"><h2 id="h-cmp">Сравнение с рыночной ипотекой</h2>
+  <details class="card" id="cCmp"><summary><span id="h-cmp">Сравнение с рыночной ипотекой</span><span class="sv" id="svCmp"></span></summary>
     <div class="row2">
       <div class="field"><label for="cmp">Рыночная ставка, %</label><input type="text" id="cmp" inputmode="decimal"></div>
       <div class="field"><label for="rent">Аренда, ₽/мес</label><input type="text" id="rent" inputmode="numeric"></div>
     </div>
     <span class="hint">Рыночная ставка для примера: средняя по новостройкам без субсидий на 5.11.2026 около 18,8 % (ключевая ставка ЦБ 14 %). Обновляйте под день расчёта. Аренду можно не вводить.</span>
-    <div id="vzCmp"></div></section>
+    <div id="vzCmp"></div></details>
 
-  <section class="card" id="cTax" aria-labelledby="h-tax"><h2 id="h-tax">Налоговый вычет</h2><div id="vzTax"></div></section>
+  <details class="card" id="cTax"><summary><span id="h-tax">Налоговый вычет</span><span class="sv" id="svTax"></span></summary><div id="vzTax"></div></details>
 
-  <section class="card" id="afterCard" aria-labelledby="h-after">
-    <h2 id="h-after">Что будет после 15 лет</h2>
+  <details class="card" id="afterCard">
+    <summary><span id="h-after">Что будет после 15 лет</span></summary>
     <div class="field" id="keyField"><label for="key">Ваш прогноз ключевой ставки ЦБ на конец 15-го года, %</label>
       <input type="text" id="key" inputmode="decimal"></div>
     <dl id="afterDl"></dl>
     <span class="hint" id="afterHint"></span>
-  </section>
+  </details>
 
   <details class="card" id="cOver">
     <summary>Завышение цены застройщиком (для вас)</summary>
@@ -322,13 +327,13 @@ section.card>.btn{flex:none}
     <div id="vzOver"></div>
   </details>
 
-  <section class="card" aria-labelledby="h-rep">
-    <h2 id="h-rep">Отчёт клиенту</h2>
+  <details class="card" id="cRep" open>
+    <summary><span>Отчёт клиенту</span></summary>
     <div class="field"><label for="cname">Имя клиента (необязательно)</label><input type="text" id="cname" autocomplete="off"></div>
     <div class="field"><label id="l-tax">Показывать клиенту налоговый вычет</label><div class="seg" id="tax" role="group" aria-labelledby="l-tax"></div><span class="hint">Включайте, если у клиента официальный доход. Иначе блок в отчёте скрыт. Для вас блок виден всегда.</span></div>
     <button class="btn" id="mkrep" type="button">Скопировать ссылку на отчёт</button>
     <span class="hint">Клиент откроет красивую страницу с итогом расчёта. Ссылка содержит цифры расчёта и имя, если вы его указали.</span>
-  </section>
+  </details>
 
   <div class="actions">
     <button class="btn" id="apply" type="button">Оставить заявку</button>
@@ -428,7 +433,7 @@ money.concat(dec).forEach(function(id){var el=$(id);fmtField(id);
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));$('sample').hidden=true}catch(e){}}
 
 function extraHTML(c,o){
-  var out={term:'',donut:'',cmp:'',tax:''};
+  var out={term:'',donut:'',cmp:'',tax:'',svCmp:'',svTax:''};
   if(!(c.loan>0))return out;
   function pm(r,n,L){if(n<=0)return 0;return r===0?L/n:L*r/(1-Math.pow(1+r,-n))}
   function yw(n){return n+(n%10===1&&n!==11?' года':' лет')}
@@ -439,9 +444,10 @@ function extraHTML(c,o){
   var mr=o.cmp/100,mp=pm(mr/12,c.years*12,c.loan),mt=mp*c.years*12,mxp=Math.max(cur.f,mp,o.rent||0);
   function bar(l,v,cls){return '<div class="vz-row2"><span>'+l+'</span><span class="vz-bar '+(cls||'')+'"><i style="width:'+Math.max(Math.round(v/mxp*100),4)+'%"></i></span><b>'+rub(v)+'</b></div>'}
   if(mr>0){out.cmp=bar('Ваша программа',cur.f)+bar('Рыночная ипотека, '+pct(mr),mp,'mk')+(o.rent>0?bar('Аренда такой квартиры',o.rent,'rt'):'');
-    var dm=mp-cur.f,dt=mt-cur.tot;
+    var dm=mp-cur.f,dt=mt-cur.tot;out.svCmp=dm>1?'выгода '+rub(dm)+' в мес':'';
     out.cmp+=(dm>1?'<div class="vz-win"><b>Выгода '+rub(dm)+' в месяц</b><span>за весь срок банку на '+rub(dt)+' меньше, чем по рыночной ипотеке</span></div>':'<div class="vz-win n"><span>Ставка вашей программы не ниже рыночной</span></div>')+(o.rent>0?'<p class="vz-n">Аренда за '+c.years+' лет: '+rub(o.rent*12*c.years)+', и квартира остаётся чужой.</p>':'')+'<p class="vz-n">Сравнение при той же сумме кредита и сроке.'+(cur.a&&!c.mk?' Платёж вашей программы указан за первые 15 лет.':'')+'</p>'}
   var pb=Math.min(2000000,Math.max(c.T-c.mat,0)),ib=Math.min(3000000,inter),pr=pb*0.13,ir=ib*0.13;
+  out.svTax='до '+rub(pr+ir);
   out.tax='<dl><dt>За квартиру (до 2 млн ₽ × 13 %)</dt><dd>'+rub(pr)+'</dd><dt>За проценты (до 3 млн ₽ × 13 %)</dt><dd>'+rub(ir)+'</dd><div class="sep"></div><dt><b>Вернуть можно до</b></dt><dd>'+rub(pr+ir)+'</dd></dl><p class="vz-n">Это максимум на одного собственника при официальном доходе. Деньги возвращаются из уплаченного НДФЛ, обычно за несколько лет. Материнский капитал вычитается из стоимости. Ориентир, не налоговая консультация.</p>';
   return out;
 }
@@ -548,7 +554,7 @@ function calc(){
 
   var tot=M.tot;
   var ex=extraHTML(M,{cmp:num(S.cmp),rent:num(S.rent)});
-  $('vzTerm').innerHTML=ex.term;$('vzDonut').innerHTML=ex.donut;$('vzCmp').innerHTML=ex.cmp;$('vzTax').innerHTML=ex.tax;
+  $('svCmp').textContent=ex.svCmp;$('svTax').textContent=ex.svTax;$('vzTerm').innerHTML=ex.term;$('vzDonut').innerHTML=ex.donut;$('vzCmp').innerHTML=ex.cmp;$('vzTax').innerHTML=ex.tax;
   $('cTerm').hidden=$('cDonut').hidden=$('cCmp').hidden=$('cTax').hidden=!(loan>0);
   $('cOver').hidden=!(T>0);
   renderOver(M);
