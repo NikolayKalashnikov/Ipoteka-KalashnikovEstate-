@@ -280,6 +280,7 @@ section.card>.btn{flex:none}
   <section class="card" aria-labelledby="h-rep">
     <h2 id="h-rep">Отчёт клиенту</h2>
     <div class="field"><label for="cname">Имя клиента (необязательно)</label><input type="text" id="cname" autocomplete="off"></div>
+    <div class="field"><label id="l-tax">Показывать клиенту налоговый вычет</label><div class="seg" id="tax" role="group" aria-labelledby="l-tax"></div><span class="hint">Включайте, если у клиента официальный доход. Иначе блок в отчёте скрыт. Для вас блок виден всегда.</span></div>
     <button class="btn" id="mkrep" type="button">Скопировать ссылку на отчёт</button>
     <span class="hint">Клиент откроет красивую страницу с итогом расчёта. Ссылка содержит цифры расчёта и имя, если вы его указали.</span>
   </section>
@@ -306,7 +307,7 @@ section.card>.btn{flex:none}
 (function(){
 'use strict';
 var RATES={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
-var DEF={cmp:'18,8',rent:'',cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14'};
+var DEF={tax:'Нет',cmp:'18,8',rent:'',cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14'};
 var KEY='ke-calc-v1', S=Object.assign({},DEF);
 try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){S=Object.assign({},DEF,p);document.getElementById('sample').hidden=true;}}}catch(e){}
 
@@ -320,10 +321,11 @@ function $(id){return document.getElementById(id)}
 function seg(id,opts,get,set){var el=$(id);el.innerHTML='';opts.forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o.t;b.dataset.v=o.v;
   b.addEventListener('click',function(){set(o.v);sync();calc();save()});el.appendChild(b)});
   el._get=get}
-function sync(){['prog','kids','half','ddu'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
+function sync(){['prog','kids','half','ddu','tax'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
 seg('prog',[{t:'Семейная ипотека',v:'fam'},{t:'Рыночная, субсидия застройщика',v:'mkt'}],null,function(v){S.prog=v});
 seg('kids',[1,2,3,4,5].map(function(n){return{t:String(n),v:n}}),null,function(v){S.kids=+v});
 seg('half',[{t:'Да',v:'Да'},{t:'Нет',v:'Нет'}],null,function(v){S.half=v});
+seg('tax',[{t:'Нет',v:'Нет'},{t:'Да',v:'Да'}],null,function(v){S.tax=v});
 seg('ddu',[{t:'Да, в ДДУ',v:'Да'},{t:'Нет, вторым договором',v:'Нет'}],null,function(v){S.ddu=v});
 
 var money=['price','rub','mat','own','years','rent'], dec=['cmp','mrate','myrs','mafter','subsidy','area','norm','key'];
