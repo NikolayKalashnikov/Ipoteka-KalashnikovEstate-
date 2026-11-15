@@ -145,7 +145,6 @@ section.card>.btn{flex:none}
 <script>
 (function(){
 'use strict';
-var RATES={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
 var nf=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0});
 function rub(x){return nf.format(Math.round(x))+' ₽'}
 function pct(x){return String(Math.round(x*10000)/100).replace('.',',')+' %'}
@@ -153,26 +152,64 @@ function num(s){if(typeof s==='number')return s;s=String(s==null?'':s).replace(/
 function pmt(r,n,pv){if(n<=0)return 0;if(r===0)return pv/n;return pv*r/(1-Math.pow(1+r,-n))}
 function balAt(r,n,k,L){return r===0?L*(1-k/n):L*((Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1))}
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function extraHTML(c){
+/* === core: shared maths for calculator and report === */
+var RN={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
+var RM={1:[0.12,12e6],2:[0.10,15e6],3:[0.08,18e6],4:[0.06,18e6],5:[0.04,18e6]};
+var IT_L=9e6, IT_MAX=18e6;
+function core(S){
+  var prog=S.prog||'fam', reg=S.reg||'nsk';
+  var mk=prog==='mkt', it=prog==='it', fam=prog==='fam', iz=fam&&reg==='izhs', ms=fam&&reg==='msk';
+  var kids=Math.min(Math.max(Math.round(+S.kids)||1,1),5);
+  var rate,limit;
+  if(mk){rate=num(S.mrate)/100;limit=Infinity}
+  else if(it){rate=0.06;limit=IT_MAX}
+  else if(iz){rate=0.06;limit=num(S.izlim)>0?num(S.izlim):6e6}
+  else{var tb=(ms?RM:RN)[kids];rate=tb[0];limit=tb[1]}
+  var half=fam&&!iz&&S.half==='Да';
+  var sub=mk?0:num(S.subsidy)/100;
+  var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
+  var itm=num(S.itmkt!=null&&S.itmkt!==''?S.itmkt:'21')/100;
+  var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
+  var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
+  var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
+  var years=Math.min(Math.max(Math.round(num(S.years))||1,1),30), n=years*12;
+  var need=Math.max(T*norm,T-limit,(half&&rate>0.06)?T*0.5:0,0);
+  var loan=T-total;
+  var fixedWhole=fam&&!iz&&half&&!(sub>0)&&T>0&&total>=T*0.5-0.5;
+  var key=num(S.key)/100, spread=iz?0.035:0.03, step=!mk&&!it&&!fixedWhole;
+  function pm(r,k,L){if(k<=0||L<=0)return 0;return r===0?L/k:L*r/(1-Math.pow(1+r,-k))}
+  function ba(r,k,j,L){return r===0?L*(1-j/k):L*((Math.pow(1+r,k)-Math.pow(1+r,j))/(Math.pow(1+r,k)-1))}
+  function plan(t,L){
+    var k=t*12,f,a=null,tot,lo=0,hi=0,plo=0,phi=0;
+    if(it){lo=Math.min(L,IT_L);hi=Math.max(L-IT_L,0);plo=pm(eff/12,k,lo);phi=pm(itm/12,k,hi);f=plo+phi;tot=f*k}
+    else{f=pm(eff/12,k,L);tot=f*k;
+      if(mk){var sy=Math.min(Math.max(Math.round(num(S.myrs))||0,0),t);
+        if(sy>0&&sy<t){var rm=num(S.mafter)/100,b=ba(eff/12,k,sy*12,L),ap=pm(rm/12,k-sy*12,b);tot=f*sy*12+ap*(k-sy*12);a={bal:b,rate:rm,pay:ap,p:ap,k:sy*12,sy:sy,y:sy}}}
+      else if(step&&t>15){var ra=eff+0.04,rb=key+spread,rn=Math.min(ra,rb),b2=ba(eff/12,k,180,L),ap2=pm(rn/12,k-180,b2);tot=f*180+ap2*(k-180);a={bal:b2,rate:rn,pay:ap2,p:ap2,k:180,sy:15,y:15,ra:ra,rb:rb}}}
+    return {f:f,a:a,tot:tot,lo:lo,hi:hi,plo:plo,phi:phi}
+  }
+  var cur=loan>0?plan(years,loan):{f:0,a:null,tot:0,lo:0,hi:0,plo:0,phi:0};
+  return {prog:prog,reg:reg,mk:mk,it:it,fam:fam,iz:iz,ms:ms,kids:kids,rate:rate,limit:limit,half:half,sub:sub,eff:eff,itm:itm,
+    price:price,ddu:ddu,area:area,rpm:rpm,repairAll:repairAll,repair:repair,T:T,norm:norm,mat:mat,own:own,total:total,years:years,n:n,
+    need:need,loan:loan,pay:cur.f,after:cur.a,tot:cur.tot,cur:cur,fixedWhole:fixedWhole,key:key,spread:spread,step:step,plan:plan,
+    pvOk:total>=need-0.5,limOk:loan<=limit+0.5&&loan>=0,ins:num(S.ins),inc:num(S.inc),
+    name:mk?'Ипотека со ставкой застройщика':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
+}
+
+function extraHTML(c,o){
   var out={term:'',donut:'',cmp:'',tax:''};
   if(!(c.loan>0))return out;
   function pm(r,n,L){if(n<=0)return 0;return r===0?L/n:L*r/(1-Math.pow(1+r,-n))}
-  function ba(r,n,k,L){return r===0?L*(1-k/n):L*((Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1))}
   function yw(n){return n+(n%10===1&&n!==11?' года':' лет')}
-  function plan(t){var n=t*12,f=pm(c.eff/12,n,c.loan),a=null,tot=f*n;
-    if(c.mk){var sy=Math.min(Math.max(Math.round(c.myrs)||0,0),t);
-      if(sy>0&&sy<t){var b=ba(c.eff/12,n,sy*12,c.loan),ap=pm(c.mafter/100/12,n-sy*12,b);tot=f*sy*12+ap*(n-sy*12);a={p:ap,y:sy}}}
-    else if(t>15&&!c.fixedWhole){var b2=ba(c.eff/12,n,180,c.loan),rn=Math.min(c.eff+0.04,c.key/100+0.03),ap2=pm(rn/12,n-180,b2);tot=f*180+ap2*(n-180);a={p:ap2,y:15}}
-    return {f:f,a:a,tot:tot}}
-  var ts=[10,15,20,25,30],ps=ts.map(plan),mx=Math.max.apply(null,ps.map(function(p){return p.f}));
+  var ts=[10,15,20,25,30],ps=ts.map(function(t){return c.plan(t,c.loan)}),mx=Math.max.apply(null,ps.map(function(p){return p.f}));
   out.term=ts.map(function(t,i){var p=ps[i];return '<div class="vz-row'+(t===c.years?' cur':'')+'"><span class="vz-l">'+t+' лет</span><span class="vz-bar"><i style="width:'+Math.max(Math.round(p.f/mx*100),4)+'%"></i></span><b>'+rub(p.f)+'</b><span class="vz-sub">переплата '+rub(p.tot-c.loan)+(p.a?' · после '+yw(p.a.y)+': '+rub(p.a.p):'')+'</span></div>'}).join('');
-  var cur=plan(c.years),inter=Math.max(cur.tot-c.loan,0),share=cur.tot>0?inter/cur.tot:0,C=2*Math.PI*42;
+  var cur=c.cur,inter=Math.max(cur.tot-c.loan,0),share=cur.tot>0?inter/cur.tot:0,C=2*Math.PI*42;
   out.donut='<div class="vz-donut"><svg viewBox="0 0 120 120" width="132" height="132" role="img" aria-label="Проценты составляют '+Math.round(share*100)+' % всех выплат"><circle cx="60" cy="60" r="42" fill="none" stroke="#6B1527" stroke-width="18"/><circle cx="60" cy="60" r="42" fill="none" stroke="#E2C7CD" stroke-width="18" stroke-dasharray="'+(share*C).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">'+Math.round(share*100)+' %</text><text x="60" y="74" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".7">проценты</text></svg><div class="vz-leg"><div><i style="background:#6B1527"></i><span>Тело кредита, ваша квартира</span><b>'+rub(c.loan)+'</b></div><div><i style="background:#E2C7CD"></i><span>Проценты, банку</span><b>'+rub(inter)+'</b></div><div class="vz-tot"><span>Всего за '+c.years+' лет</span><b>'+rub(cur.tot)+'</b></div></div></div>';
-  var mr=c.cmp/100,mp=pm(mr/12,c.years*12,c.loan),mt=mp*c.years*12,mxp=Math.max(cur.f,mp,c.rent||0);
+  var mr=o.cmp/100,mp=pm(mr/12,c.years*12,c.loan),mt=mp*c.years*12,mxp=Math.max(cur.f,mp,o.rent||0);
   function bar(l,v,cls){return '<div class="vz-row2"><span>'+l+'</span><span class="vz-bar '+(cls||'')+'"><i style="width:'+Math.max(Math.round(v/mxp*100),4)+'%"></i></span><b>'+rub(v)+'</b></div>'}
-  if(mr>0){out.cmp=bar('Ваша программа',cur.f)+bar('Рыночная ипотека, '+pct(mr),mp,'mk')+(c.rent>0?bar('Аренда такой квартиры',c.rent,'rt'):'');
+  if(mr>0){out.cmp=bar('Ваша программа',cur.f)+bar('Рыночная ипотека, '+pct(mr),mp,'mk')+(o.rent>0?bar('Аренда такой квартиры',o.rent,'rt'):'');
     var dm=mp-cur.f,dt=mt-cur.tot;
-    out.cmp+=(dm>1?'<div class="vz-win"><b>Выгода '+rub(dm)+' в месяц</b><span>за весь срок банку на '+rub(dt)+' меньше, чем по рыночной ипотеке</span></div>':'<div class="vz-win n"><span>Ставка вашей программы не ниже рыночной</span></div>')+(c.rent>0?'<p class="vz-n">Аренда за '+c.years+' лет: '+rub(c.rent*12*c.years)+', и квартира остаётся чужой.</p>':'')+'<p class="vz-n">Сравнение при той же сумме кредита и сроке.'+(cur.a&&!c.mk?' Платёж вашей программы указан за первые 15 лет.':'')+'</p>'}
+    out.cmp+=(dm>1?'<div class="vz-win"><b>Выгода '+rub(dm)+' в месяц</b><span>за весь срок банку на '+rub(dt)+' меньше, чем по рыночной ипотеке</span></div>':'<div class="vz-win n"><span>Ставка вашей программы не ниже рыночной</span></div>')+(o.rent>0?'<p class="vz-n">Аренда за '+c.years+' лет: '+rub(o.rent*12*c.years)+', и квартира остаётся чужой.</p>':'')+'<p class="vz-n">Сравнение при той же сумме кредита и сроке.'+(cur.a&&!c.mk?' Платёж вашей программы указан за первые 15 лет.':'')+'</p>'}
   var pb=Math.min(2000000,Math.max(c.T-c.mat,0)),ib=Math.min(3000000,inter),pr=pb*0.13,ir=ib*0.13;
   out.tax='<dl><dt>За квартиру (до 2 млн ₽ × 13 %)</dt><dd>'+rub(pr)+'</dd><dt>За проценты (до 3 млн ₽ × 13 %)</dt><dd>'+rub(ir)+'</dd><div class="sep"></div><dt><b>Вернуть можно до</b></dt><dd>'+rub(pr+ir)+'</dd></dl><p class="vz-n">Это максимум на одного собственника при официальном доходе. Деньги возвращаются из уплаченного НДФЛ, обычно за несколько лет. Материнский капитал вычитается из стоимости. Ориентир, не налоговая консультация.</p>';
   return out;
@@ -183,29 +220,13 @@ try{var d=new URLSearchParams(location.search).get('d');
   d=d.replace(/-/g,'+').replace(/_/g,'/');S=JSON.parse(decodeURIComponent(escape(atob(d))))}catch(e){S=null}
 if(!S||typeof S!=='object'||!num(S.price)){
   app.innerHTML='<section><h2>Ссылка не открылась</h2><p>Расчёт не удалось прочитать. Попросите отправить ссылку ещё раз.</p><div class="btns"><a class="btn" href="tel:+79130019041">Позвонить +7 913 001 90 41</a></div></section>';return}
-var mk=S.prog==='mkt', kids=+S.kids||1;
-var rate=mk?num(S.mrate)/100:RATES[kids][0], limit=mk?Infinity:RATES[kids][1];
-var half=!mk&&S.half==='Да', sub=mk?0:num(S.subsidy)/100;
-var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
-var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
-var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
-var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
-var years=Math.min(Math.max(Math.round(num(S.years))||1,1),30), n=years*12;
-var need=Math.max(T*norm,T-limit,(half&&rate>0.06)?T*0.5:0,0);
-var loan=T-total, pay=loan>0?pmt(eff/12,n,loan):0;
-var fixedWhole=!mk&&half&&!(sub>0)&&T>0&&total>=T*0.5-0.5;
-var pvOk=total>=need-0.5, limOk=loan<=limit+0.5&&loan>=0;
-var after=null;
-if(mk){var sy=Math.max(Math.round(num(S.myrs))||0,0);
-  if(sy>0&&sy<years&&loan>0){var rm=num(S.mafter)/100,bm=balAt(eff/12,n,sy*12,loan);after={bal:bm,rate:rm,pay:pmt(rm/12,n-sy*12,bm),k:sy*12,sy:sy}}}
-else if(n>180&&loan>0&&!fixedWhole){var bal=balAt(eff/12,n,180,loan),rn=Math.min(eff+0.04,num(S.key)/100+0.03);after={bal:bal,rate:rn,pay:pmt(rn/12,n-180,bal),k:180,sy:15}}
-var tot=loan>0?(after?pay*after.k+after.pay*(n-after.k):pay*n):0;
+var M=core(S), mk=M.mk,it=M.it,iz=M.iz,fam=M.fam,kids=M.kids,rate=M.rate,limit=M.limit,half=M.half,sub=M.sub,eff=M.eff,price=M.price,ddu=M.ddu,repairAll=M.repairAll,repair=M.repair,T=M.T,mat=M.mat,own=M.own,total=M.total,years=M.years,n=M.n,need=M.need,loan=M.loan,pay=M.pay,fixedWhole=M.fixedWhole,pvOk=M.pvOk,limOk=M.limOk,after=M.after,tot=M.tot,cur=M.cur;
 
 var who=S.name?String(S.name).slice(0,60):'';
 document.getElementById('ttl').textContent=who?'Расчёт для '+who:'Расчёт ипотеки';
 document.title=who?'Расчёт для '+who:'Расчёт ипотеки · Николай Калашников';
 var dt=S.date?new Date(S.date):null;
-document.getElementById('sub').textContent=(mk?'Ипотека со ставкой застройщика':'Семейная ипотека')+(dt&&isFinite(dt)?' · '+dt.toLocaleDateString('ru-RU'):'');
+document.getElementById('sub').textContent=M.name+(dt&&isFinite(dt)?' · '+dt.toLocaleDateString('ru-RU'):'');
 
 var firstTxt=mk?(after?'первые '+after.sy+' '+(after.sy%10===1&&after.sy!==11?'год':(after.sy%10>=2&&after.sy%10<=4&&(after.sy<10||after.sy>20)?'года':'лет')):'весь срок'):(after?'первые 15 лет':'весь срок');
 function row(a,b){return '<dt>'+a+'</dt><dd>'+b+'</dd>'}
@@ -213,9 +234,12 @@ var h='',H={hero:'',st:'',cmp:'',top:'',chips:'',comp:'',after:'',term:'',tax:''
 if(loan>0)H.hero+='<div class="hero"><div class="k">Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>Ставка <b>'+pct(eff)+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
 var pvShare=T>0?total/T:0, needShare=T>0?need/T:0, ch=[];
 if(mk){ch.push(['Программа','Ставка от застройщика'],['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После субсидии',after?pct(after.rate):'ставка не меняется'])}
-else{ch.push(['Программа','Семейная ипотека'],['Детей в семье',kids>=5?'5 и более':String(kids)],[sub>0?'Ставка застройщика':'Ставка',pct(eff)+(fixedWhole?' · весь срок':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)]);
+else if(it){ch.push(['Программа','ИТ-ипотека'],['Ставка льготной части',pct(eff)+' · весь срок'],['Ставка сверх 9 млн ₽',cur.hi>0?pct(M.itm):'не нужна'],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['Лимит кредита',rub(limit)+' всего'],['Срок',years+' лет'])}
+else{ch.push(['Программа',iz?'Семейная ипотека · ИЖС':(M.ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека')]);
+  if(!iz)ch.push(['Детей в семье',kids>=5?'5 и более':String(kids)]);
+  ch.push([sub>0?'Ставка застройщика':'Ставка',pct(eff)+(fixedWhole?' · весь срок':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)]);
   if(fixedWhole)ch.push(['Условие','взнос от 50 % стоимости'],['Лимит кредита',rub(limit)]);else ch.push(['Лимит кредита',rub(limit)],['Срок',years+' лет'])}
-H.chips+='<section><h2>Условия расчёта</h2><div class="chips">'+ch.map(function(c){return '<div class="chip"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join('')+'</div></section>';
+H.chips+='<section><h2>Условия расчёта</h2><div class="chips">'+ch.map(function(c){return '<div class="chip"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join('')+'</div>'+(it?'<p class="muted">Нужна работа в аккредитованной ИТ-компании весь срок кредита. В Москве и Санкт-Петербурге программа не действует. Возможно досрочное закрытие программы: условия уточняйте в банке.</p>':'')+'</section>';
 var st=[];
 if(loan<0)st.push(['bad','Взнос больше стоимости','Проверьте исходные данные.']);
 else{
@@ -230,7 +254,9 @@ r.push('<div class="sep"></div>',row('Первоначальный взнос',r
 if(mat>0)r.push(row('из них маткапитал',rub(mat)));
 if(own>0)r.push(row('из них свои средства',rub(own)));
 r.push('<div class="sep"></div>',row('Сумма кредита',rub(Math.max(loan,0))));
+if(it&&loan>0){r.push(row('Льготная часть, '+pct(eff),rub(cur.lo)+' · '+rub(cur.plo)+'/мес'));if(cur.hi>0)r.push(row('Рыночная часть, '+pct(M.itm),rub(cur.hi)+' · '+rub(cur.phi)+'/мес'))}
 if(loan>0)r.push(row('Платёж в месяц',rub(pay)));
+if(loan>0&&M.ins>0)r.push(row('Платёж со страховкой',rub(pay+M.ins/12)+' в мес'));
 H.comp+='<section><h2>Из чего состоит расчёт</h2><dl>'+r.join('')+'</dl>'+(!ddu&&repairAll>0?'<p class="muted">Ремонт '+rub(repairAll)+' оплачивается отдельно, вторым договором. В кредит и взнос он не входит.</p>':'')+'</section>';
 if(loan>0){
   var a=[];
@@ -240,15 +266,15 @@ if(loan>0){
   }
   a.push(row('Всего банку за срок',rub(tot)),row('из них проценты',rub(tot-loan)));
   if(fixedWhole&&!after)a.unshift(row('Ставка',pct(eff)+' на весь срок'),row('Платёж в месяц',rub(pay)+' · не меняется'),'<div class="sep"></div>');
-  H.after+='<section><h2>'+(after?'Что будет дальше':(fixedWhole?'Ставка на весь срок':'Итого за срок'))+'</h2><dl>'+a.join('')+'</dl>'+(fixedWhole?'<p class="muted">Взнос от 50 % стоимости: ставка не выше 6 % действует на весь срок кредита и после 15 лет не повышается.</p>':after?'<p class="muted">'+(mk?'Ставка после субсидии указана по условиям застройщика и может отличаться.':'Ставка после 15 лет оценочная: она зависит от ключевой ставки ЦБ на тот момент.')+'</p>':'')+'</section>';
+  H.after+='<section><h2>'+(after?'Что будет дальше':(fixedWhole?'Ставка на весь срок':'Итого за срок'))+'</h2><dl>'+a.join('')+'</dl>'+(it?'<p class="muted">Ставка льготной части действует весь срок кредита и не повышается.</p>':fixedWhole?'<p class="muted">Взнос от 50 % стоимости: ставка не выше 6 % действует на весь срок кредита и после 15 лет не повышается.</p>':after?'<p class="muted">'+(mk?'Ставка после субсидии указана по условиям застройщика и может отличаться.':'Ставка после 15 лет оценочная: она зависит от ключевой ставки ЦБ на тот момент.')+'</p>':'')+'</section>';
 }
-var ex=extraHTML({mk:mk,loan:loan,eff:eff,years:years,fixedWhole:fixedWhole,key:num(S.key),myrs:num(S.myrs),mafter:num(S.mafter),cmp:num(S.cmp!=null&&S.cmp!==''?S.cmp:'18,8'),rent:num(S.rent),T:T,mat:mat});
+var ex=extraHTML(M,{cmp:num(S.cmp!=null&&S.cmp!==''?S.cmp:'18,8'),rent:num(S.rent)});
 if(loan>0){
   if(ex.cmp)H.cmp='<section><h2>Сравнение с рыночной ипотекой</h2>'+ex.cmp+'</section>';
   H.term='<details class="vz-det"><summary>Платёж по срокам: 10, 15, 20, 25, 30 лет</summary><div class="vz-in">'+ex.term+'<p class="muted">Чем короче срок, тем выше платёж и меньше переплата.</p></div></details>';
   if(S.tax==='Да')H.tax='<details class="vz-det"><summary>Налоговый вычет при покупке</summary><div class="vz-in">'+ex.tax+'</div></details>';
 }
-var ask='Хочу подбор объектов под этот расчёт.\nПрограмма: '+(mk?'ставка застройщика':'семейная ипотека'+(kids?', детей: '+kids:''))+'\nОбъект: '+rub(T)+'\nВзнос: '+rub(total)+' ('+pct(T>0?total/T:0)+')'+(loan>0?'\nПлатёж: '+rub(pay)+' в месяц, ставка '+pct(eff)+', срок '+years+' лет':'');
+var ask='Хочу подбор объектов под этот расчёт.\nПрограмма: '+(mk?'ставка застройщика':it?'ИТ-ипотека':iz?'семейная ипотека, ИЖС':'семейная ипотека'+(M.ms?' (Москва, СПб)':'')+', детей: '+kids)+'\nОбъект: '+rub(T)+'\nВзнос: '+rub(total)+' ('+pct(T>0?total/T:0)+')'+(loan>0?'\nПлатёж: '+rub(pay)+' в месяц, ставка '+pct(eff)+', срок '+years+' лет':'');
 var cta=loan>0?'Хотите, я подберу объекты под платёж '+rub(pay)+' и ваш взнос?':'Хотите, я подберу объекты под ваш расчёт?';
 if(loan>0)H.top='<div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Подобрать объекты под этот платёж</a></div>';
 H.cta+='<section class="hl"><h2>Что дальше</h2><p class="who">'+cta+'</p><p class="muted">Проверю условия у застройщика и банка, покажу короткий список с честным разбором каждого объекта.</p><div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Оставить заявку на подбор</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div><p class="muted">Персональный расчёт подготовил Николай Калашников · в недвижимости с 2017 года, более 400 сделок</p></section>';

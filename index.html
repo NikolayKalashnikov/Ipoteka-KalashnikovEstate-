@@ -177,6 +177,19 @@ a{color:inherit}
 .vz-leg .vz-tot{display:block;border-top:1px solid var(--line);padding-top:8px}.vz-tot b{display:block;font-size:16px}
 
 section.card>.btn{flex:none}
+
+#cOver{gap:12px}#cOver>summary{margin-bottom:0}
+.ovt{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.ovt th{font-weight:600;color:var(--muted);text-align:right;padding:4px 0 6px;font-size:11.5px}
+.ovt td{padding:6px 0;border-top:1px solid var(--line);text-align:right;white-space:nowrap}
+.ovt td:first-child,.ovt th:first-child{text-align:left;white-space:normal;padding-right:6px;color:var(--muted)}
+.ovt tr.st td{font-weight:700;color:var(--ink)}
+
+#prog button{font-size:14.5px;padding:0 6px}
+#cOver{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+#cOver>*:not(summary){margin-top:12px}
+#cOver>summary{line-height:1.4}
+.ovt{font-size:12px}.ovt td,.ovt th{padding-left:10px}.ovt td:first-child,.ovt th:first-child{padding-left:0}
 </style>
 <style>html,body{margin:0}</style></head><body>
 
@@ -206,22 +219,40 @@ section.card>.btn{flex:none}
       <span class="hint">Подходит любому заёмщику, дети не нужны. Лимита кредита нет. Если субсидия на весь срок, поставьте срок субсидии равным сроку кредита. Ставку после субсидии уточните у застройщика и банка.</span></div>
   </section>
 
+  <section class="card" id="izCard" aria-labelledby="h-iz" hidden>
+    <h2 id="h-iz">ИЖС</h2>
+    <div class="field"><label for="izlim">Максимальная сумма кредита, ₽</label><input type="text" id="izlim" inputmode="numeric">
+      <span class="hint">Единого лимита по ИЖС нет: впишите по банку. Взнос от 50 % здесь не применяется. После 15 лет берётся «ключевая + 3,5 п.п.».</span></div>
+  </section>
+
+  <section class="card" id="itCard" aria-labelledby="h-it" hidden>
+    <h2 id="h-it">ИТ-ипотека</h2>
+    <div class="row2">
+      <div class="field"><label for="itmkt">Сверх 9 млн, %</label><input type="text" id="itmkt" inputmode="decimal"></div>
+      <div class="field"><label for="inc">Доход, ₽/мес</label><input type="text" id="inc" inputmode="numeric" placeholder="необязательно"></div>
+    </div>
+    <span class="hint">Льготная часть до 9 млн ₽ по 6 % на весь срок, общий лимит 18 млн ₽. Ставка сверх лимита: оценка, уточните в банке. Справочный порог дохода 150 000 ₽. Нужна работа в аккредитованной ИТ-компании весь срок; в Москве и СПб не действует. Возможно досрочное закрытие программы.</span>
+  </section>
+
   <section class="card" id="famCard" aria-labelledby="h-fam">
     <h2 id="h-fam">Семья и программа</h2>
-    <div class="field"><span class="lbl" id="l-kids">Детей в семье</span>
+    <div class="field" id="regF"><span class="lbl" id="l-reg">Что покупаете</span>
+      <div class="seg" id="reg" role="group" aria-labelledby="l-reg"></div>
+      <span class="hint" id="regHint"></span></div>
+    <div class="field" id="kidsF"><span class="lbl" id="l-kids">Детей в семье</span>
       <div class="seg" id="kids" role="group" aria-labelledby="l-kids"></div>
       <span class="hint">Считаются все дети основного заёмщика, включая совершеннолетних. «5» — пять и более. Нужен ребёнок младше 7 лет.</span></div>
-    <div class="field"><span class="lbl" id="l-half">Первоначальный взнос от 50 % стоимости?</span>
+    <div class="field" id="halfF"><span class="lbl" id="l-half">Первоначальный взнос от 50 % стоимости?</span>
       <div class="seg" id="half" role="group" aria-labelledby="l-half"></div>
       <span class="hint" id="halfHint">«Да» — ставка не выше 6 %.</span></div>
-    <div class="field"><label for="subsidy">Ставка по предложению застройщика, % годовых</label>
+    <div class="field" id="subF"><label for="subsidy">Ставка по предложению застройщика, % годовых</label>
       <input type="text" id="subsidy" inputmode="decimal" placeholder="0 — нет">
       <span class="hint">Впишите, если застройщик снижает ставку ниже программной. 0 или пусто — не применяется.</span></div>
   </section>
 
   <section class="card" aria-labelledby="h-obj">
     <h2 id="h-obj">Объект и ремонт</h2>
-    <div class="field"><label for="price">Стоимость квартиры по договору, ₽</label>
+    <div class="field"><label for="price" id="lPrice">Стоимость квартиры по договору, ₽</label>
       <input type="text" id="price" inputmode="numeric"></div>
     <div class="field"><span class="lbl" id="l-ddu">Ремонт зашит в ДДУ?</span>
       <div class="seg" id="ddu" role="group" aria-labelledby="l-ddu"></div>
@@ -240,6 +271,8 @@ section.card>.btn{flex:none}
     </div>
     <div class="field"><label for="mat">Материнский капитал, ₽</label><input type="text" id="mat" inputmode="numeric"></div>
     <div class="field"><label for="own">Свои средства клиента, ₽</label><input type="text" id="own" inputmode="numeric"></div>
+    <div class="field"><label for="ins">Страховка, ₽ в год</label><input type="text" id="ins" inputmode="numeric" placeholder="необязательно">
+      <span class="hint">Автоматически не считается: зависит от банка и страховой. Введите сумму из их предложения.</span></div>
   </section>
 
   <div class="hero" aria-live="polite">
@@ -269,13 +302,25 @@ section.card>.btn{flex:none}
 
   <section class="card" id="cTax" aria-labelledby="h-tax"><h2 id="h-tax">Налоговый вычет</h2><div id="vzTax"></div></section>
 
-  <section class="card" aria-labelledby="h-after">
+  <section class="card" id="afterCard" aria-labelledby="h-after">
     <h2 id="h-after">Что будет после 15 лет</h2>
     <div class="field" id="keyField"><label for="key">Ваш прогноз ключевой ставки ЦБ на конец 15-го года, %</label>
       <input type="text" id="key" inputmode="decimal"></div>
     <dl id="afterDl"></dl>
     <span class="hint" id="afterHint"></span>
   </section>
+
+  <details class="card" id="cOver">
+    <summary>Завышение цены застройщиком (для вас)</summary>
+    <span class="hint">Во сколько клиенту обходится «взнос от застройщика»: цену в договоре поднимают, часть взноса закрывает рост цены, кредит и платёж растут. В отчёт клиенту этот блок не попадает.</span>
+    <div class="field"><label for="ovOwn">Свои деньги клиента на взнос, ₽</label><input type="text" id="ovOwn" inputmode="numeric"></div>
+    <div class="field"><span class="lbl" id="l-ov">Как завышают цену</span><div class="seg" id="ovMode" role="group" aria-labelledby="l-ov"></div></div>
+    <div class="row2">
+      <div class="field"><label for="ovPct">Завышение, % от цены</label><input type="text" id="ovPct" inputmode="decimal"></div>
+      <div class="field"><label for="ovRub">Завышение, ₽</label><input type="text" id="ovRub" inputmode="numeric"></div>
+    </div>
+    <div id="vzOver"></div>
+  </details>
 
   <section class="card" aria-labelledby="h-rep">
     <h2 id="h-rep">Отчёт клиенту</h2>
@@ -306,8 +351,7 @@ section.card>.btn{flex:none}
 <script>
 (function(){
 'use strict';
-var RATES={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
-var DEF={tax:'Нет',cmp:'18,8',rent:'',cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14'};
+var DEF={reg:'nsk',izlim:6000000,itmkt:'21',inc:'',ins:'',ovOwn:0,ovMode:'в процентах',ovPct:'10',ovRub:0,tax:'Нет',cmp:'18,8',rent:'',cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14'};
 var KEY='ke-calc-v1', S=Object.assign({},DEF);
 try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){S=Object.assign({},DEF,p);document.getElementById('sample').hidden=true;}}}catch(e){}
 
@@ -317,18 +361,65 @@ function pct(x){var v=Math.round(x*10000)/100;return String(v).replace('.',',')+
 function num(s){if(typeof s==='number')return s;s=String(s==null?'':s).replace(/\s| /g,'').replace(',','.');var v=parseFloat(s);return isFinite(v)?v:0}
 function pmt(r,n,pv){if(n<=0)return 0;if(r===0)return pv/n;return pv*r/(1-Math.pow(1+r,-n))}
 function $(id){return document.getElementById(id)}
+/* === core: shared maths for calculator and report === */
+var RN={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
+var RM={1:[0.12,12e6],2:[0.10,15e6],3:[0.08,18e6],4:[0.06,18e6],5:[0.04,18e6]};
+var IT_L=9e6, IT_MAX=18e6;
+function core(S){
+  var prog=S.prog||'fam', reg=S.reg||'nsk';
+  var mk=prog==='mkt', it=prog==='it', fam=prog==='fam', iz=fam&&reg==='izhs', ms=fam&&reg==='msk';
+  var kids=Math.min(Math.max(Math.round(+S.kids)||1,1),5);
+  var rate,limit;
+  if(mk){rate=num(S.mrate)/100;limit=Infinity}
+  else if(it){rate=0.06;limit=IT_MAX}
+  else if(iz){rate=0.06;limit=num(S.izlim)>0?num(S.izlim):6e6}
+  else{var tb=(ms?RM:RN)[kids];rate=tb[0];limit=tb[1]}
+  var half=fam&&!iz&&S.half==='Да';
+  var sub=mk?0:num(S.subsidy)/100;
+  var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
+  var itm=num(S.itmkt!=null&&S.itmkt!==''?S.itmkt:'21')/100;
+  var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
+  var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
+  var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
+  var years=Math.min(Math.max(Math.round(num(S.years))||1,1),30), n=years*12;
+  var need=Math.max(T*norm,T-limit,(half&&rate>0.06)?T*0.5:0,0);
+  var loan=T-total;
+  var fixedWhole=fam&&!iz&&half&&!(sub>0)&&T>0&&total>=T*0.5-0.5;
+  var key=num(S.key)/100, spread=iz?0.035:0.03, step=!mk&&!it&&!fixedWhole;
+  function pm(r,k,L){if(k<=0||L<=0)return 0;return r===0?L/k:L*r/(1-Math.pow(1+r,-k))}
+  function ba(r,k,j,L){return r===0?L*(1-j/k):L*((Math.pow(1+r,k)-Math.pow(1+r,j))/(Math.pow(1+r,k)-1))}
+  function plan(t,L){
+    var k=t*12,f,a=null,tot,lo=0,hi=0,plo=0,phi=0;
+    if(it){lo=Math.min(L,IT_L);hi=Math.max(L-IT_L,0);plo=pm(eff/12,k,lo);phi=pm(itm/12,k,hi);f=plo+phi;tot=f*k}
+    else{f=pm(eff/12,k,L);tot=f*k;
+      if(mk){var sy=Math.min(Math.max(Math.round(num(S.myrs))||0,0),t);
+        if(sy>0&&sy<t){var rm=num(S.mafter)/100,b=ba(eff/12,k,sy*12,L),ap=pm(rm/12,k-sy*12,b);tot=f*sy*12+ap*(k-sy*12);a={bal:b,rate:rm,pay:ap,p:ap,k:sy*12,sy:sy,y:sy}}}
+      else if(step&&t>15){var ra=eff+0.04,rb=key+spread,rn=Math.min(ra,rb),b2=ba(eff/12,k,180,L),ap2=pm(rn/12,k-180,b2);tot=f*180+ap2*(k-180);a={bal:b2,rate:rn,pay:ap2,p:ap2,k:180,sy:15,y:15,ra:ra,rb:rb}}}
+    return {f:f,a:a,tot:tot,lo:lo,hi:hi,plo:plo,phi:phi}
+  }
+  var cur=loan>0?plan(years,loan):{f:0,a:null,tot:0,lo:0,hi:0,plo:0,phi:0};
+  return {prog:prog,reg:reg,mk:mk,it:it,fam:fam,iz:iz,ms:ms,kids:kids,rate:rate,limit:limit,half:half,sub:sub,eff:eff,itm:itm,
+    price:price,ddu:ddu,area:area,rpm:rpm,repairAll:repairAll,repair:repair,T:T,norm:norm,mat:mat,own:own,total:total,years:years,n:n,
+    need:need,loan:loan,pay:cur.f,after:cur.a,tot:cur.tot,cur:cur,fixedWhole:fixedWhole,key:key,spread:spread,step:step,plan:plan,
+    pvOk:total>=need-0.5,limOk:loan<=limit+0.5&&loan>=0,ins:num(S.ins),inc:num(S.inc),
+    name:mk?'Ипотека со ставкой застройщика':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
+}
+
 
 function seg(id,opts,get,set){var el=$(id);el.innerHTML='';opts.forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o.t;b.dataset.v=o.v;
   b.addEventListener('click',function(){set(o.v);sync();calc();save()});el.appendChild(b)});
   el._get=get}
-function sync(){['prog','kids','half','ddu','tax'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
-seg('prog',[{t:'Семейная ипотека',v:'fam'},{t:'Рыночная, субсидия застройщика',v:'mkt'}],null,function(v){S.prog=v});
+function sync(){['prog','reg','kids','half','ddu','tax','ovMode'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
+function defYears(){var d=S.prog==='it'?15:(S.prog==='fam'&&S.reg==='izhs'?20:30);if([15,20,30].indexOf(Math.round(num(S.years)))>-1){S.years=d;fmtField('years')}}
+seg('prog',[{t:'Семейная',v:'fam'},{t:'ИТ-ипотека',v:'it'},{t:'От застройщика',v:'mkt'}],null,function(v){S.prog=v;defYears()});
+seg('reg',[{t:'Новосибирск',v:'nsk'},{t:'Москва, СПб',v:'msk'},{t:'ИЖС',v:'izhs'}],null,function(v){S.reg=v;defYears()});
+seg('ovMode',[{t:'в процентах',v:'в процентах'},{t:'в рублях',v:'в рублях'}],null,function(v){S.ovMode=v});
 seg('kids',[1,2,3,4,5].map(function(n){return{t:String(n),v:n}}),null,function(v){S.kids=+v});
 seg('half',[{t:'Да',v:'Да'},{t:'Нет',v:'Нет'}],null,function(v){S.half=v});
 seg('tax',[{t:'Нет',v:'Нет'},{t:'Да',v:'Да'}],null,function(v){S.tax=v});
 seg('ddu',[{t:'Да, в ДДУ',v:'Да'},{t:'Нет, вторым договором',v:'Нет'}],null,function(v){S.ddu=v});
 
-var money=['price','rub','mat','own','years','rent'], dec=['cmp','mrate','myrs','mafter','subsidy','area','norm','key'];
+var money=['price','rub','mat','own','years','rent','izlim','inc','ins','ovOwn','ovRub'], dec=['cmp','mrate','myrs','mafter','subsidy','area','norm','key','itmkt','ovPct'];
 function fmtField(id){var v=S[id];if(money.indexOf(id)>-1){$(id).value=(v===''||v==null)?'':nf.format(num(v))}else{$(id).value=String(v==null?'':v).replace('.',',')}}
 money.concat(dec).forEach(function(id){var el=$(id);fmtField(id);
   el.addEventListener('focus',function(){if(money.indexOf(id)>-1)el.value=String(num(el.value)||'').replace(/\s/g,'');el.select&&el.select()});
@@ -336,113 +427,136 @@ money.concat(dec).forEach(function(id){var el=$(id);fmtField(id);
   el.addEventListener('blur',function(){S[id]=el.value;fmtField(id);calc();save()})});
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));$('sample').hidden=true}catch(e){}}
 
-var last='';
-function extraHTML(c){
+function extraHTML(c,o){
   var out={term:'',donut:'',cmp:'',tax:''};
   if(!(c.loan>0))return out;
   function pm(r,n,L){if(n<=0)return 0;return r===0?L/n:L*r/(1-Math.pow(1+r,-n))}
-  function ba(r,n,k,L){return r===0?L*(1-k/n):L*((Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1))}
   function yw(n){return n+(n%10===1&&n!==11?' года':' лет')}
-  function plan(t){var n=t*12,f=pm(c.eff/12,n,c.loan),a=null,tot=f*n;
-    if(c.mk){var sy=Math.min(Math.max(Math.round(c.myrs)||0,0),t);
-      if(sy>0&&sy<t){var b=ba(c.eff/12,n,sy*12,c.loan),ap=pm(c.mafter/100/12,n-sy*12,b);tot=f*sy*12+ap*(n-sy*12);a={p:ap,y:sy}}}
-    else if(t>15&&!c.fixedWhole){var b2=ba(c.eff/12,n,180,c.loan),rn=Math.min(c.eff+0.04,c.key/100+0.03),ap2=pm(rn/12,n-180,b2);tot=f*180+ap2*(n-180);a={p:ap2,y:15}}
-    return {f:f,a:a,tot:tot}}
-  var ts=[10,15,20,25,30],ps=ts.map(plan),mx=Math.max.apply(null,ps.map(function(p){return p.f}));
+  var ts=[10,15,20,25,30],ps=ts.map(function(t){return c.plan(t,c.loan)}),mx=Math.max.apply(null,ps.map(function(p){return p.f}));
   out.term=ts.map(function(t,i){var p=ps[i];return '<div class="vz-row'+(t===c.years?' cur':'')+'"><span class="vz-l">'+t+' лет</span><span class="vz-bar"><i style="width:'+Math.max(Math.round(p.f/mx*100),4)+'%"></i></span><b>'+rub(p.f)+'</b><span class="vz-sub">переплата '+rub(p.tot-c.loan)+(p.a?' · после '+yw(p.a.y)+': '+rub(p.a.p):'')+'</span></div>'}).join('');
-  var cur=plan(c.years),inter=Math.max(cur.tot-c.loan,0),share=cur.tot>0?inter/cur.tot:0,C=2*Math.PI*42;
+  var cur=c.cur,inter=Math.max(cur.tot-c.loan,0),share=cur.tot>0?inter/cur.tot:0,C=2*Math.PI*42;
   out.donut='<div class="vz-donut"><svg viewBox="0 0 120 120" width="132" height="132" role="img" aria-label="Проценты составляют '+Math.round(share*100)+' % всех выплат"><circle cx="60" cy="60" r="42" fill="none" stroke="#6B1527" stroke-width="18"/><circle cx="60" cy="60" r="42" fill="none" stroke="#E2C7CD" stroke-width="18" stroke-dasharray="'+(share*C).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">'+Math.round(share*100)+' %</text><text x="60" y="74" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".7">проценты</text></svg><div class="vz-leg"><div><i style="background:#6B1527"></i><span>Тело кредита, ваша квартира</span><b>'+rub(c.loan)+'</b></div><div><i style="background:#E2C7CD"></i><span>Проценты, банку</span><b>'+rub(inter)+'</b></div><div class="vz-tot"><span>Всего за '+c.years+' лет</span><b>'+rub(cur.tot)+'</b></div></div></div>';
-  var mr=c.cmp/100,mp=pm(mr/12,c.years*12,c.loan),mt=mp*c.years*12,mxp=Math.max(cur.f,mp,c.rent||0);
+  var mr=o.cmp/100,mp=pm(mr/12,c.years*12,c.loan),mt=mp*c.years*12,mxp=Math.max(cur.f,mp,o.rent||0);
   function bar(l,v,cls){return '<div class="vz-row2"><span>'+l+'</span><span class="vz-bar '+(cls||'')+'"><i style="width:'+Math.max(Math.round(v/mxp*100),4)+'%"></i></span><b>'+rub(v)+'</b></div>'}
-  if(mr>0){out.cmp=bar('Ваша программа',cur.f)+bar('Рыночная ипотека, '+pct(mr),mp,'mk')+(c.rent>0?bar('Аренда такой квартиры',c.rent,'rt'):'');
+  if(mr>0){out.cmp=bar('Ваша программа',cur.f)+bar('Рыночная ипотека, '+pct(mr),mp,'mk')+(o.rent>0?bar('Аренда такой квартиры',o.rent,'rt'):'');
     var dm=mp-cur.f,dt=mt-cur.tot;
-    out.cmp+=(dm>1?'<div class="vz-win"><b>Выгода '+rub(dm)+' в месяц</b><span>за весь срок банку на '+rub(dt)+' меньше, чем по рыночной ипотеке</span></div>':'<div class="vz-win n"><span>Ставка вашей программы не ниже рыночной</span></div>')+(c.rent>0?'<p class="vz-n">Аренда за '+c.years+' лет: '+rub(c.rent*12*c.years)+', и квартира остаётся чужой.</p>':'')+'<p class="vz-n">Сравнение при той же сумме кредита и сроке.'+(cur.a&&!c.mk?' Платёж вашей программы указан за первые 15 лет.':'')+'</p>'}
+    out.cmp+=(dm>1?'<div class="vz-win"><b>Выгода '+rub(dm)+' в месяц</b><span>за весь срок банку на '+rub(dt)+' меньше, чем по рыночной ипотеке</span></div>':'<div class="vz-win n"><span>Ставка вашей программы не ниже рыночной</span></div>')+(o.rent>0?'<p class="vz-n">Аренда за '+c.years+' лет: '+rub(o.rent*12*c.years)+', и квартира остаётся чужой.</p>':'')+'<p class="vz-n">Сравнение при той же сумме кредита и сроке.'+(cur.a&&!c.mk?' Платёж вашей программы указан за первые 15 лет.':'')+'</p>'}
   var pb=Math.min(2000000,Math.max(c.T-c.mat,0)),ib=Math.min(3000000,inter),pr=pb*0.13,ir=ib*0.13;
   out.tax='<dl><dt>За квартиру (до 2 млн ₽ × 13 %)</dt><dd>'+rub(pr)+'</dd><dt>За проценты (до 3 млн ₽ × 13 %)</dt><dd>'+rub(ir)+'</dd><div class="sep"></div><dt><b>Вернуть можно до</b></dt><dd>'+rub(pr+ir)+'</dd></dl><p class="vz-n">Это максимум на одного собственника при официальном доходе. Деньги возвращаются из уплаченного НДФЛ, обычно за несколько лет. Материнский капитал вычитается из стоимости. Ориентир, не налоговая консультация.</p>';
   return out;
 }
+
+var last='';
+function sg(x){return (x>0.5?'+':'')+nf.format(Math.round(x))}
+function renderOver(M){
+  var el=$('vzOver');
+  if(!(M.T>0)){el.innerHTML='';return}
+  var own=num(S.ovOwn), byPct=S.ovMode!=='в рублях';
+  var P2=byPct?M.T*(1+num(S.ovPct)/100):M.T+num(S.ovRub);
+  function sc(P,over){
+    var pv=Math.max(P*M.norm,P-M.limit,0), real=over?Math.min(own,pv):pv, L=Math.max(P-pv,0), pl=L>0?M.plan(M.years,L):{f:0,tot:0};
+    return {P:P,pv:pv,real:real,shown:pv-real,L:L,pay:pl.f,tot:pl.tot,inter:pl.tot-L,all:real+pl.tot,dev:real+L,lim:L>M.limit+0.5};
+  }
+  var a=sc(M.T,false), b=sc(P2,true);
+  var rows=[
+    ['Цена в договоре',a.P,b.P],
+    ['Взнос по требованию банка',a.pv,b.pv],
+    ['Вносит клиент реально',a.real,b.real],
+    ['«Показывает» застройщик',a.shown,b.shown],
+    ['Сумма кредита',a.L,b.L],
+    ['Платёж в месяц',a.pay,b.pay],
+    ['Всего выплат банку',a.tot,b.tot],
+    ['из них проценты',a.inter,b.inter],
+    ['Всего потратит клиент',a.all,b.all],
+    ['Застройщик получит',a.dev,b.dev],
+    ['к цене по прайсу',a.dev-M.T,b.dev-M.T]
+  ];
+  var h='<table class="ovt"><thead><tr><th></th><th>По прайсу</th><th>С завышением</th><th>Разница</th></tr></thead><tbody>'+rows.map(function(r,i){
+    var strong=(i===8||i===5)?' class="st"':'';
+    return '<tr'+strong+'><td>'+r[0]+'</td><td>'+nf.format(Math.round(r[1]))+'</td><td>'+nf.format(Math.round(r[2]))+'</td><td>'+sg(r[2]-r[1])+'</td></tr>'}).join('')+'</tbody></table>';
+  if(a.lim||b.lim)h+='<p class="vz-n" style="color:var(--bad)">'+(b.lim?'С завышением':'По прайсу')+' кредит выходит за лимит программы.</p>';
+  var dAll=b.all-a.all;
+  h+='<p class="vz-n"><b>Вывод для клиента.</b> При своих '+rub(own)+' и завышении цены на '+rub(P2-M.T)+' ('+pct(M.T>0?P2/M.T-1:0)+') клиент вносит сейчас на '+rub(a.real-b.real)+' меньше, но кредит больше на '+rub(b.L-a.L)+', платёж выше на '+rub(b.pay-a.pay)+' в месяц, а всего за срок отдаёт на '+rub(Math.abs(dAll))+' '+(dAll>=0?'больше':'меньше')+'.</p>';
+  if(M.norm<1){var Ps=(M.T-own)/(1-M.norm);h+='<p class="vz-n">Чтобы застройщик получил цену по прайсу, цена в договоре должна быть '+rub(Ps)+' (завышение '+pct(Ps/M.T-1)+'). Верно, пока лимит кредита не ограничивает взнос.</p>'}
+  el.innerHTML=h;
+}
 function calc(){
-  var mk=S.prog==='mkt';
-  var kids=+S.kids||1, rate=mk?num(S.mrate)/100:RATES[kids][0], limit=mk?Infinity:RATES[kids][1];
-  var half=!mk&&S.half==='Да', sub=mk?0:num(S.subsidy)/100;
-  var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
-  $('famCard').hidden=mk;$('mktCard').hidden=!mk;$('keyField').hidden=mk;
-  $('progHint').textContent=mk?'Рыночная ипотека с пониженной ставкой от застройщика. Семейная ипотека отключена: дети и лимит кредита не учитываются.':'Ставка и лимит зависят от числа детей.';
-  $('subLine').textContent=mk?'Ипотека со ставкой застройщика · для всех заёмщиков':'Семейная ипотека · Новосибирск и регионы · условия с 1 октября 2026';
-  var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
-  var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
-  var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
-  var years=Math.min(Math.max(Math.round(num(S.years))||1,1),30), n=years*12;
-  var need=Math.max(T*norm,T-limit,(half&&rate>0.06)?T*0.5:0,0);
+  var M=core(S), mk=M.mk, it=M.it, iz=M.iz, ms=M.ms, fam=M.fam, kids=M.kids, rate=M.rate, limit=M.limit, half=M.half, sub=M.sub, eff=M.eff,
+      T=M.T, price=M.price, ddu=M.ddu, repairAll=M.repairAll, repair=M.repair, mat=M.mat, total=M.total, years=M.years, n=M.n, need=M.need,
+      loan=M.loan, pay=M.pay, fixedWhole=M.fixedWhole, pvOk=M.pvOk, limOk=M.limOk, after=M.after, cur=M.cur, rpm=M.rpm;
   var cash=Math.max(need-mat,0);
-  var loan=T-total, pay=loan>0?pmt(eff/12,n,loan):0;
-  var fixedWhole=!mk&&half&&!(sub>0)&&T>0&&total>=T*0.5-0.5;
+  $('famCard').hidden=mk; $('regF').hidden=!fam; $('kidsF').hidden=!fam||iz; $('halfF').hidden=!fam||iz;
+  $('mktCard').hidden=!mk; $('itCard').hidden=!it; $('izCard').hidden=!iz; $('afterCard').hidden=it; $('keyField').hidden=mk||it;
+  $('h-fam').textContent=fam?'Семья и программа':'Предложение застройщика';
+  $('progHint').textContent=mk?'Рыночная ипотека с пониженной ставкой от застройщика. Семейная ипотека отключена: дети и лимит кредита не учитываются.':(it?'ИТ-ипотека: 6 % на льготную часть до 9 млн ₽, остальное по рыночной ставке. Дети не нужны.':'Ставка и лимит зависят от числа детей.');
+  $('regHint').textContent=iz?'ИЖС и земля под ИЖС: ставка 6 % не зависит от числа детей. Единого лимита нет, впишите по банку.':(ms?'Москва, Санкт-Петербург, Московская и Ленинградская области: свои ставки и лимиты.':'Новосибирск и остальные регионы.');
+  $('subLine').textContent=mk?'Ипотека со ставкой застройщика · для всех заёмщиков':(it?'ИТ-ипотека · условия 2026 года':(iz?'Семейная ипотека 6 % · ИЖС и земля под ИЖС':(ms?'Семейная ипотека · Москва, СПб, МО, ЛО · условия с 1 октября 2026':'Семейная ипотека · Новосибирск и регионы · условия с 1 октября 2026')));
+  $('lPrice').textContent=iz?'Стоимость дома или участка по договору, ₽':'Стоимость квартиры по договору, ₽';
   $('h-after').textContent=mk?'Что будет после субсидии':(fixedWhole?'Ставка на весь срок':'Что будет после 15 лет');
-  var pvOk=total>=need-0.5, limOk=loan<=limit+0.5 && loan>=0;
-  var econ=(mk||rate<=0.06)?0:Math.max(pmt(rate/12,n,loan)-pmt(Math.min(rate,0.06)/12,n,loan),0);
-  (function(){var el=$('halfHint');if(mk||!el)return;var t,warn=false,pc=function(x){return String(Math.round(x*10000)/100).replace('.',',')+' %'};
-    if(rate<=0.06){t=fixedWhole?'Взнос от 50 %: ставка '+pc(rate)+' действует на весь срок, после 15 лет не повышается.':(S.half==='Да'?'Взнос меньше 50 %: фиксации ставки на весь срок нет, после 15 лет ставка пересчитывается.':'При '+kids+(kids===1?' ребёнке':(kids===5?' и более детях':' детях'))+' ставка уже '+pc(rate)+(rate<0.06?', ниже 6 %':'')+'. Взнос от 50 % не снизит её на первые 15 лет, только зафиксирует на весь срок.')}
+  var econ=(!fam||iz||rate<=0.06)?0:Math.max(pmt(rate/12,n,loan)-pmt(Math.min(rate,0.06)/12,n,loan),0);
+  (function(){var el=$('halfHint');if(!fam||iz||!el)return;var t,warn=false,pc=function(x){return String(Math.round(x*10000)/100).replace('.',',')+' %'};
+    if(rate<=0.06){t=fixedWhole?'Взнос от 50 %: ставка '+pc(rate)+' действует на весь срок, после 15 лет не повышается.':(S.half==='Да'?'Взнос меньше 50 %: фиксации ставки на весь срок нет, после 15 лет ставка пересчитывается.':'Ставка по числу детей уже не выше 6 %. Условие взноса от 50 % закрепляет её на весь срок.')}
     else if(S.half==='Да')t=fixedWhole?'Экономия: ставка 6 % вместо '+pc(rate)+' на весь срок.':'Взнос меньше 50 %: ставка 6 % не применяется.';
     else if(T>0&&total>=T*0.5)t='Взнос уже от 50 %. Выберите «Да», и ставка станет 6 % вместо '+pc(rate)+'.';
     else if(T>0)t='Нужен взнос от 50 %: ещё '+rub(T*0.5-total)+'. Ставка снизится с '+pc(rate)+' до 6 %.';
     else t='«Да» — ставка не выше 6 %.';
     el.textContent=t;el.style.color=warn?'var(--warn)':'';el.style.fontWeight=warn?'600':''})();
-  var Tmax=total<=0?0:Math.min(total/norm,total+limit,(half&&rate>0.06)?total/0.5:Infinity);
-  var aptMax=Math.max(Tmax-repair,0);
-  var perM2=(area>0&&price>0)?(price/area+(ddu?rpm:0)):0, areaMax=perM2>0?Tmax/perM2:0;
 
   $('dduHint').textContent=ddu?'Ремонт входит в цену: ПВ и кредит считаются от суммы «квартира + ремонт».':'Ремонт вторым договором: вне ипотеки, платится отдельно, в кредит и ПВ не входит.';
   $('payment').textContent=loan>0?rub(pay):'—';
   $('barPay').textContent=loan>0?rub(pay):'—';
-  var meta=[['Ставка',pct(eff)],['Срок',years+' лет'],['Кредит',rub(Math.max(loan,0))]];
+  var meta=[[it?'Ставка льготной':'Ставка',pct(eff)],['Срок',years+' лет'],['Кредит',rub(Math.max(loan,0))]];
   $('heroMeta').innerHTML=meta.map(function(m){return '<span>'+m[0]+' <b>'+m[1]+'</b></span>'}).join('');
 
   var st=[];
   if(loan<0)st.push(['bad','Взнос больше стоимости','Уменьшите свои средства или маткапитал.']);
   else{
     if(!pvOk)st.push(['warn','Не хватает '+rub(need-total)+' до норматива ПВ','Нужен взнос '+rub(need)+' ('+pct(T>0?need/T:0)+' от стоимости).']);
-    if(!limOk)st.push(['bad',(repair>0?'С ремонтом выходим':'Выходим')+' за рамки лимита программы','Кредит больше лимита ('+rub(limit)+') на '+rub(loan-limit)+'. Увеличьте ПВ на эту сумму'+(repair>0?', либо уменьшите ремонт':', либо выберите объект дешевле')+'.']);
+    if(!limOk)st.push(['bad',(repair>0?'С ремонтом выходим':'Выходим')+' за рамки лимита программы','Кредит больше лимита ('+rub(limit)+') на '+rub(loan-limit)+'. Увеличьте ПВ на эту сумму'+(repair>0?', либо уменьшите ремонт':'')+'.']);
     if(pvOk&&limOk)st.push(['ok','Условия программы выполнены',mk?'Взнос достаточен'+(repair>0?' (с ремонтом)':'')+'.':'Взнос достаточен, кредит в пределах лимита '+rub(limit)+(repair>0?' (с ремонтом)':'')+'.']);
   }
   if(fixedWhole&&pvOk&&loan>0)st.push(['ok','Ставка '+pct(eff)+' на весь срок','Взнос от 50 %: платёж '+rub(pay)+' в месяц не меняется до конца срока.']);
+  if(it&&loan>IT_L)st.push(['warn','Часть кредита по рыночной ставке','Сверх '+rub(IT_L)+' ставка '+pct(M.itm)+'. Итоговый платёж — сумма двух частей.']);
+  if(it&&M.inc>0&&M.inc<150000)st.push(['warn','Доход ниже типового порога 150 000 ₽','Банк может отказать или снизить сумму. Уточните у банка.']);
+  if(it)st.push(['warn','Условия ИТ-ипотеки меняются','Нужна работа в аккредитованной ИТ-компании весь срок. В Москве и СПб не действует. Возможно досрочное закрытие программы, уточняйте в банке.']);
   if(!ddu&&repairAll>0)st.push(['warn','Ремонт '+rub(repairAll)+' оплачивается отдельно','Вторым договором, вне ипотеки: в кредит и в ПВ не входит.']);
   $('statuses').innerHTML=st.map(function(s){return '<div class="status '+s[0]+'"><span>'+(s[0]==='ok'?'✔':'⚠')+'</span><span>'+s[1]+'<br><span class="t">'+s[2]+'</span></span></div>'}).join('');
   var worst=loan<0||!limOk?'bad':(!pvOk?'warn':'ok');
   var pill=$('barPill');pill.className='pill '+worst;pill.textContent=worst==='ok'?'Проходит':(worst==='warn'?'Не хватает ПВ':'Вне лимита');
 
-  var rows=[['Стоимость объекта',rub(T)+(repair>0?'':'')]];
+  var rows=[['Стоимость объекта',rub(T)]];
   if(repair>0)rows.push(['в том числе ремонт',rub(repair)]);
   rows.push(['Требуется ПВ',rub(need)+' · '+pct(T>0?need/T:0)]);
   rows.push(['Нужно довнести сверх маткапитала',rub(cash)]);
   rows.push(['Итого взнос',rub(total)+' · '+pct(T>0?total/T:0)]);
   rows.push(['Сумма кредита',rub(Math.max(loan,0))]);
-  rows.push(['Ставка',pct(eff)+(fixedWhole?' · на весь срок':'')]);
-  if(!mk)rows.push(['Лимит кредита ('+kids+(kids===5?' и более':'')+' дет.)',rub(limit)]);
+  if(it&&loan>0){rows.push(['Льготная часть, '+pct(eff),rub(cur.lo)+' · '+rub(cur.plo)+'/мес']);if(cur.hi>0)rows.push(['Рыночная часть, '+pct(M.itm),rub(cur.hi)+' · '+rub(cur.phi)+'/мес'])}
+  else rows.push(['Ставка',pct(eff)+(fixedWhole?' · на весь срок':'')]);
+  if(fam&&!iz)rows.push(['Лимит кредита ('+kids+(kids===5?' и более':'')+' дет.)',rub(limit)]);
+  else if(iz)rows.push(['Лимит кредита (по банку)',rub(limit)]);
+  else if(it)rows.push(['Лимит: льготная часть / всего',rub(IT_L)+' / '+rub(IT_MAX)]);
   if(econ>0.5)rows.push(['Экономия при взносе от 50 %',rub(econ)+' в мес']);
+  if(M.ins>0&&loan>0)rows.push(['Платёж со страховкой',rub(pay+M.ins/12)+' в мес']);
   $('resDl').innerHTML=rows.map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('');
 
-
-  var after=null;
-  function balAt(r,n,k,L){return r===0?L*(1-k/n):L*((Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1))}
-  if(mk){var sy=Math.max(Math.round(num(S.myrs))||0,0);
-    if(sy>0&&sy<years&&loan>0){var rm=num(S.mafter)/100,bm=balAt(eff/12,n,sy*12,loan);after={bal:bm,rate:rm,pay:pmt(rm/12,n-sy*12,bm),k:sy*12,mk:true,sy:sy}}}
-  else if(n>180&&loan>0&&!fixedWhole){var r=eff/12,bal=balAt(r,n,180,loan);
-    var ra=eff+0.04, rb=num(S.key)/100+0.03, rn=Math.min(ra,rb);
-    after={bal:bal,rate:rn,pay:pmt(rn/12,n-180,bal),ra:ra,rb:rb,k:180};}
   var firstTxt=mk?(after?'первые '+after.sy+' '+(after.sy%10===1&&after.sy!==11?'год':(after.sy%10>=2&&after.sy%10<=4&&(after.sy<10||after.sy>20)?'года':'лет')):'весь срок'):(after?'первые 15 лет':'весь срок');
   $('heroK').textContent='Платёж в месяц · '+firstTxt;
+  var spreadTxt=iz?'3,5':'3';
   if(after){$('afterDl').innerHTML=[[mk?'Остаток долга после субсидии':'Остаток долга на конец 15-го года',rub(after.bal)],[mk?'Ставка после субсидии':'Ставка после 15 лет',pct(after.rate)],[mk?'Платёж после субсидии':'Платёж после 15 лет',rub(after.pay)+' / мес']].map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('');
-    $('afterHint').textContent=mk?'Ставка после субсидии взята из вашего ввода. Уточните её у застройщика и банка.':'Берётся меньшее из «ставка по договору + 4 п.п.» ('+pct(after.ra)+') и «ключевая + 3 п.п.» ('+pct(after.rb)+'). Это оценка: ключевую ставку на тот момент знать нельзя.';}
+    $('afterHint').textContent=mk?'Ставка после субсидии взята из вашего ввода. Уточните её у застройщика и банка.':'Берётся меньшее из «ставка по договору + 4 п.п.» ('+pct(after.ra)+') и «ключевая + '+spreadTxt+' п.п.» ('+pct(after.rb)+'). Это оценка: ключевую ставку на тот момент знать нельзя.';}
   else{$('afterDl').innerHTML=mk?'<dt>Субсидия на весь срок</dt><dd>ставка не меняется</dd>':(fixedWhole?'<dt>Ставка '+pct(eff)+' на весь срок</dt><dd>платёж не меняется</dd>':'<dt>Срок до 15 лет</dt><dd>льгота на весь срок</dd>');$('afterHint').textContent=fixedWhole?'Взнос от 50 %: ставка не выше 6 % действует на весь срок кредита, после 15 лет она не повышается.':'';}
 
-  var tot=loan>0?(after?pay*after.k+after.pay*(n-after.k):pay*n):0;
-  var ex=extraHTML({mk:mk,loan:loan,eff:eff,years:years,fixedWhole:fixedWhole,key:num(S.key),myrs:num(S.myrs),mafter:num(S.mafter),cmp:num(S.cmp),rent:num(S.rent),T:T,mat:mat});
+  var tot=M.tot;
+  var ex=extraHTML(M,{cmp:num(S.cmp),rent:num(S.rent)});
   $('vzTerm').innerHTML=ex.term;$('vzDonut').innerHTML=ex.donut;$('vzCmp').innerHTML=ex.cmp;$('vzTax').innerHTML=ex.tax;
   $('cTerm').hidden=$('cDonut').hidden=$('cCmp').hidden=$('cTax').hidden=!(loan>0);
-  last=['❝ Расчёт от сомелье · '+(mk?'ипотека со ставкой застройщика':'семейная ипотека'),'',
+  $('cOver').hidden=!(T>0);
+  renderOver(M);
+  var pname=mk?'ипотека со ставкой застройщика':(it?'ИТ-ипотека':(iz?'семейная ипотека, ИЖС':(ms?'семейная ипотека, Москва и СПб':'семейная ипотека')));
+  last=['❝ Расчёт от сомелье · '+pname,'',
     '🏠 Объект: '+rub(T)+(repair>0?' (с ремонтом '+rub(repair)+')':''),
     '💰 Взнос '+rub(total)+' ('+pct(T>0?total/T:0)+')',
-    '📊 Кредит '+rub(Math.max(loan,0))+' · ставка '+pct(eff)+(fixedWhole?' на весь срок':'')+' · срок '+years+' лет',
+    '📊 Кредит '+rub(Math.max(loan,0))+' · ставка '+pct(eff)+(it&&cur.hi>0?' (льготная часть) и '+pct(M.itm)+' на остальное':'')+(fixedWhole?' на весь срок':'')+' · срок '+years+' лет',
     '💳 Платёж: '+(loan>0?rub(pay):'—')+' в месяц, '+firstTxt,
     after?'⚠️ '+(mk?'После субсидии':'После 15 лет')+': ставка '+pct(after.rate)+', платёж '+rub(after.pay)+' (оценка)':'',
     loan>0?'Всего банку за срок: '+rub(tot)+', из них проценты '+rub(tot-loan):'',
@@ -461,7 +575,7 @@ $('cname').value=S.cname||'';
 $('cname').addEventListener('input',function(){S.cname=$('cname').value;save()});
 $('mkrep').addEventListener('click',function(){
   var m=$('copyMsg');
-  var o={};Object.keys(S).forEach(function(k){o[k]=S[k]});o.name=S.cname||'';o.date=new Date().toISOString();delete o.cname;
+  var o={};Object.keys(S).forEach(function(k){o[k]=S[k]});o.name=S.cname||'';o.date=new Date().toISOString();delete o.cname;['ovOwn','ovMode','ovPct','ovRub'].forEach(function(k){delete o[k]});
   var b=btoa(unescape(encodeURIComponent(JSON.stringify(o)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   var url=new URL('report.html?d='+b,location.href).href;
   function fallback(){var t=document.createElement('textarea');t.value=url;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0';document.body.appendChild(t);t.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(t);m.textContent=ok?'Ссылка на отчёт скопирована. Отправьте её клиенту.':'Не удалось скопировать: '+url}
