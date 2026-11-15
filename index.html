@@ -522,13 +522,14 @@ function calc(){
     if(pvOk&&limOk)st.push(['ok','Условия программы выполнены',mk?'Взнос достаточен'+(repair>0?' (с ремонтом)':'')+'.':'Взнос достаточен, кредит в пределах лимита '+rub(limit)+(repair>0?' (с ремонтом)':'')+'.']);
   }
   if(fixedWhole&&pvOk&&loan>0)st.push(['ok','Ставка '+pct(eff)+' на весь срок','Взнос от 50 %: платёж '+rub(pay)+' в месяц не меняется до конца срока.']);
-  if(it&&loan>IT_L)st.push(['warn','Часть кредита по рыночной ставке','Сверх '+rub(IT_L)+' ставка '+pct(M.itm)+'. Итоговый платёж — сумма двух частей.']);
+  if(it&&loan>IT_L){var need6=Math.max(T*M.norm,T-IT_L);st.push(['warn','Льготная ставка только до '+rub(IT_L),'Сверх этой суммы кредит идёт по рыночной ставке '+pct(M.itm)+' (комбо), платёж складывается из двух частей. Чтобы весь кредит был по '+pct(eff)+', нужен взнос от '+rub(need6)+(need6>total?': ещё '+rub(need6-total):'')+'.'])}
   if(it&&M.inc>0&&M.inc<150000)st.push(['warn','Доход ниже типового порога 150 000 ₽','Банк может отказать или снизить сумму. Уточните у банка.']);
   if(it)st.push(['warn','Условия ИТ-ипотеки меняются','Нужна работа в аккредитованной ИТ-компании весь срок. В Москве и СПб не действует. Возможно досрочное закрытие программы, уточняйте в банке.']);
   if(!ddu&&repairAll>0)st.push(['warn','Ремонт '+rub(repairAll)+' оплачивается отдельно','Вторым договором, вне ипотеки: в кредит и в ПВ не входит.']);
   $('statuses').innerHTML=st.map(function(s){return '<div class="status '+s[0]+'"><span>'+(s[0]==='ok'?'✔':'⚠')+'</span><span>'+s[1]+'<br><span class="t">'+s[2]+'</span></span></div>'}).join('');
   var worst=loan<0||!limOk?'bad':(!pvOk?'warn':'ok');
   var pill=$('barPill');pill.className='pill '+worst;pill.textContent=worst==='ok'?'Проходит':(worst==='warn'?'Не хватает ПВ':'Вне лимита');
+  if(it&&loan>IT_L&&worst==='ok'){pill.className='pill warn';pill.textContent='Комбо'}
 
   var rows=[['Стоимость объекта',rub(T)]];
   if(repair>0)rows.push(['в том числе ремонт',rub(repair)]);
