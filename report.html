@@ -99,6 +99,34 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-vis
 .pt::before{background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.2),rgba(255,255,255,0) 68%)!important}
 .pt img{filter:none!important}
 a{color:inherit}
+
+/* === visuals === */
+.vz-tax .sep,dl .sep{grid-column:1/-1;height:1px}
+
+.vz-row{display:grid;grid-template-columns:52px 1fr auto;gap:4px 10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+.vz-row:last-child{border-bottom:0}
+.vz-row .vz-l{font-size:14px;color:var(--muted)}.vz-row.cur .vz-l{color:var(--ink);font-weight:700}
+.vz-row b{font-variant-numeric:tabular-nums;font-size:15px}
+.vz-row.cur{background:rgba(107,21,39,.06);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:8px}
+.vz-sub{grid-column:2/4;font-size:12.5px;color:var(--muted)}
+.vz-bar{display:block;height:10px;border-radius:5px;background:#EFE5DA;overflow:hidden}
+.vz-bar i{display:block;height:100%;background:#6B1527;border-radius:5px}
+.vz-bar.mk i{background:#B58A93}.vz-bar.rt i{background:#9A8A8C}
+.vz-row2{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:6px 0}
+.vz-row2 .vz-bar{grid-column:1/3;grid-row:2}.vz-row2 span:first-child{font-size:14px}
+.vz-row2 b{font-variant-numeric:tabular-nums;font-size:15px}
+.vz-win{margin-top:10px;background:#E3F2E9;color:#1F6B43;border-radius:8px;padding:11px 12px;display:flex;flex-direction:column;gap:2px}
+.vz-win b{font-size:17px}.vz-win span{font-size:13.5px}.vz-win.n{background:#F6F1EA;color:var(--muted)}
+.vz-n{margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+.vz-donut{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.vz-donut svg{flex:none;color:var(--ink)}
+.vz-leg{flex:1 1 170px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.vz-leg div{display:grid;grid-template-columns:12px 1fr;gap:2px 8px;align-items:center;font-size:13.5px}
+.vz-leg i{width:12px;height:12px;border-radius:3px;display:block}
+.vz-leg b{grid-column:2;font-size:15px;font-variant-numeric:tabular-nums}
+.vz-leg .vz-tot{display:block;border-top:1px solid var(--line);padding-top:8px}.vz-tot b{display:block;font-size:16px}
+
+section.card>.btn{flex:none}
 </style></head><body>
 <header><div class="in"><div class="q" aria-hidden="true">“</div>
   <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
@@ -118,6 +146,31 @@ function num(s){if(typeof s==='number')return s;s=String(s==null?'':s).replace(/
 function pmt(r,n,pv){if(n<=0)return 0;if(r===0)return pv/n;return pv*r/(1-Math.pow(1+r,-n))}
 function balAt(r,n,k,L){return r===0?L*(1-k/n):L*((Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1))}
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function extraHTML(c){
+  var out={term:'',donut:'',cmp:'',tax:''};
+  if(!(c.loan>0))return out;
+  function pm(r,n,L){if(n<=0)return 0;return r===0?L/n:L*r/(1-Math.pow(1+r,-n))}
+  function ba(r,n,k,L){return r===0?L*(1-k/n):L*((Math.pow(1+r,n)-Math.pow(1+r,k))/(Math.pow(1+r,n)-1))}
+  function yw(n){return n+(n%10===1&&n!==11?' года':' лет')}
+  function plan(t){var n=t*12,f=pm(c.eff/12,n,c.loan),a=null,tot=f*n;
+    if(c.mk){var sy=Math.min(Math.max(Math.round(c.myrs)||0,0),t);
+      if(sy>0&&sy<t){var b=ba(c.eff/12,n,sy*12,c.loan),ap=pm(c.mafter/100/12,n-sy*12,b);tot=f*sy*12+ap*(n-sy*12);a={p:ap,y:sy}}}
+    else if(t>15&&!c.fixedWhole){var b2=ba(c.eff/12,n,180,c.loan),rn=Math.min(c.eff+0.04,c.key/100+0.03),ap2=pm(rn/12,n-180,b2);tot=f*180+ap2*(n-180);a={p:ap2,y:15}}
+    return {f:f,a:a,tot:tot}}
+  var ts=[10,15,20,25,30],ps=ts.map(plan),mx=Math.max.apply(null,ps.map(function(p){return p.f}));
+  out.term=ts.map(function(t,i){var p=ps[i];return '<div class="vz-row'+(t===c.years?' cur':'')+'"><span class="vz-l">'+t+' лет</span><span class="vz-bar"><i style="width:'+Math.max(Math.round(p.f/mx*100),4)+'%"></i></span><b>'+rub(p.f)+'</b><span class="vz-sub">переплата '+rub(p.tot-c.loan)+(p.a?' · после '+yw(p.a.y)+': '+rub(p.a.p):'')+'</span></div>'}).join('');
+  var cur=plan(c.years),inter=Math.max(cur.tot-c.loan,0),share=cur.tot>0?inter/cur.tot:0,C=2*Math.PI*42;
+  out.donut='<div class="vz-donut"><svg viewBox="0 0 120 120" width="132" height="132" role="img" aria-label="Проценты составляют '+Math.round(share*100)+' % всех выплат"><circle cx="60" cy="60" r="42" fill="none" stroke="#6B1527" stroke-width="18"/><circle cx="60" cy="60" r="42" fill="none" stroke="#E2C7CD" stroke-width="18" stroke-dasharray="'+(share*C).toFixed(1)+' '+C.toFixed(1)+'" transform="rotate(-90 60 60)"/><text x="60" y="58" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">'+Math.round(share*100)+' %</text><text x="60" y="74" text-anchor="middle" font-size="9.5" fill="currentColor" opacity=".7">проценты</text></svg><div class="vz-leg"><div><i style="background:#6B1527"></i><span>Тело кредита, ваша квартира</span><b>'+rub(c.loan)+'</b></div><div><i style="background:#E2C7CD"></i><span>Проценты, банку</span><b>'+rub(inter)+'</b></div><div class="vz-tot"><span>Всего за '+c.years+' лет</span><b>'+rub(cur.tot)+'</b></div></div></div>';
+  var mr=c.cmp/100,mp=pm(mr/12,c.years*12,c.loan),mt=mp*c.years*12,mxp=Math.max(cur.f,mp,c.rent||0);
+  function bar(l,v,cls){return '<div class="vz-row2"><span>'+l+'</span><span class="vz-bar '+(cls||'')+'"><i style="width:'+Math.max(Math.round(v/mxp*100),4)+'%"></i></span><b>'+rub(v)+'</b></div>'}
+  if(mr>0){out.cmp=bar('Ваша программа',cur.f)+bar('Рыночная ипотека, '+pct(mr),mp,'mk')+(c.rent>0?bar('Аренда такой квартиры',c.rent,'rt'):'');
+    var dm=mp-cur.f,dt=mt-cur.tot;
+    out.cmp+=(dm>1?'<div class="vz-win"><b>Выгода '+rub(dm)+' в месяц</b><span>за весь срок банку на '+rub(dt)+' меньше, чем по рыночной ипотеке</span></div>':'<div class="vz-win n"><span>Ставка вашей программы не ниже рыночной</span></div>')+(c.rent>0?'<p class="vz-n">Аренда за '+c.years+' лет: '+rub(c.rent*12*c.years)+', и квартира остаётся чужой.</p>':'')+'<p class="vz-n">Сравнение при той же сумме кредита и сроке.'+(cur.a&&!c.mk?' Платёж вашей программы указан за первые 15 лет.':'')+'</p>'}
+  var pb=Math.min(2000000,Math.max(c.T-c.mat,0)),ib=Math.min(3000000,inter),pr=pb*0.13,ir=ib*0.13;
+  out.tax='<dl><dt>За квартиру (до 2 млн ₽ × 13 %)</dt><dd>'+rub(pr)+'</dd><dt>За проценты (до 3 млн ₽ × 13 %)</dt><dd>'+rub(ir)+'</dd><div class="sep"></div><dt><b>Вернуть можно до</b></dt><dd>'+rub(pr+ir)+'</dd></dl><p class="vz-n">Это максимум на одного собственника при официальном доходе. Деньги возвращаются из уплаченного НДФЛ, обычно за несколько лет. Материнский капитал вычитается из стоимости. Ориентир, не налоговая консультация.</p>';
+  return out;
+}
+
 var app=document.getElementById('app'),S=null;
 try{var d=new URLSearchParams(location.search).get('d');
   d=d.replace(/-/g,'+').replace(/_/g,'/');S=JSON.parse(decodeURIComponent(escape(atob(d))))}catch(e){S=null}
@@ -182,6 +235,10 @@ if(loan>0){
   if(fixedWhole&&!after)a.unshift(row('Ставка',pct(eff)+' на весь срок'),row('Платёж в месяц',rub(pay)+' · не меняется'),'<div class="sep"></div>');
   h+='<section><h2>'+(after?'Что будет дальше':(fixedWhole?'Ставка на весь срок':'Итого за срок'))+'</h2><dl>'+a.join('')+'</dl>'+(fixedWhole?'<p class="muted">Взнос от 50 % стоимости: ставка не выше 6 % действует на весь срок кредита и после 15 лет не повышается.</p>':after?'<p class="muted">'+(mk?'Ставка после субсидии указана по условиям застройщика и может отличаться.':'Ставка после 15 лет оценочная: она зависит от ключевой ставки ЦБ на тот момент.')+'</p>':'')+'</section>';
 }
+var ex=extraHTML({mk:mk,loan:loan,eff:eff,years:years,fixedWhole:fixedWhole,key:num(S.key),myrs:num(S.myrs),mafter:num(S.mafter),cmp:num(S.cmp!=null&&S.cmp!==''?S.cmp:'18,8'),rent:num(S.rent),T:T,mat:mat});
+if(loan>0){h+='<section><h2>Платёж по срокам</h2>'+ex.term+'<p class="muted">Чем короче срок, тем выше платёж и меньше переплата.</p></section><section><h2>Куда уходят выплаты</h2>'+ex.donut+'</section>';
+  if(ex.cmp)h+='<section><h2>Сравнение с рыночной ипотекой</h2>'+ex.cmp+'</section>';
+  h+='<section><h2>Налоговый вычет</h2>'+ex.tax+'</section>'}
 var ask='Хочу подбор объектов под этот расчёт.\nПрограмма: '+(mk?'ставка застройщика':'семейная ипотека'+(kids?', детей: '+kids:''))+'\nОбъект: '+rub(T)+'\nВзнос: '+rub(total)+' ('+pct(T>0?total/T:0)+')'+(loan>0?'\nПлатёж: '+rub(pay)+' в месяц, ставка '+pct(eff)+', срок '+years+' лет':'');
 var cta=loan>0?'Хотите, я подберу объекты под платёж '+rub(pay)+' и ваш взнос?':'Хотите, я подберу объекты под ваш расчёт?';
 h+='<section class="hl"><h2>Что дальше</h2><p class="who">'+cta+'</p><p class="muted">Проверю условия у застройщика и банка, покажу короткий список с честным разбором каждого объекта.</p><div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Оставить заявку на подбор</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div><p class="muted">Персональный расчёт подготовил Николай Калашников · в недвижимости с 2017 года, более 400 сделок</p></section>';
