@@ -1,4 +1,10 @@
 <!doctype html>
+<!--
+  © 2026 Калашников Николай Анатольевич · KalashnikovEstate · Сомелье недвижимости. Все права защищены.
+  Дизайн, тексты, структура расчётов и исходный код являются объектом авторского права (ст. 1259 ГК РФ).
+  Копирование, воспроизведение и использование без письменного разрешения автора запрещены. Связь: +7 913 001 90 41.
+-->
+
 <html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Расчёт ипотеки · Николай Калашников</title>
 <!-- seo:start -->
@@ -416,6 +422,7 @@ var ask='Хочу подбор объектов под этот расчёт.\n�
 var cta=loan>0?'Хотите, я подберу объекты под платёж '+rub(pay)+' и ваш взнос?':'Хотите, я подберу объекты под ваш расчёт?';
 if(loan>0)H.top='<div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Подобрать объекты под этот платёж</a></div>';
 H.cta+='<section class="hl"><h2>Что дальше</h2><p class="who">'+cta+'</p><p class="muted">Проверю условия у застройщика и банка, покажу короткий список с честным разбором каждого объекта.</p><div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Оставить заявку на подбор</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div><p class="muted">Персональный расчёт подготовил Николай Калашников · в недвижимости с 2017 года, более 400 сделок</p></section>';
+H.foot+='<p class="muted">© 2026 Калашников Николай Анатольевич · KalashnikovEstate. Материалы и расчёты защищены авторским правом; копирование без разрешения запрещено.</p>';
 H.foot+='<p class="muted">Расчёт предварительный и не является офертой банка. Окончательные условия определяет банк. Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>';
 h=H.hero+H.st+(H.buy||'')+H.cmp+H.top+H.chips+H.comp+H.after+H.term+H.tax+H.cta+H.foot;
 app.innerHTML=h;
