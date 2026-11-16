@@ -1,0 +1,402 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>Способы покупки · Сомелье</title>
+
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+/* Concept: wine-cellar ledger on a phone — burgundy header band, cream paper, gold input fields, a sticky payment bar at the bottom. */
+:root{color-scheme:dark;
+  --bg:#1A090E; --surface:#2A0F17; --ink:#F7ECDC; --muted:#C2A9A3; --line:#4F2430;
+  --wine:#D9B45A; --wine-deep:#1A090E; --on-wine:#2A0F17; --on-wine-soft:#C2A9A3;
+  --field:#1F0A11; --field-ink:#F7ECDC; --field-line:#5A2B38; --gold:#D9B45A; --gold-soft:#E9D3A0; --card2:#340F1B;
+  --ok:#7FD0A0; --ok-bg:#16301F; --warn:#F0C66A; --warn-bg:#3A2C0C; --bad:#FF9A90; --bad-bg:#3E1713;
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',Arial,sans-serif;
+  --font-display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;
+  padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));padding-block:0 110px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header.band{margin-inline:calc(-1 * max(10px,env(safe-area-inset-left,0px)));background:var(--wine-deep);color:var(--on-wine);
+  padding:22px max(16px,env(safe-area-inset-left,0px)) 20px}
+header.band .inner{max-width:620px;margin:0 auto}
+.brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--on-wine-soft);font-weight:600}
+h1{font-family:var(--font-display);font-weight:700;font-size:34px;line-height:1.05;margin:8px 0 6px;text-wrap:balance}
+.sub{color:var(--on-wine-soft);font-size:13px}
+.note{font-size:12.5px;color:var(--muted)}
+section.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 14px;display:flex;flex-direction:column;gap:14px}
+h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine);margin:0;font-weight:700}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field>label,.lbl{font-weight:600;font-size:14px}
+.hint{font-size:12.5px;color:var(--muted)}
+input[type=text],input[type=number]{width:100%;min-height:46px;border-radius:8px;border:1.5px solid var(--field-line);background:var(--field);color:var(--field-ink);
+  font:600 17px var(--font-body);padding:8px 12px;font-variant-numeric:tabular-nums}
+input:focus-visible,button:focus-visible{outline:3px solid var(--wine);outline-offset:2px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 0;min-width:52px;min-height:46px;border-radius:8px;border:1.5px solid var(--field-line);background:var(--surface);color:var(--ink);
+  font:600 16px var(--font-body);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--wine);border-color:var(--wine);color:var(--on-wine)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:380px){.row2{grid-template-columns:1fr}}
+.hero{background:var(--wine);color:var(--on-wine);border-radius:10px;padding:18px 16px;display:flex;flex-direction:column;gap:6px}
+.hero .k{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--on-wine-soft);font-weight:600}
+.hero .big{font-family:var(--font-display);font-weight:700;font-size:46px;line-height:1;font-variant-numeric:tabular-nums}
+.hero .meta{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13.5px;color:var(--on-wine-soft)}
+.hero .meta b{color:var(--on-wine);font-weight:600}
+.status{border-radius:8px;padding:10px 12px;font-size:14px;font-weight:600;display:flex;gap:8px;align-items:flex-start}
+.status.ok{background:var(--ok-bg);color:var(--ok)} .status.warn{background:var(--warn-bg);color:var(--warn)} .status.bad{background:var(--bad-bg);color:var(--bad)}
+.status .t{font-weight:500;color:inherit}
+dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:8px 12px}
+dt{color:var(--muted);font-size:14px;min-width:0}
+dd{margin:0;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+dd .sub{display:block;font-weight:500;font-size:12.5px;color:var(--muted);margin-top:1px}
+dd.sm{font-weight:600;font-size:13px;white-space:normal}
+.sep{height:1px;background:var(--line);margin:2px 0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{min-height:46px;border-radius:8px;border:1.5px solid var(--wine);background:var(--wine);color:var(--on-wine);font:600 15px var(--font-body);padding:0 16px;cursor:pointer;flex:1 1 200px}
+.btn.ghost{background:transparent;color:var(--wine)}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--wine-deep);color:var(--on-wine);z-index:20;
+  padding:10px max(16px,env(safe-area-inset-left,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));border-top:1px solid #000}
+.bar .in{max-width:620px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.bar .p{font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1;font-variant-numeric:tabular-nums}
+.bar .l{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--on-wine-soft)}
+.pill{font-size:12.5px;font-weight:700;border-radius:999px;padding:6px 12px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)} .pill.warn{background:var(--warn-bg);color:var(--warn)} .pill.bad{background:var(--bad-bg);color:var(--bad)}
+details.card summary{cursor:pointer;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine);font-weight:700;min-height:24px}
+footer{font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+
+body{background:var(--bg)}
+header.band{background:linear-gradient(180deg,#3A0F1D 0%,var(--bg) 100%);position:relative;overflow:hidden}
+header.band .inner{position:relative}
+header.band .q{position:absolute;right:-4px;top:-34px;font-family:var(--font-display);font-size:190px;line-height:1;color:var(--gold);opacity:.18;pointer-events:none;user-select:none}
+.brand{color:var(--gold)} .sub{color:var(--muted)}
+h1{color:var(--ink)}
+.seg button{background:#1F0A11;border-color:var(--field-line);color:var(--ink)}
+.seg button[aria-pressed=true]{background:var(--gold);border-color:var(--gold);color:#2A0F17}
+.hero{background:linear-gradient(160deg,var(--card2),#240A12);border:1px solid var(--gold)}
+.hero .k,.hero .meta{color:var(--muted)} .hero .meta b{color:var(--ink)}
+.hero .big{color:var(--gold)}
+.btn{background:var(--gold);border-color:var(--gold);color:#2A0F17;font-weight:700}
+.btn.ghost{background:transparent;color:var(--gold);border-color:var(--gold)}
+.bar{background:#120609;border-top:1px solid var(--line)}
+.bar .p{color:var(--gold)}
+h2,details.card summary{color:var(--gold)}
+input:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* === Light page, burgundy accents (colours sampled from the agent badge) === */
+:root{color-scheme:light;--bg:#F6F1EA;--surface:#FFFFFF;--card:#FFFFFF;--card2:#FFFFFF;--line:#E6DACE;
+--ink:#2A0F17;--muted:#6F5A5E;--gold:#6B1527;--gold-soft:#F6ECE3;--wine:#6B1527;--wine-deep:#4A0B1A;--on-wine:#FFFFFF;--on-wine-soft:rgba(255,255,255,.78);
+--field:#FFFFFF;--field-ink:#2A0F17;--field-line:#D8C9BB;
+--ok:#1F6B43;--ok-bg:#E3F2E9;--warn:#7A5600;--warn-bg:#FBF0D0;--bad:#9B2A1F;--bad-bg:#F9E0DC}
+html{background:#F6F1EA}
+body{background:#F6F1EA!important;color:#2A0F17}
+body::before{display:none}
+header,header.band{background:linear-gradient(160deg,#78192D 0%,#6B1527 40%,#560E20 100%)!important;color:#fff;clip-path:polygon(0 0,100% 0,100% calc(100% - 26px),0 100%);padding-bottom:58px!important;margin-bottom:-14px}
+header h1,header .brand,header .role,header .sub{color:#fff!important}
+header .brand{color:rgba(255,255,255,.85)!important}
+header .role,header .sub{color:rgba(255,255,255,.78)!important}
+header .q,header.band .q{position:absolute;left:auto;right:-8px;top:-12px;font-family:Georgia,'DejaVu Serif',serif;font-weight:700;font-size:190px;line-height:1;color:#5A1021;opacity:1;z-index:0;pointer-events:none;user-select:none}
+.qs{position:relative;z-index:1;font-family:Georgia,'DejaVu Serif',serif;font-weight:700;font-size:96px;line-height:.7;height:48px;color:#F6ECE3;margin:14px 0 6px}
+header .lead{color:#F6ECE3!important}
+header .stats div{background:rgba(255,255,255,.08)!important;border:1px solid rgba(255,255,255,.22)!important}
+header .stats b{color:#fff!important}header .stats span{color:rgba(255,255,255,.76)!important}
+h2,details.card summary{color:#6B1527!important}
+section,section.card,details.card{background:#FFFFFF!important;border:1px solid #E6DACE!important;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 6px 22px rgba(90,15,32,.07)}
+section.hl{border-left:4px solid #6B1527!important}
+.hero{background:linear-gradient(160deg,#78192D,#5A0F20)!important;border:none!important;color:#fff;box-shadow:0 12px 30px rgba(90,15,32,.28)}
+.hero .big,.hero .meta b{color:#fff!important}.hero .k,.hero .meta{color:rgba(255,255,255,.78)!important}
+.bar{background:rgba(255,255,255,.88)!important;-webkit-backdrop-filter:blur(16px) saturate(140%);backdrop-filter:blur(16px) saturate(140%);border-top:1px solid #E6DACE!important;box-shadow:0 -6px 20px rgba(90,15,32,.08)}
+.bar .p{color:#6B1527!important}.bar .k,.bar .l{color:#6F5A5E!important}
+.chip{background:#FBF7F2!important;border-color:#E6DACE!important}
+.n{color:#6B1527!important}
+.who{color:#6B1527!important}
+.btn{background:#6B1527!important;border:1.5px solid #6B1527!important;color:#fff!important;font-weight:700}
+.btn.ghost{background:#fff!important;color:#6B1527!important;border-color:rgba(107,21,39,.45)!important;-webkit-backdrop-filter:none;backdrop-filter:none}
+.seg button{background:#fff!important;border-color:#D8C9BB!important;color:#2A0F17!important}
+.seg button[aria-pressed=true]{background:#6B1527!important;border-color:#6B1527!important;color:#fff!important}
+input,select,textarea,input[type=text],input[type=number]{background:#fff!important;color:#2A0F17!important;border:1.5px solid #D8C9BB!important}
+input::placeholder,textarea::placeholder{color:#9A8A8C}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible,a:focus-visible,.btn:focus-visible{outline:3px solid #6B1527!important;outline-offset:2px}
+.back{color:#6B1527!important}
+.perks li::before{background:#6B1527!important}
+.sep{background:#E6DACE!important}
+.or{color:#6F5A5E!important}.or::before,.or::after{background:#E6DACE!important}
+#msg{color:#6B1527!important}
+.pt::before{background:radial-gradient(ellipse at 50% 55%,rgba(255,255,255,.2),rgba(255,255,255,0) 68%)!important}
+.pt img{filter:none!important}
+a{color:inherit}
+
+/* === visuals === */
+.vz-tax .sep,dl .sep{grid-column:1/-1;height:1px}
+
+.vz-row{display:grid;grid-template-columns:52px 1fr auto;gap:4px 10px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)}
+.vz-row:last-child{border-bottom:0}
+.vz-row .vz-l{font-size:14px;color:var(--muted)}.vz-row.cur .vz-l{color:var(--ink);font-weight:700}
+.vz-row b{font-variant-numeric:tabular-nums;font-size:15px}
+.vz-row.cur{background:rgba(107,21,39,.06);margin:0 -8px;padding-left:8px;padding-right:8px;border-radius:8px}
+.vz-sub{grid-column:2/4;font-size:12.5px;color:var(--muted)}
+.vz-bar{display:block;height:10px;border-radius:5px;background:#EFE5DA;overflow:hidden}
+.vz-bar i{display:block;height:100%;background:#6B1527;border-radius:5px}
+.vz-bar.mk i{background:#B58A93}.vz-bar.rt i{background:#9A8A8C}
+.vz-row2{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:6px 0}
+.vz-row2 .vz-bar{grid-column:1/3;grid-row:2}.vz-row2 span:first-child{font-size:14px}
+.vz-row2 b{font-variant-numeric:tabular-nums;font-size:15px}
+.vz-win{margin-top:10px;background:#E3F2E9;color:#1F6B43;border-radius:8px;padding:11px 12px;display:flex;flex-direction:column;gap:2px}
+.vz-win b{font-size:17px}.vz-win span{font-size:13.5px}.vz-win.n{background:#F6F1EA;color:var(--muted)}
+.vz-n{margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+.vz-donut{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.vz-donut svg{flex:none;color:var(--ink)}
+.vz-leg{flex:1 1 170px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.vz-leg div{display:grid;grid-template-columns:12px 1fr;gap:2px 8px;align-items:center;font-size:13.5px}
+.vz-leg i{width:12px;height:12px;border-radius:3px;display:block}
+.vz-leg b{grid-column:2;font-size:15px;font-variant-numeric:tabular-nums}
+.vz-leg .vz-tot{display:block;border-top:1px solid var(--line);padding-top:8px}.vz-tot b{display:block;font-size:16px}
+
+section.card>.btn{flex:none}
+
+.ovt{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.ovt th{font-weight:600;color:var(--muted);text-align:right;padding:4px 0 6px;font-size:11.5px}
+.ovt td{padding:6px 0;border-top:1px solid var(--line);text-align:right;white-space:nowrap}
+.ovt td:first-child,.ovt th:first-child{text-align:left;white-space:normal;padding-right:6px;color:var(--muted)}
+.ovt tr.st td{font-weight:700;color:var(--ink)}
+
+#prog button,#reg button{font-size:14.5px;padding:0 6px}
+details.card{display:block;padding:16px 14px}
+details.card>*:not(summary){margin-top:12px}
+details.card>summary{list-style:none;display:flex;align-items:center;gap:10px;line-height:1.4}
+details.card>summary::-webkit-details-marker{display:none}
+details.card>summary>span:first-child{flex:1}
+details.card>summary::after{content:"+";font-size:20px;line-height:1;color:#6B1527}
+details.card[open]>summary::after{content:"–"}
+details.card .sv{flex:none;letter-spacing:0;text-transform:none;font-size:13px;font-weight:700;color:var(--ink)}
+details.card>.row2{display:grid}
+.seg button{flex:1 1 auto;min-width:0;padding:6px 4px;font-size:15px;line-height:1.15;hyphens:manual;overflow-wrap:normal;word-break:keep-all}
+.ovt{font-size:11.5px;table-layout:fixed}.ovt td,.ovt th{padding-left:4px;padding-right:0}.ovt td:first-child,.ovt th:first-child{padding-left:0;padding-right:6px;width:31%}.ovt td{white-space:nowrap;letter-spacing:-.2px}.ovt th{font-size:11px;line-height:1.2;vertical-align:bottom}
+@media(max-width:400px){.seg button{font-size:13px;padding:6px 2px}}
+</style><style>html,body{margin:0}details.card summary h2{display:inline}</style></head><body>
+<header class="band"><div class="inner"><div class="q" aria-hidden="true">“</div>
+  <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
+  <div class="qs" aria-hidden="true">“</div>
+  <h1>Способы покупки</h1>
+  <div class="sub">Впишите условия застройщика и банка: расчёт сразу покажет все схемы рядом</div>
+</div></header>
+<main class="wrap">
+  <details class="card" open><summary><span><h2>Квартира и клиент</h2></span></summary>
+    <div class="field"><label for="price">Цена по прайсу, ₽</label><input type="text" id="price" inputmode="numeric"></div>
+    <div class="field"><label for="own">Свои средства (с маткапиталом), ₽</label><input type="text" id="own" inputmode="numeric"></div>
+    <div class="field"><label for="prr">Цена с ремонтом от застройщика, ₽ (необязательно)</label><input type="text" id="prr" inputmode="numeric"><div class="hint">Если заполнить, добавится схема «ипотека с ремонтом» по сниженной ставке.</div></div>
+    <div class="field"><span class="lbl">Клиент</span><div class="seg" id="who"></div><div class="hint">Скидки не суммируются: при выборе применяется одна.</div></div>
+    <div class="field"><span class="lbl">Где квартира</span><div class="seg" id="reg"></div></div>
+    <div class="field"><span class="lbl">Детей в семье</span><div class="seg" id="kids"></div></div>
+    <div class="field"><label for="years">Срок ипотеки, лет</label><input type="text" id="years" inputmode="numeric"></div>
+  </details>
+  <details class="card"><summary><span><h2>Скидки, %</h2></span></summary>
+    <div class="row2"><div class="field"><label for="dstart">Первым клиентам</label><input type="text" id="dstart" inputmode="decimal"></div><div class="field"><label for="dsvo">Участникам СВО</label><input type="text" id="dsvo" inputmode="decimal"></div></div>
+    <div class="row2"><div class="field"><label for="dnos">За расчёт без субсидии</label><input type="text" id="dnos" inputmode="decimal"></div><div class="field"><label for="dcash">За 100 % оплату</label><input type="text" id="dcash" inputmode="decimal"></div></div>
+    <div class="row2"><div class="field"><label for="dsvoc">СВО при полном расчёте</label><input type="text" id="dsvoc" inputmode="decimal"></div><div class="field"><label for="dst">Поэтапная рассрочка</label><input type="text" id="dst" inputmode="decimal"></div></div>
+    <div class="row2"><div class="field"><label for="dr70">Рассрочка 12 мес, ПВ 70 %</label><input type="text" id="dr70" inputmode="decimal"></div><div class="field"><label for="dr50">Рассрочка 12 мес, ПВ 50 %</label><input type="text" id="dr50" inputmode="decimal"></div></div>
+  </details>
+  <details class="card"><summary><span><h2>Ставки, % годовых</h2></span></summary>
+    <p class="hint">Семейная ипотека с субсидией застройщика, по числу детей. Пустое поле — схема не считается:</p>
+    <div class="row2"><div class="field"><label for="rk1">1 ребёнок</label><input type="text" id="rk1" inputmode="decimal"></div><div class="field"><label for="rk2">2 ребёнка</label><input type="text" id="rk2" inputmode="decimal"></div></div>
+    <div class="row2"><div class="field"><label for="rk3">3 ребёнка</label><input type="text" id="rk3" inputmode="decimal"></div><div class="field"><label for="rk4">4 ребёнка</label><input type="text" id="rk4" inputmode="decimal"></div></div>
+    <div class="row2"><div class="field"><label for="rk5">5 детей</label><input type="text" id="rk5" inputmode="decimal"></div><div class="field"><label for="mrk">Обычная ипотека</label><input type="text" id="mrk" inputmode="decimal"></div></div>
+    <div class="row2"><div class="field"><label for="key">Ключевая (после 15 лет)</label><input type="text" id="key" inputmode="decimal"></div><div class="field"><label for="rrr">С ремонтом (застройщик)</label><input type="text" id="rrr" inputmode="decimal"></div></div>
+    <p class="hint">«Без субсидии» считается по ставке самой программы (Новосибирск или Москва, по числу детей).</p>
+  </details>
+  <details class="card"><summary><span><h2>Траншевая ипотека</h2></span></summary>
+    <div class="field"><label for="trs">Транши: сумма или %, @ месяц от сделки</label><input type="text" id="trs" inputmode="text"><div class="hint">Пример: 100000@0, 20%@9, rest@14. «rest» — остаток. Срок ипотеки считается от дня сделки, поэтому после последнего транша остаётся (срок − месяц последнего транша).</div></div>
+    <div class="row2"><div class="field"><label for="rtr">Ставка траншевой, %</label><input type="text" id="rtr" inputmode="decimal"></div><div class="field"><label for="pvt">ПВ траншевой, %</label><input type="text" id="pvt" inputmode="decimal"></div></div>
+    <p class="hint">Примеры подставлены для наглядности. Банк может считать платёж чуть выше (страховка), тогда впишите ставку с надбавкой.</p>
+  </details>
+  <details class="card"><summary><span><h2>Рассрочки</h2></span></summary>
+    <div class="row2"><div class="field"><label for="rm">Рассрочка до N месяцев</label><input type="text" id="rm" inputmode="decimal"></div><div class="field"><label for="r70">ПВ рассрочки (скидка 1), %</label><input type="text" id="r70" inputmode="decimal"></div></div>
+    <div class="row2"><div class="field"><label for="r50">ПВ рассрочки (скидка 2), %</label><input type="text" id="r50" inputmode="decimal"></div><div class="field"><label for="mon">Месяцев до расчёта</label><input type="text" id="mon" inputmode="decimal"></div></div>
+    <div class="row2"><div class="field"><label for="pvi">ПВ рассрочки 1/100, %</label><input type="text" id="pvi" inputmode="decimal"></div><div class="field"><label for="pvs">ПВ поэтапной, %</label><input type="text" id="pvs" inputmode="decimal"></div></div>
+    <div class="field"><label for="stg">Этапные платежи: месяц:%, через запятую</label><input type="text" id="stg" inputmode="text"></div>
+    <div class="row2"><div class="field"><label for="sm">Срок поэтапной, мес</label><input type="text" id="sm" inputmode="decimal"></div><div class="field"><label for="mpay">Ежемесячно в поэтапной, ₽</label><input type="text" id="mpay" inputmode="decimal"></div></div>
+    <p class="hint">Схема не считается, если не заполнены её ПВ и этапы. «Ежемесячно» — если застройщик берёт ещё и регулярный платёж сверх этапов.</p>
+    <div class="row2"><button type="button" class="btn" id="reset" style="background:transparent;color:inherit">Подставить пример условий</button><button type="button" class="btn" id="clear" style="background:transparent;color:inherit">Очистить все условия</button></div>
+  </details>
+  <div id="out" style="display:flex;flex-direction:column;gap:14px"></div>
+  <p class="note">Расчёт предварительный и не является офертой банка или застройщика. В траншевой схеме клиент до последнего транша платит проценты на выданную часть кредита, затем аннуитет. Условия траншей и рассрочки подтверждает застройщик.</p>
+  <p class="note"><a href="index.html" style="color:inherit">← Калькулятор ипотеки</a></p>
+</main>
+<script>
+function num(s){if(typeof s==='number')return s;s=String(s==null?'':s).replace(/\s| /g,'').replace(',','.');var v=parseFloat(s);return isFinite(v)?v:0}
+/* === core: shared maths for calculator and report === */
+var RN={1:[0.10,6e6],2:[0.08,8e6],3:[0.06,10e6],4:[0.04,10e6],5:[0.02,10e6]};
+var RM={1:[0.12,12e6],2:[0.10,15e6],3:[0.08,18e6],4:[0.06,18e6],5:[0.04,18e6]};
+var IT_L=9e6, IT_MAX=18e6;
+function core(S){
+  IT_L=num(S.itl)>0?num(S.itl):9e6; IT_MAX=Math.max(num(S.itmax)>0?num(S.itmax):18e6,IT_L);
+  var prog=S.prog||'fam', reg=S.reg||'nsk';
+  var mk=prog==='mkt', it=prog==='it', fam=prog==='fam', iz=fam&&reg==='izhs', ms=fam&&reg==='msk';
+  var kids=Math.min(Math.max(Math.round(+S.kids)||1,1),5);
+  var rate,limit;
+  if(mk){rate=num(S.mrate)/100;limit=Infinity}
+  else if(it){rate=0.06;limit=IT_MAX}
+  else if(iz){rate=0.06;limit=num(S.izlim)>0?num(S.izlim):6e6}
+  else{var tb=(ms?RM:RN)[kids];rate=tb[0];limit=tb[1]}
+  var half=fam&&!iz&&S.half==='Да';
+  var sub=mk?0:num(S.subsidy)/100;
+  var eff=mk?rate:(sub>0?sub:(half?Math.min(rate,0.06):rate));
+  var itm=num(S.itmkt!=null&&S.itmkt!==''?S.itmkt:'21')/100;
+  var price=num(S.price), ddu=S.ddu==='Да', area=num(S.area), rpm=num(S.rub);
+  var repairAll=area*rpm, repair=ddu?repairAll:0, T=price+repair;
+  var norm=num(S.norm)/100||0.201, mat=num(S.mat), own=num(S.own), total=mat+own;
+  var years=Math.min(Math.max(Math.round(num(S.years))||1,1),30), n=years*12;
+  var need=Math.max(T*norm,T-limit,(half&&rate>0.06)?T*0.5:0,0);
+  var loan=T-total;
+  var fixedWhole=fam&&!iz&&half&&!(sub>0)&&T>0&&total>=T*0.5-0.5;
+  var key=num(S.key)/100, spread=iz?0.035:0.03, step=!mk&&!it&&!fixedWhole;
+  function pm(r,k,L){if(k<=0||L<=0)return 0;return r===0?L/k:L*r/(1-Math.pow(1+r,-k))}
+  function ba(r,k,j,L){return r===0?L*(1-j/k):L*((Math.pow(1+r,k)-Math.pow(1+r,j))/(Math.pow(1+r,k)-1))}
+  function plan1(t,L){
+    var k=t*12,f,a=null,tot,lo=0,hi=0,plo=0,phi=0;
+    if(it){lo=Math.min(L,IT_L);hi=Math.max(L-IT_L,0);plo=pm(eff/12,k,lo);phi=pm(itm/12,k,hi);f=plo+phi;tot=f*k}
+    else{f=pm(eff/12,k,L);tot=f*k;
+      if(mk){var sy=Math.min(Math.max(Math.round(num(S.myrs))||0,0),t);
+        if(sy>0&&sy<t){var rm=num(S.mafter)/100,b=ba(eff/12,k,sy*12,L),ap=pm(rm/12,k-sy*12,b);tot=f*sy*12+ap*(k-sy*12);a={bal:b,rate:rm,pay:ap,p:ap,k:sy*12,sy:sy,y:sy}}}
+      else if(step&&t>15){var ra=eff+0.04,rb=key+spread,rn=Math.min(ra,rb),b2=ba(eff/12,k,180,L),ap2=pm(rn/12,k-180,b2);tot=f*180+ap2*(k-180);a={bal:b2,rate:rn,pay:ap2,p:ap2,k:180,sy:15,y:15,ra:ra,rb:rb}}}
+    return {f:f,a:a,tot:tot,lo:lo,hi:hi,plo:plo,phi:phi}
+  }
+  var mrk=num(S.cmp!=null&&S.cmp!==''?S.cmp:'18,8')/100;
+  function plan(t,L){
+    if(it||mk||!(L>limit+0.5))return plan1(t,L);
+    var k=t*12,a=plan1(t,limit),hiL=L-limit,ph=pm(mrk/12,k,hiL),x=null;
+    if(a.a){var bh=ba(mrk/12,k,a.a.k,hiL);x={bal:a.a.bal+bh,rate:a.a.rate,pay:a.a.pay+ph,p:a.a.pay+ph,k:a.a.k,sy:a.a.sy,y:a.a.y,ra:a.a.ra,rb:a.a.rb}}
+    return {f:a.f+ph,a:x,tot:a.tot+ph*k,lo:limit,hi:hiL,plo:a.f,phi:ph,combo:true}
+  }
+  var cur=loan>0?plan(years,loan):{f:0,a:null,tot:0,lo:0,hi:0,plo:0,phi:0};
+  var combo=cur.hi>0&&loan>0, needMin=T*norm, needShow=(combo&&!it)?needMin:need, altL=it?IT_L:limit, altNeed=combo?Math.max(T-altL,0):0, altPay=combo?plan1(years,altL).f:0;
+  return {prog:prog,reg:reg,mk:mk,it:it,fam:fam,iz:iz,ms:ms,kids:kids,rate:rate,limit:limit,half:half,sub:sub,eff:eff,itm:itm,
+    price:price,ddu:ddu,area:area,rpm:rpm,repairAll:repairAll,repair:repair,T:T,norm:norm,mat:mat,own:own,total:total,years:years,n:n,
+    need:need,loan:loan,pay:cur.f,after:cur.a,tot:cur.tot,cur:cur,fixedWhole:fixedWhole,key:key,spread:spread,step:step,plan:plan,
+    mrk:mrk,combo:combo,needShow:needShow,altNeed:altNeed,altPay:altPay,altL:altL,pvOk:total>=needShow-0.5,limOk:combo&&!it?loan>=0:(loan<=limit+0.5&&loan>=0),ins:num(S.ins),inc:num(S.inc),
+    name:mk?'Ипотека со ставкой застройщика':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
+}
+
+(function(){
+'use strict';
+var $=function(i){return document.getElementById(i)};
+var KEY='ke-buy-v2';
+var now=new Date(),end=new Date(2029,8,20),mon=Math.max(0,(end.getFullYear()-now.getFullYear())*12+end.getMonth()-now.getMonth());
+var DEF={price:12000000,own:3600000,who:'0',reg:'nsk',kids:'2',years:30,
+ dstart:'3',dsvo:'4',dnos:'7',dcash:'7',dsvoc:'8',dr70:'5',dr50:'3',dst:'0',
+ rk1:'8,9',rk2:'6,9',rk3:'4,9',rk4:'2,9',rk5:'1,4',mrk:'16,9',key:'14',
+ pvi:'30',mon:mon,pvt:'20,1',rtr:'19,7',trs:'100000@0, 20%@9, rest@14',prr:'0',rrr:'12,9',
+ r70:'70',r50:'50',rm:'12',
+ pvs:'30',stg:'6:10, 12:20, 18:10',sm:'24',mpay:'0'};
+var S=Object.assign({},DEF);
+try{var r=localStorage.getItem(KEY);if(r)S=Object.assign({},DEF,JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var nf=new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0});
+function rub(x){return nf.format(Math.round(x))+' ₽'}
+function pc(x){return String(Math.round(x*10000)/100).replace('.',',')+' %'}
+function seg(id,opts){var el=$(id);el.innerHTML='';opts.forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o.t;b.dataset.v=o.v;b.addEventListener('click',function(){S[id]=o.v;sync();calc();save()});el.appendChild(b)})}
+function sync(){['who','reg','kids'].forEach(function(id){Array.prototype.forEach.call($(id).children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
+seg('who',[{t:'Обычный клиент',v:'0'},{t:'Скидка на старте',v:'start'},{t:'Участник СВО',v:'svo'}]);
+seg('reg',[{t:'Новосибирск',v:'nsk'},{t:'Москва, СПб',v:'msk'}]);
+seg('kids',[1,2,3,4,5].map(function(k){return {t:String(k===5?'5+':k),v:String(k)}}));
+var IDS=['price','own','years','dstart','dsvo','dnos','dcash','dsvoc','dr70','dr50','dst','rk1','rk2','rk3','rk4','rk5','mrk','key','pvi','mon','pvt','rtr','trs','prr','rrr','r70','r50','rm','pvs','stg','sm','mpay'];
+IDS.forEach(function(id){var el=$(id);if(!el)return;el.value=String(S[id]==null?'':S[id]);
+  el.addEventListener('input',function(){S[id]=el.value;calc();save()});
+  if(id==='price'||id==='own')el.addEventListener('blur',function(){var v=num(el.value);if(v>0)el.value=nf.format(v)})});
+['price','own'].forEach(function(id){var v=num(S[id]);if(v>0)$(id).value=nf.format(v)});
+$('reset').addEventListener('click',function(){var k=S.price,o=S.own,y=S.years,w=S.who,rg=S.reg,kd=S.kids;S=Object.assign({},DEF,{price:k,own:o,years:y,who:w,reg:rg,kids:kd});save();location.reload()});
+$('clear').addEventListener('click',function(){var keep={price:S.price,own:S.own,years:S.years,who:S.who,reg:S.reg,kids:S.kids,key:S.key};var E={};Object.keys(DEF).forEach(function(k){E[k]=''});S=Object.assign(E,keep);save();location.reload()});
+function mk(S0){return core(Object.assign({prog:'fam',half:'Нет',mat:0,norm:'20,1',itl:'',itmax:''},S0))}
+function P(id){return num(S[id])/100}
+function stages(){var out=[];String(S.stg||'').split(/[;,]/).forEach(function(t){var m=t.split(':');if(m.length===2&&num(m[0])>0&&num(m[1])>0)out.push([Math.round(num(m[0])),num(m[1])/100])});return out}
+function pmt(r,n,L){r=r/12;if(n<=0||L<=0)return 0;return r===0?L/n:L*r/(1-Math.pow(1+r,-n))}
+function trSched(L,txt,N,rate){var tr=[],bad=false;String(txt||'').split(/[;,]/).forEach(function(t){t=t.trim();if(!t)return;var m=t.split('@');if(m.length!==2){bad=true;return}
+  var x=m[0].trim().toLowerCase(),mo=Math.round(num(m[1]));var o={m:mo};if(/^(rest|ост)/.test(x))o.rest=true;else if(/%$/.test(x))o.a=L*num(x.replace('%',''))/100;else o.a=num(x);tr.push(o)});
+  if(!tr.length||bad)return {ok:false};
+  tr.sort(function(p,q){return p.m-q.m});var fixed=0;tr.forEach(function(o){if(!o.rest)fixed+=o.a});
+  var hasRest=tr.some(function(o){return o.rest});
+  tr.forEach(function(o){if(o.rest)o.a=Math.max(L-fixed,0)});
+  if(!hasRest){var tot=fixed;if(tot<L-0.5)tr[tr.length-1].a+=L-tot}
+  var cum=0,seg=[],interest=0;
+  for(var i=0;i<tr.length;i++){cum+=tr[i].a;var to=i<tr.length-1?tr[i+1].m:null;
+    if(to===null)break;var months=to-tr[i].m;if(months>0){var pay=cum*rate/12;seg.push({from:tr[i].m+1,to:to,pay:pay,bal:cum});interest+=pay*months}}
+  var lastM=tr[tr.length-1].m;return {ok:true,tr:tr,seg:seg,interest:interest,nAfter:Math.max(N-lastM,0),lastM:lastM}}
+function calc(){
+  var Pr=num(S.price),O=num(S.own),yrs=Math.min(Math.max(Math.round(num(S.years))||1,1),30),M=Math.max(0,Math.round(num(S.mon)));
+  var svo=S.who==='svo',st=S.who==='start';
+  var dMain=svo?P('dsvo'):st?P('dstart'):0;
+  var kidsN=+S.kids,subRate=num(S['rk'+kidsN]);
+  var common={reg:S.reg,kids:S.kids,years:yrs,key:S.key,cmp:S.mrk,ddu:'Нет'};
+  var res=[];
+  function fam(price,own,sub){return mk(Object.assign({},common,{price:price,own:own,subsidy:sub||''}))}
+  function famRes(id,name,price,sub,note){var X=fam(price,O,sub);
+    res.push({id:id,name:name,price:price,note:note+(X.combo?' · комбо: сверх лимита рыночная часть':''),pv:X.needShow,pay:X.pay,pay2:X.after?X.after.pay:null,pay2n:'после 15 лет',total:O+X.tot,ok:X.pvOk&&X.limOk,short:X.needShow-O})}
+  // A
+  var Pa=Pr*(1-dMain);
+  if(subRate>0)famRes('A','Семейная ипотека с субсидией застройщика',Pa,subRate,'Ставка '+pc(subRate/100)+(dMain>0?', скидка '+pc(dMain):''));
+  // B
+  var Pb=Pr*(1-P('dnos')),Bp=(S.reg==='msk'?RM:RN)[kidsN][0];
+  famRes('B','Семейная ипотека без субсидии застройщика',Pb,'','Ставка по программе '+pc(Bp)+', скидка '+pc(P('dnos')));
+  // F: ипотека для всех
+  var Pf=Pr*(1-P('dnos')),Fm=mk({prog:'mkt',reg:S.reg,kids:S.kids,years:yrs,key:S.key,price:Pf,own:O,mrate:S.mrk,norm:'20,1'});
+  if(P('mrk')>0)res.push({id:'F',name:'Обычная (рыночная) ипотека',price:Pf,note:'Ставка '+pc(P('mrk'))+', скидка '+pc(P('dnos'))+' (как «без субсидирования»)',pv:Fm.needShow,pay:Fm.pay,pay2:null,total:O+Fm.tot,ok:Fm.pvOk,short:Fm.needShow-O});
+  // C
+  var dc=svo?P('dsvoc'):P('dcash'),Pc=Pr*(1-dc);
+  res.push({id:'C',name:'Наличные (100 % оплата)',price:Pc,note:'Скидка '+pc(dc)+(svo?' (СВО при полном быстром расчёте)':'')+', оплата в течение 5 банковских дней после регистрации договора',pv:Pc,pay:0,pay2:null,total:Pc,ok:O>=Pc-0.5,cash:true,short:Pc-O});
+  // R: рассрочка до 12 мес
+  [['R1','r70','dr70'],['R2','r50','dr50']].forEach(function(q){
+    if(!(P(q[1])>0&&num(S.rm)>0))return;
+    var d=P(q[2]),Pq=Pr*(1-d),pv=Pq*P(q[1]),mm=Math.max(1,Math.round(num(S.rm))),up=Math.min(Math.max(O,pv),Pq),rest=Pq-up;
+    res.push({id:q[0],name:'Рассрочка до '+mm+' мес, ПВ от '+Math.round(P(q[1])*100)+' %',price:Pq,note:'Скидка '+pc(d)+', без процентов. Остаток '+rub(rest)+' равными платежами',
+      pv:pv,pay:rest/mm,payn:'в течение '+mm+' мес',pay2:null,total:Pq,ok:O>=pv-0.5,short:pv-O,inst:true})});
+  // D: рассрочка 1/100 + семейная
+  var Pd=Pr*(1-dMain),pvD=Pd*P('pvi'),inst=Pd-pvD,m1=inst/100,paid=Math.min(m1*M,inst),rest=inst-paid,extra=Math.max(O-pvD,0);
+  var Dm=rest-extra>0.5?fam(rest,extra,subRate):null;
+  if(P('pvi')>0&&M>0)res.push({id:'D',name:'Рассрочка до расчёта (1/100 в месяц), затем семейная ипотека',price:Pd,
+    note:'ПВ '+pc(P('pvi'))+', затем '+rub(m1)+'/мес '+M+' мес; остаток '+rub(rest)+' закрывает ипотека',
+    pv:pvD,pay:m1,payn:'в период рассрочки',pay2:Dm?Dm.pay:0,pay2n:'ипотека после расчёта',total:pvD+paid+extra+(Dm?Dm.tot:0),ok:O>=pvD-0.5&&(!Dm||Dm.limOk),short:pvD-O,late:Dm&&Dm.combo});
+  // E: траншевая (Сбербанк), по слайду застройщика
+  var Pe=Pa,rT=P('rtr'),NT=yrs*12,Lt=Pe-O,T=trSched(Lt,S.trs,NT,rT);
+  var pvT=Math.max(Pe*P('pvt'),0);
+  if(!(String(S.trs||'').trim()&&rT>0)){}else if(Lt>0&&T.ok){
+    var segsTxt=T.seg.map(function(g){return (g.from===g.to?'мес '+g.from:'мес '+g.from+'–'+g.to)+': '+rub(g.pay)}).join('; ');
+    var tail=T.nAfter>0?pmt(rT,T.nAfter,Lt):0,totE1=O+T.interest+tail*T.nAfter;
+    res.push({id:'E',name:'Траншевая ипотека, ставка остаётся',price:Pe,
+      note:'Ставка '+pc(rT)+' · траншей: '+T.tr.length+'. Платежи по этапам: '+segsTxt+'. Дальше аннуитет на '+T.nAfter+' мес',
+      pv:pvT,pay:T.seg.length?T.seg[0].pay:0,payn:'в первый период',pay2:tail,pay2n:'после последнего транша',total:totE1,ok:O>=pvT-0.5,short:pvT-O,tr:T});
+    var Fx=fam(Lt,0,subRate);
+    var Fb=mk({prog:'fam',reg:S.reg,kids:S.kids,years:yrs,key:S.key,price:Lt,own:0,norm:'0,001',half:'Нет',subsidy:''});
+    res.push({id:'E2',name:'Траншевая, затем переход на семейную ипотеку',price:Pe,
+      note:'До последнего транша проценты по '+pc(rT)+' ('+T.tr.length+' транша), затем рефинансирование '+rub(Lt)+' в семейную ипотеку на '+yrs+' лет'+(Fb.combo?' · комбо: сверх лимита рыночная часть':''),
+      pv:pvT,pay:T.seg.length?T.seg[0].pay:0,payn:'в первый период',pay2:Fb.pay,pay2n:'после перехода',total:O+T.interest+Fb.tot,ok:O>=pvT-0.5&&Fb.limOk,short:pvT-O,tr:T,late:Fb.combo});
+  }else res.push({id:'E',name:'Траншевая ипотека',price:Pe,note:Lt>0?'Проверьте строку траншей: пример «100000@0, 20%@9, rest@14»':'Кредит не нужен',pv:pvT,pay:0,pay2:null,total:O,ok:false,short:0});
+  // G: ипотека застройщика с ремонтом
+  var Pg=num(S.prr);
+  if(Pg>0){var Gm=mk({prog:'mkt',reg:S.reg,kids:S.kids,years:yrs,key:S.key,price:Pg,own:O,mrate:S.rrr,norm:'20,1'});
+    res.push({id:'G',name:'Ипотека застройщика с ремонтом',price:Pg,note:'Цена с ремонтом, ставка '+pc(P('rrr')),pv:Gm.needShow,pay:Gm.pay,pay2:null,total:O+Gm.tot,ok:Gm.pvOk,short:Gm.needShow-O})}
+  // S: поэтапная
+  var Ps=Pr*(1-P('dst')),pvS=Ps*P('pvs'),sg=stages(),sumS=sg.reduce(function(a,b){return a+b[1]},0)*Ps,restS=Ps-pvS-sumS,extraS=Math.max(O-pvS,0);
+  var Sm=restS-extraS>0.5?fam(restS-0,extraS,subRate):null,sm=Math.round(num(S.sm)),mp=num(S.mpay);
+  if(P('pvs')>0&&sg.length)res.push({id:'S',name:'Поэтапная рассрочка '+sm+' мес, затем ипотека на остаток',price:Ps,
+    note:'ПВ '+pc(P('pvs'))+', этапы: '+sg.map(function(x){return x[0]+' мес — '+Math.round(x[1]*100)+' %'}).join(', ')+'; остаток '+rub(Math.max(restS,0))+' на '+sm+' мес'+(mp>0?'. Ежемесячно ещё '+rub(mp):''),
+    pv:pvS,pay:mp,payn:'ежемесячно в рассрочку',pay2:Sm?Sm.pay:0,pay2n:'ипотека после '+sm+' мес',total:pvS+sumS+extraS+(Sm?Sm.tot:0)+mp*sm,ok:O>=pvS-0.5&&(!Sm||Sm.limOk),short:pvS-O,stages:sg.map(function(x){return [x[0],x[1]*Ps]}),late:Sm&&Sm.combo});
+  var best=null;res.forEach(function(x){if(x.ok&&(best===null||x.total<best.total))best=x});
+  var h='';
+  if(best)h+='<div class="hero"><div class="k">Выгоднее всего из доступных вам схем</div><div class="big" style="font-size:26px">'+best.name+'</div><div class="meta"><span>Всего <b>'+rub(best.total)+'</b></span><span>Цена <b>'+rub(best.price)+'</b></span><span>Максимальный платёж <b>'+rub(Math.max(best.pay||0,best.pay2||0))+'</b></span>'+(best.stages?'<span>Крупные этапные платежи <b>'+best.stages.map(function(g){return rub(g[1])}).join(' · ')+'</b></span>':'')+'</div></div><p class="note">Выбор только по полной стоимости. Проверьте, посилен ли клиенту самый высокий платёж, и подтвердите у застройщика условия рассрочки.</p>';
+  else h+='<div class="status warn"><div>Свои средства меньше требуемого ни по одной схеме. Увеличьте взнос.</div></div>';
+  res.forEach(function(x){
+    h+='<section class="card"><h2>'+x.name+(best&&best.id===x.id?' · выгоднее':'')+'</h2><div class="hint">'+x.note+'</div><dl>';
+    h+='<dt>Цена для клиента</dt><dd>'+rub(x.price)+'</dd>';
+    if(!x.cash){h+='<dt>Нужно своих (взнос)</dt><dd>'+rub(x.pv)+'</dd>';
+      if(x.pay>0||!x.payn)h+='<dt>'+(x.payn?'Платёж · '+x.payn:'Платёж в месяц')+'</dt><dd>'+rub(x.pay)+'</dd>';
+      if(x.stages)x.stages.forEach(function(g){h+='<dt>Этапный платёж, '+g[0]+' мес</dt><dd>'+rub(g[1])+'</dd>'});
+      if(x.pay2)h+='<dt>Платёж · '+x.pay2n+'</dt><dd>'+rub(x.pay2)+'</dd>'}
+    h+='<dt><b>Всего потратит клиент</b></dt><dd>'+rub(x.total)+'</dd></dl>';
+    if(!x.ok)h+='<div class="status bad"><div>'+(x.short>0.5?(x.cash?'Для оплаты наличными не хватает '+rub(x.short):'Не хватает '+rub(x.short)+' до требуемого взноса'):'Кредит выходит за лимит программы')+'</div></div>';
+    if(x.late)h+='<div class="status warn"><div>Остаток выше лимита семейной ипотеки: часть пойдёт по рыночной ставке</div></div>';
+    h+='</section>'});
+  h+='<p class="note">«Всего потратит» учитывает скидку, взнос, платежи по рассрочке и процентам. Для семейной после 15 лет платёж оценочный (по ключевой ставке из настроек). Сроки разные, сравнивайте как ориентир. Все условия застройщика можно менять в разделах выше.</p>';
+  $('out').innerHTML=h}
+sync();calc();
+})();
+</script></body></html>
