@@ -134,6 +134,15 @@ section.card>.btn{flex:none}
 .vz-det summary::after{content:"+";font-size:20px;line-height:1}
 .vz-det[open] summary::after{content:"–"}
 .vz-in{margin-top:12px}
+
+.bs{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.bs.best{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok)}.bs.no{opacity:.88}
+.bs .bsh{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.bs h3{margin:0;font-size:15px;line-height:1.3}
+.bs .bsb{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-bg);border-radius:99px;padding:3px 9px;white-space:nowrap}
+.bs .bsn{font-size:13px;color:var(--muted)}.bs dl{grid-template-columns:1fr auto}
+.bs .bsx{align-self:flex-start;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:7px 10px;font:600 12.5px var(--font-body);cursor:pointer}
+details.sub{border:1px dashed var(--line);border-radius:10px;padding:10px 12px}details.sub>summary{cursor:pointer;font-weight:700;font-size:14px}
+details.sub>*:not(summary){margin-top:10px}.bgrp{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px}
 </style></head><body>
 <header><div class="in"><div class="q" aria-hidden="true">“</div>
   <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
@@ -204,6 +213,102 @@ function core(S){
     mrk:mrk,combo:combo,needShow:needShow,altNeed:altNeed,altPay:altPay,altL:altL,pvOk:total>=needShow-0.5,limOk:combo&&!it?loan>=0:(loan<=limit+0.5&&loan>=0),ins:num(S.ins),inc:num(S.inc),
     name:mk?'Ипотека со ставкой застройщика':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
 }
+
+/* === schemes: comparison of purchase methods (shared by calculator and report) === */
+function pmtA(rate,n,L){var r=rate/12;if(n<=0||L<=0)return 0;return r===0?L/n:L*r/(1-Math.pow(1+r,-n))}
+function trSched(L,txt,N,rate){var tr=[],bad=false;String(txt||'').split(/[;,]/).forEach(function(t){t=t.trim();if(!t)return;var m=t.split('@');if(m.length!==2){bad=true;return}
+  var x=m[0].trim().toLowerCase(),mo=Math.round(num(m[1]));var o={m:mo};if(/^(rest|ост)/.test(x))o.rest=true;else if(/%$/.test(x))o.a=L*num(x.replace('%',''))/100;else o.a=num(x);tr.push(o)});
+  if(!tr.length||bad)return {ok:false};
+  tr.sort(function(p,q){return p.m-q.m});var fixed=0;tr.forEach(function(o){if(!o.rest)fixed+=o.a});
+  var hasRest=tr.some(function(o){return o.rest});
+  tr.forEach(function(o){if(o.rest)o.a=Math.max(L-fixed,0)});
+  if(!hasRest&&fixed<L-0.5)tr[tr.length-1].a+=L-fixed;
+  var cum=0,seg=[],interest=0;
+  for(var i=0;i<tr.length-1;i++){cum+=tr[i].a;var months=tr[i+1].m-tr[i].m;if(months>0){var pay=cum*rate/12;seg.push({from:tr[i].m+1,to:tr[i+1].m,pay:pay,bal:cum});interest+=pay*months}}
+  var lastM=tr[tr.length-1].m;return {ok:true,tr:tr,seg:seg,interest:interest,nAfter:Math.max(N-lastM,0),lastM:lastM}}
+var BK=['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay'];
+function buyCompare(S,M){
+  var P0=num(S.price),O=M.total,yrs=M.years,N=yrs*12,rep=M.repair||0,kidsN=M.kids;
+  var pc_=function(k){return num(S[k])/100};
+  var out=[];
+  function mkS(o){return core(Object.assign({prog:'fam',reg:S.reg||'nsk',kids:kidsN,years:yrs,key:S.key,cmp:S.cmp,ddu:'Нет',mat:0,norm:S.norm,half:'Нет',izlim:S.izlim,itl:'',itmax:'',subsidy:''},o))}
+  function priceAfter(d){return P0*(1-d)+rep}
+  function add(x){x.rows=x.rows||[];out.push(x);return x}
+  function famItem(id,name,price,sub,note){var X=mkS({price:price,own:O,subsidy:sub||''});
+    var rows=[['Цена для клиента',price],['Нужно своих',X.needShow],['Кредит',Math.max(price-O,0)],['Платёж в месяц',X.pay]];
+    if(X.after)rows.push(['Платёж после 15 лет (оценка)',X.after.pay]);
+    return add({id:id,name:name,price:price,note:note+(X.combo?'. Комбо: часть сверх лимита по рыночной ставке':''),need:X.needShow,pay1:X.pay,pay2:X.after?X.after.pay:null,pay2n:'после 15 лет',total:O+X.tot,ok:X.pvOk&&X.limOk&&X.loan>=0,short:X.needShow-O,rows:rows,limBad:!X.limOk,combo:X.combo,loan:Math.max(price-O,0)})}
+  // A: семейная с субсидией застройщика
+  var bsub=num(S.bsub);
+  if(M.fam&&bsub>0){var dA=pc_('bdis');famItem('A','Семейная ипотека с субсидией застройщика',priceAfter(dA),bsub,'Ставка '+pct(bsub/100)+(dA>0?', скидка '+pct(dA):''))}
+  // B: семейная без субсидии застройщика
+  if(M.fam){var dB=pc_('bnos'),bp=M.rate;famItem('B','Семейная ипотека по ставке программы',priceAfter(dB),'','Ставка '+pct(bp)+(dB>0?', скидка '+pct(dB)+' за расчёт без субсидирования':''))}
+  // IT
+  // F: обычная (рыночная)
+  var mr=num(S.cmp)/100;
+  if(mr>0){var dF=pc_('bnos'),Pf=priceAfter(dF),Fm=core({prog:'mkt',reg:'nsk',kids:kidsN,years:yrs,key:S.key,price:Pf,own:O,mat:0,mrate:S.cmp,norm:S.norm,ddu:'Нет'});
+    add({id:'F',name:'Обычная ипотека по рыночной ставке',price:Pf,note:'Ставка '+pct(mr)+(dF>0?', скидка '+pct(dF):''),need:Fm.needShow,pay1:Fm.pay,total:O+Fm.tot,ok:Fm.pvOk&&Fm.loan>=0,short:Fm.needShow-O,loan:Math.max(Pf-O,0),
+      rows:[['Цена для клиента',Pf],['Нужно своих',Fm.needShow],['Кредит',Math.max(Pf-O,0)],['Платёж в месяц',Fm.pay]]})}
+  // C: наличные
+  var dC=Math.max(pc_('bcash'),pc_('bsvo')),Pc=priceAfter(dC);
+  add({id:'C',name:'Оплата 100 % сразу',price:Pc,note:dC>0?'Скидка '+pct(dC):'Без скидки',need:Pc,total:Pc,ok:O>=Pc-0.5,short:Pc-O,cash:true,rows:[['Цена для клиента',Pc],['Нужно своих',Pc]]});
+  // R: рассрочка без процентов
+  var mm=Math.max(Math.round(num(S.bim)),0);
+  [['R1','bi1pv','bi1d'],['R2','bi2pv','bi2d']].forEach(function(q){
+    var pv=pc_(q[1]);if(!(pv>0&&mm>0))return;var d=pc_(q[2]),Pq=priceAfter(d),need=Pq*pv,up=Math.min(Math.max(O,need),Pq),rest=Pq-up;
+    add({id:q[0],name:'Рассрочка '+mm+' мес, взнос от '+Math.round(pv*100)+' %',price:Pq,note:(d>0?'Скидка '+pct(d)+', ':'')+'без процентов',need:need,pay1:rest/mm,pay1n:'в месяц, '+mm+' мес',total:Pq,ok:O>=need-0.5,short:need-O,
+      rows:[['Цена для клиента',Pq],['Взнос сразу',up],['Остаток в рассрочку',rest],['Платёж в месяц · '+mm+' мес',rest/mm]]})});
+  // D: рассрочка до сдачи + ипотека
+  var dpv=pc_('bdpv'),dm=Math.round(num(S.bdm)),dpay=(num(S.bdd)>0?num(S.bdd):1)/100;
+  if(dpv>0&&dm>0&&M.fam){var dD=pc_('bdis'),Pd=priceAfter(dD),pvD=Pd*dpv,inst=Pd-pvD,m1=inst*dpay,paid=Math.min(m1*dm,inst),rest2=inst-paid,ex=Math.max(O-pvD,0);
+    var Dm=rest2-ex>0.5?mkS({price:rest2,own:ex,norm:'0,001',subsidy:bsub>0?bsub:''}):null;
+    add({id:'D',name:'Рассрочка до сдачи дома, затем ипотека',price:Pd,note:'Взнос '+pct(dpv)+', платёж '+pct(dpay)+' от остатка в месяц, '+dm+' мес; остаток '+rub(rest2)+' закрывает семейная ипотека',need:pvD,pay1:m1,pay1n:'в месяц до расчёта',pay2:Dm?Dm.pay:0,pay2n:'ипотека после расчёта',
+      total:pvD+paid+ex+(Dm?Dm.tot:0),ok:O>=pvD-0.5&&(!Dm||Dm.limOk),short:pvD-O,combo:Dm&&Dm.combo,
+      rows:[['Цена для клиента',Pd],['Взнос сразу',pvD],['Платёж в месяц · '+dm+' мес',m1],['Остаток закрывает ипотека',rest2],['Платёж по ипотеке потом',Dm?Dm.pay:0]]})}
+  // S: поэтапная
+  var spv=pc_('bsp'),stg=[[num(S.bs1m),pc_('bs1p')],[num(S.bs2m),pc_('bs2p')],[num(S.bs3m),pc_('bs3p')]].filter(function(g){return g[0]>0&&g[1]>0}),send=Math.round(num(S.bsend));
+  if(spv>0&&stg.length&&send>0&&M.fam){var Ps=priceAfter(pc_('bsd')),pvS=Ps*spv,sumS=stg.reduce(function(a,g){return a+g[1]},0)*Ps,restS=Ps-pvS-sumS,exS=Math.max(O-pvS,0),mp=num(S.bpay);
+    var Sm=restS-exS>0.5?mkS({price:restS,own:exS,norm:'0,001',subsidy:bsub>0?bsub:''}):null;
+    var rows=[['Цена для клиента',Ps],['Взнос сразу',pvS]];stg.forEach(function(g){rows.push(['Платёж на '+g[0]+'-м месяце',g[1]*Ps])});
+    rows.push(['Остаток на '+send+'-м месяце закрывает ипотека',restS]);rows.push(['Платёж по ипотеке потом',Sm?Sm.pay:0]);if(mp>0)rows.splice(2,0,['Ежемесячно в рассрочку',mp]);
+    add({id:'S',name:'Поэтапная рассрочка, затем ипотека',price:Ps,note:'Взнос '+pct(spv)+', этапы по графику, остаток '+rub(Math.max(restS,0))+' на '+send+'-м месяце',need:pvS,pay1:mp,pay1n:'ежемесячно',pay2:Sm?Sm.pay:0,pay2n:'ипотека после расчёта',
+      total:pvS+sumS+exS+(Sm?Sm.tot:0)+mp*send,ok:O>=pvS-0.5&&(!Sm||Sm.limOk),short:pvS-O,combo:Sm&&Sm.combo,rows:rows})}
+  // E: траншевая
+  var rT=num(S.btr)/100,t1=String(S.bt1==null?'':S.bt1).trim(),t3=Math.round(num(S.bt3m));
+  if(rT>0&&t1&&t3>0){var parts=[t1+'@0'];if(num(S.bt2m)>0&&num(S.bt2)>0)parts.push(num(S.bt2)+'%@'+Math.round(num(S.bt2m)));parts.push('rest@'+t3);
+    var Pe=priceAfter(pc_('bdis')),Lt=Pe-O,pvT=Pe*(num(S.btpv)>0?num(S.btpv)/100:(num(S.norm)||20.1)/100),T=trSched(Math.max(Lt,0),parts.join(','),N,rT);
+    if(Lt>0&&T.ok){var rows=[['Цена для клиента',Pe],['Нужно своих',pvT],['Кредит',Lt]];
+      T.seg.forEach(function(g){rows.push(['Платёж, '+(g.from===g.to?g.from+'-й месяц':'месяцы '+g.from+'–'+g.to),g.pay])});
+      var tail=pmtA(rT,T.nAfter,Lt);rows.push(['Платёж после последнего транша ('+T.nAfter+' мес)',tail]);
+      add({id:'E',name:'Траншевая ипотека',price:Pe,note:'Ставка '+pct(rT)+', траншей: '+T.tr.length+'. До последнего транша платите только проценты на выданную часть',need:pvT,pay1:T.seg.length?T.seg[0].pay:0,pay1n:'в первый период',pay2:tail,pay2n:'после последнего транша',total:O+T.interest+tail*T.nAfter,ok:O>=pvT-0.5,short:pvT-O,rows:rows});
+      if(M.fam){var Fb=mkS({price:Lt,own:0,norm:'0,001'});var rows2=rows.slice(0,3);T.seg.forEach(function(g){rows2.push(['Платёж, '+(g.from===g.to?g.from+'-й месяц':'месяцы '+g.from+'–'+g.to),g.pay])});rows2.push(['Платёж после перехода на семейную',Fb.pay]);
+        add({id:'E2',name:'Траншевая, затем переход на семейную ипотеку',price:Pe,note:'До последнего транша проценты по '+pct(rT)+', затем рефинансирование '+rub(Lt)+' в семейную ипотеку на '+yrs+' лет'+(Fb.combo?'. Комбо: часть сверх лимита по рыночной ставке':''),need:pvT,pay1:T.seg.length?T.seg[0].pay:0,pay1n:'в первый период',pay2:Fb.pay,pay2n:'после перехода',total:O+T.interest+Fb.tot,ok:O>=pvT-0.5&&Fb.limOk,short:pvT-O,combo:Fb.combo,rows:rows2})}}}
+  // G: с ремонтом от застройщика
+  var Pg=num(S.bpr),rg=num(S.brr);
+  if(Pg>0&&rg>0){var Gm=core({prog:'mkt',reg:'nsk',kids:kidsN,years:yrs,key:S.key,price:Pg,own:O,mat:0,mrate:S.brr,norm:S.norm,ddu:'Нет'});
+    add({id:'G',name:'Ипотека с ремонтом от застройщика',price:Pg,note:'Цена с ремонтом, ставка '+pct(rg/100),need:Gm.needShow,pay1:Gm.pay,total:O+Gm.tot,ok:Gm.pvOk&&Gm.loan>=0,short:Gm.needShow-O,rows:[['Цена с ремонтом',Pg],['Нужно своих',Gm.needShow],['Кредит',Math.max(Pg-O,0)],['Платёж в месяц',Gm.pay]]})}
+  var best=null;out.forEach(function(x){if(x.ok&&(best===null||x.total<best.total))best=x});
+  var cheap=best?best.total:0;
+  out.forEach(function(x){x.over=x.total-x.price;x.delta=best?x.total-cheap:0});
+  return {items:out,best:best}}
+function buyHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Boolean),h='';
+  var items=R.items.filter(function(x){return !o.report||hide.indexOf(x.id)<0});
+  if(!items.length)return '';
+  var best=null;items.forEach(function(x){if(x.ok&&(best===null||x.total<best.total))best=x});
+  items.forEach(function(x){
+    var cls='bs'+(best&&best.id===x.id?' best':'')+(x.ok?'':' no');
+    h+='<div class="'+cls+'">';
+    h+='<div class="bsh"><h3>'+x.name+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+'</div>';
+    h+='<div class="bsn">'+x.note+'</div><dl>';
+    x.rows.forEach(function(r){h+='<dt>'+r[0]+'</dt><dd>'+rub(r[1])+'</dd>'});
+    h+='<div class="sep"></div><dt><b>Всего потратит клиент</b></dt><dd>'+rub(x.total)+'</dd>';
+    if(!x.cash)h+='<dt>Переплата сверх цены</dt><dd>'+rub(Math.max(x.over,0))+'</dd>';
+    if(best&&x.ok&&best.id!==x.id)h+='<dt>Дороже лучшего варианта на</dt><dd>'+rub(x.delta)+'</dd>';
+    h+='</dl>';
+    if(!x.ok)h+='<div class="status bad"><span>⚠</span><span>'+(x.short>0.5?(x.cash?'Для оплаты сразу не хватает '+rub(x.short):'Не хватает '+rub(x.short)+' до нужного взноса'):'Кредит выходит за лимит программы')+'</span></div>';
+    if(!o.report)h+='<button type="button" class="bsx" data-id="'+x.id+'">'+(hide.indexOf(x.id)<0?'В отчёте клиента: да':'В отчёте клиента: нет')+'</button>';
+    h+='</div>'});
+  return h}
 
 function extraHTML(c,o){
   var out={term:'',donut:'',cmp:'',tax:''};
@@ -286,12 +391,13 @@ if(loan>0){
   H.term='<details class="vz-det"><summary>Платёж по срокам: 10, 15, 20, 25, 30 лет</summary><div class="vz-in">'+ex.term+'<p class="muted">Чем короче срок, тем выше платёж и меньше переплата.</p></div></details>';
   if(S.tax==='Да')H.tax='<details class="vz-det"><summary>Налоговый вычет при покупке</summary><div class="vz-in">'+ex.tax+'</div></details>';
 }
+var RB=buyCompare(S,M);if(loan>0||RB.items.length){var bh=buyHTML(RB,{hide:S.bhide,report:true});if(bh)H.buy='<section><h2>Все способы покупки: открытая математика</h2><p class="muted">Ниже все схемы, которые мы рассматривали, с ценой, взносом, платежами и полной стоимостью. Без скрытых условий: что дешевле, что проходит по вашим средствам, чего не хватает.</p>'+bh+'<p class="muted">Платёж после 15 лет оценочный. Условия рассрочек и траншей подтверждает застройщик, ставки — банк.</p></section>'}
 var ask='Хочу подбор объектов под этот расчёт.\nПрограмма: '+(mk?'ставка застройщика':it?'ИТ-ипотека':iz?'семейная ипотека, ИЖС':'семейная ипотека'+(M.ms?' (Москва, СПб)':'')+', детей: '+kids)+'\nОбъект: '+rub(T)+'\nВзнос: '+rub(total)+' ('+pct(T>0?total/T:0)+')'+(loan>0?'\nПлатёж: '+rub(pay)+' в месяц, ставка '+pct(eff)+', срок '+years+' лет':'');
 var cta=loan>0?'Хотите, я подберу объекты под платёж '+rub(pay)+' и ваш взнос?':'Хотите, я подберу объекты под ваш расчёт?';
 if(loan>0)H.top='<div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Подобрать объекты под этот платёж</a></div>';
 H.cta+='<section class="hl"><h2>Что дальше</h2><p class="who">'+cta+'</p><p class="muted">Проверю условия у застройщика и банка, покажу короткий список с честным разбором каждого объекта.</p><div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Оставить заявку на подбор</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div><p class="muted">Персональный расчёт подготовил Николай Калашников · в недвижимости с 2017 года, более 400 сделок</p></section>';
 H.foot+='<p class="muted">Расчёт предварительный и не является офертой банка. Окончательные условия определяет банк. Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>';
-h=H.hero+H.st+H.cmp+H.top+H.chips+H.comp+H.after+H.term+H.tax+H.cta+H.foot;
+h=H.hero+H.st+(H.buy||'')+H.cmp+H.top+H.chips+H.comp+H.after+H.term+H.tax+H.cta+H.foot;
 app.innerHTML=h;
 })();
 </script></body></html>
