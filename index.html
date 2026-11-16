@@ -1,7 +1,4 @@
-<!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Расчёт от сомелье</title>
-
+<!doctype html><html lang="ru"><head><title>Расчёт от сомелье</title>
 <!-- seo:start -->
 <meta name="description" content="Платёж, взнос и лимиты семейной ипотеки и ипотеки застройщика за минуту. Николай Калашников, KalashnikovEstate, Новосибирск.">
 <meta name="theme-color" content="#6B1527">
@@ -25,7 +22,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <!-- seo:end -->
-
+<meta name="x-removed" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 /* Concept: wine-cellar ledger on a phone — burgundy header band, cream paper, gold input fields, a sticky payment bar at the bottom. */
@@ -40,16 +37,16 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 110px}
+  padding-left:max(10px,env(safe-area-inset-left,0px));padding-right:max(10px,env(safe-area-inset-right,0px));padding-block:0 110px}
 .wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-header.band{margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px)));background:var(--wine-deep);color:var(--on-wine);
+header.band{margin-inline:calc(-1 * max(10px,env(safe-area-inset-left,0px)));background:var(--wine-deep);color:var(--on-wine);
   padding:22px max(16px,env(safe-area-inset-left,0px)) 20px}
 header.band .inner{max-width:620px;margin:0 auto}
 .brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--on-wine-soft);font-weight:600}
 h1{font-family:var(--font-display);font-weight:700;font-size:34px;line-height:1.05;margin:8px 0 6px;text-wrap:balance}
 .sub{color:var(--on-wine-soft);font-size:13px}
 .note{font-size:12.5px;color:var(--muted)}
-section.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:14px}
+section.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 14px;display:flex;flex-direction:column;gap:14px}
 h2{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--wine);margin:0;font-weight:700}
 .field{display:flex;flex-direction:column;gap:6px;min-width:0}
 .field>label,.lbl{font-weight:600;font-size:14px}
@@ -74,6 +71,7 @@ input:focus-visible,button:focus-visible{outline:3px solid var(--wine);outline-o
 dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:8px 12px}
 dt{color:var(--muted);font-size:14px;min-width:0}
 dd{margin:0;font-weight:700;text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+dd .sub{display:block;font-weight:500;font-size:12.5px;color:var(--muted);margin-top:1px}
 dd.sm{font-weight:600;font-size:13px;white-space:normal}
 .sep{height:1px;background:var(--line);margin:2px 0}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
@@ -185,7 +183,7 @@ section.card>.btn{flex:none}
 .ovt tr.st td{font-weight:700;color:var(--ink)}
 
 #prog button,#reg button{font-size:14.5px;padding:0 6px}
-details.card{display:block;padding:16px}
+details.card{display:block;padding:16px 14px}
 details.card>*:not(summary){margin-top:12px}
 details.card>summary{list-style:none;display:flex;align-items:center;gap:10px;line-height:1.4}
 details.card>summary::-webkit-details-marker{display:none}
@@ -194,9 +192,10 @@ details.card>summary::after{content:"+";font-size:20px;line-height:1;color:#6B15
 details.card[open]>summary::after{content:"–"}
 details.card .sv{flex:none;letter-spacing:0;text-transform:none;font-size:13px;font-weight:700;color:var(--ink)}
 details.card>.row2{display:grid}
-.ovt{font-size:12px}.ovt td,.ovt th{padding-left:10px}.ovt td:first-child,.ovt th:first-child{padding-left:0}
+.seg button{flex:1 1 auto;min-width:0;padding:6px 4px;font-size:15px;line-height:1.15;hyphens:manual;overflow-wrap:normal;word-break:keep-all}
+.ovt{font-size:11.5px;table-layout:fixed}.ovt td,.ovt th{padding-left:4px;padding-right:0}.ovt td:first-child,.ovt th:first-child{padding-left:0;padding-right:6px;width:31%}.ovt td{white-space:nowrap;letter-spacing:-.2px}.ovt th{font-size:11px;line-height:1.2;vertical-align:bottom}
+@media(max-width:400px){.seg button{font-size:13px;padding:6px 2px}}
 </style>
-<style>html,body{margin:0}</style></head><body>
 
 <header class="band"><div class="inner"><div class="q" aria-hidden="true">“</div>
   <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
@@ -429,7 +428,7 @@ function seg(id,opts,get,set){var el=$(id);el.innerHTML='';opts.forEach(function
   el._get=get}
 function sync(){['prog','reg','kids','half','ddu','tax','ovMode'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
 function defYears(){var d=S.prog==='it'?15:(S.prog==='fam'&&S.reg==='izhs'?20:30);if([15,20,30].indexOf(Math.round(num(S.years)))>-1){S.years=d;fmtField('years')}}
-seg('prog',[{t:'Семейная',v:'fam'},{t:'ИТ-ипотека',v:'it'},{t:'От застройщика',v:'mkt'}],null,function(v){S.prog=v;defYears()});
+seg('prog',[{t:'Семейная',v:'fam'},{t:'ИТ-ипотека',v:'it'},{t:'Застройщик',v:'mkt'}],null,function(v){S.prog=v;defYears()});
 seg('reg',[{t:'Новосибирск',v:'nsk'},{t:'Москва, СПб',v:'msk'},{t:'ИЖС',v:'izhs'}],null,function(v){S.reg=v;defYears()});
 seg('ovMode',[{t:'в процентах',v:'в процентах'},{t:'в рублях',v:'в рублях'}],null,function(v){S.ovMode=v});
 seg('kids',[1,2,3,4,5].map(function(n){return{t:String(n),v:n}}),null,function(v){S.kids=+v});
@@ -559,12 +558,12 @@ function calc(){
   else if(it)rows.push(['Лимит: льготная часть / всего',rub(IT_L)+' / '+rub(IT_MAX)]);
   if(econ>0.5)rows.push(['Экономия при взносе от 50 %',rub(econ)+' в мес']);
   if(M.ins>0&&loan>0)rows.push(['Платёж со страховкой',rub(pay+M.ins/12)+' в мес']);
-  $('resDl').innerHTML=rows.map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('');
+  $('resDl').innerHTML=rows.map(function(r){var v=String(r[1]),i=v.indexOf(' · ');if(i>0)v=v.slice(0,i)+'<span class="sub">'+v.slice(i+3)+'</span>';return '<dt>'+r[0]+'</dt><dd>'+v+'</dd>'}).join('');
 
   var firstTxt=mk?(after?'первые '+after.sy+' '+(after.sy%10===1&&after.sy!==11?'год':(after.sy%10>=2&&after.sy%10<=4&&(after.sy<10||after.sy>20)?'года':'лет')):'весь срок'):(after?'первые 15 лет':'весь срок');
   $('heroK').textContent='Платёж в месяц · '+(M.combo?'комбо-ипотека, ':'')+firstTxt;
   var spreadTxt=iz?'3,5':'3';
-  if(after){$('afterDl').innerHTML=[[mk?'Остаток долга после субсидии':'Остаток долга на конец 15-го года',rub(after.bal)],[mk?'Ставка после субсидии':'Ставка после 15 лет',pct(after.rate)],[mk?'Платёж после субсидии':'Платёж после 15 лет',rub(after.pay)+' / мес']].map(function(r){return '<dt>'+r[0]+'</dt><dd>'+r[1]+'</dd>'}).join('');
+  if(after){$('afterDl').innerHTML=[[mk?'Остаток долга после субсидии':'Остаток долга на конец 15-го года',rub(after.bal)],[mk?'Ставка после субсидии':'Ставка после 15 лет',pct(after.rate)],[mk?'Платёж после субсидии':'Платёж после 15 лет',rub(after.pay)+' / мес']].map(function(r){var v=String(r[1]),i=v.indexOf(' · ');if(i>0)v=v.slice(0,i)+'<span class="sub">'+v.slice(i+3)+'</span>';return '<dt>'+r[0]+'</dt><dd>'+v+'</dd>'}).join('');
     $('afterHint').textContent=mk?'Ставка после субсидии взята из вашего ввода. Уточните её у застройщика и банка.':'Берётся меньшее из «ставка по договору + 4 п.п.» ('+pct(after.ra)+') и «ключевая + '+spreadTxt+' п.п.» ('+pct(after.rb)+'). Это оценка по правилам с 1 октября 2026 года: законодательство и ключевая ставка могут измениться, тогда изменится и платёж.';}
   else{$('afterDl').innerHTML=mk?'<dt>Субсидия на весь срок</dt><dd>ставка не меняется</dd>':(fixedWhole?'<dt>Ставка '+pct(eff)+' на весь срок</dt><dd>платёж не меняется</dd>':'<dt>Срок до 15 лет</dt><dd>льгота на весь срок</dd>');$('afterHint').textContent=fixedWhole?'Взнос от 50 %: ставка не выше 6 % действует на весь срок кредита, после 15 лет она не повышается.':'';}
 
@@ -606,4 +605,3 @@ $('mkrep').addEventListener('click',function(){
 sync();calc();
 })();
 </script>
-</body></html>
