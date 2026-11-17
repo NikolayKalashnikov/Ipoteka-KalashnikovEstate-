@@ -206,7 +206,8 @@ details.card>.row2{display:grid}
 .bs.best{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok)}.bs.no{opacity:.88}
 .bs .bsh{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.bs h3{margin:0;font-size:15px;line-height:1.3}
 .bs .bsb{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-bg);border-radius:99px;padding:3px 9px;white-space:nowrap}
-.bs .bsn{font-size:13px;color:var(--muted)}.bs dl{grid-template-columns:1fr auto}
+.bs .bsw{font-size:12.5px;line-height:1.45;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:9px 10px}.bs .bsw b{color:var(--warn,#c90)}.bs.no .bsh h3{opacity:.9}.bs .bsn{font-size:13px;color:var(--muted)}.bs dl{grid-template-columns:1fr auto}
+.bs .bsb.nb{color:var(--bad);background:var(--bad-bg)}
 .bs .bsx{align-self:flex-start;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:7px 10px;font:600 12.5px var(--font-body);cursor:pointer}
 details.card>summary>.sv{max-width:46%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}details.card>summary>span:first-child{min-width:0}details.sub .row2{grid-template-columns:1fr 1fr!important;gap:8px}details.sub label{font-size:12.5px}.stp{display:flex;gap:10px;align-items:flex-start}.stp .sn{flex:none;width:26px;height:26px;border-radius:50%;background:var(--wine,#6B1527);color:var(--on-wine,#fff);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px}.stp .sb{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}.stp .st{font-weight:700;font-size:14px}.sar{padding-left:8px;color:var(--muted);font-size:18px;line-height:1}
 .trprev{border:1px dashed var(--line);border-radius:8px;padding:9px 11px;font-size:13px;color:var(--muted)}.trprev b{color:var(--ink)}
@@ -574,6 +575,15 @@ function buyCompare(S,M){
   var Pg=num(S.bpr),rg=num(S.brr);
   if(Pg>0&&rg>0){var Gm=core({prog:'mkt',reg:'nsk',kids:kidsN,years:yrs,key:S.key,price:Pg,own:O,mat:0,mrate:S.brr,norm:S.norm,ddu:'Нет'});
     add({id:'G',name:'Ипотека с ремонтом от застройщика',price:Pg,note:'Цена с ремонтом, ставка '+pct(rg/100),need:Gm.needShow,pay1:Gm.pay,total:O+Gm.tot,ok:Gm.pvOk&&Gm.loan>=0,short:Gm.needShow-O,rows:[['Цена с ремонтом',Pg],['Минимальный взнос по условиям',Gm.needShow],['Ваши средства',O],['Кредит (цена минус ваши средства)',Math.max(Pg-O,0)],['Платёж в месяц',Gm.pay]]})}
+  if(!M.noAlt)out.forEach(function(x){
+    if(x.ok||!(x.short>0.5)||x.cash)return;
+    var R2=buyCompare(S,Object.assign({},M,{total:O+x.short,noAlt:true})),y=null;
+    R2.items.forEach(function(z){if(z.id===x.id)y=z});
+    if(!y||!y.ok)return;
+    var skip={'Цена для клиента':1,'Цена с ремонтом':1,'Ваши средства':1,'Минимальный взнос по условиям':1};
+    var head=[[y.rows[0][0],x.price],['Требуемый взнос',O+x.short],['Ваши средства',O],['Не хватает',x.short]];
+    var tail=y.rows.filter(function(r,i){return i>0&&!skip[r[0]]}).map(function(r){return [r[0]==='Кредит (цена минус ваши средства)'?'Кредит при полном взносе':r[0],r[1]]});
+    x.rows=head.concat(tail);x.pay1=y.pay1;x.pay2=y.pay2;x.pay1n=y.pay1n;x.pay2n=y.pay2n;x.total=y.total;x.alt=true;x.have=O;x.must=O+x.short});
   var best=null;out.forEach(function(x){if(x.ok&&(best===null||x.total<best.total))best=x});
   var cheap=best?best.total:0;
   out.forEach(function(x){x.over=x.total-x.price;x.delta=best?x.total-cheap:0});
@@ -585,10 +595,12 @@ function buyHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Boolean),h
   items.forEach(function(x){
     var cls='bs'+(best&&best.id===x.id?' best':'')+(x.ok?'':' no');
     h+='<div class="'+cls+'">';
-    h+='<div class="bsh"><h3>'+x.name+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+'</div>';
-    h+='<div class="bsn">'+x.note+'</div><dl>';
+    h+='<div class="bsh"><h3>'+x.name+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+(x.ok?'':'<span class="bsb nb">'+(x.short>0.5?'не хватает средств':'выше лимита')+'</span>')+'</div>';
+    h+='<div class="bsn">'+x.note+'</div>';
+    if(x.alt)h+='<div class="bsw"><b>Схема сейчас недоступна.</b> Платёж ниже рассчитан при взносе '+rub(x.must)+'. У вас '+rub(x.have)+'. Чтобы воспользоваться схемой, нужно найти ещё '+rub(x.short)+'.</div>';
+    h+='<dl>';
     x.rows.forEach(function(r){h+='<dt>'+r[0]+'</dt><dd>'+rub(r[1])+'</dd>'});
-    h+='<div class="sep"></div><dt><b>Всего потратит клиент</b></dt><dd>'+rub(x.total)+'</dd>';
+    h+='<div class="sep"></div><dt><b>Всего потратит клиент'+(x.alt?' (если найдёте недостающее)':'')+'</b></dt><dd>'+rub(x.total)+'</dd>';
     if(!x.cash)h+='<dt>Переплата сверх цены</dt><dd>'+rub(Math.max(x.over,0))+'</dd>';
     if(best&&x.ok&&best.id!==x.id)h+='<dt>Дороже лучшего варианта на</dt><dd>'+rub(x.delta)+'</dd>';
     h+='</dl>';
@@ -608,10 +620,9 @@ function buyReportHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Bool
     h+='<div class="rbar'+(x.ok?'':' no')+(best&&best.id===x.id?' top':'')+'"><div class="rbl"><span>'+x.name+'</span><b>'+rub(x.total)+'</b></div><div class="rbt2"><i style="width:'+w+'%"></i></div>'+(x.ok?'':'<div class="rbn">Не хватает '+rub(Math.max(x.short,0))+(x.limBad?' · выше лимита программы':'')+'</div>')+'</div>'});
   h+='<h3 class="rbt">Платежи и первоначальные суммы</h3><div class="rtab"><table><thead><tr><th>Схема</th><th>Взнос от</th><th>Платёж</th></tr></thead><tbody>';
   items.forEach(function(x){var pay=x.pay1?rub(x.pay1)+(x.pay2?' → '+rub(x.pay2):''):(x.pay2?rub(x.pay2):'—');
-    h+='<tr class="'+(x.ok?'':'no')+'"><td>'+x.name+'</td><td>'+rub(x.need)+'</td><td>'+pay+'</td></tr>'});
-  h+='</tbody></table></div><h3 class="rbt">Каждая схема подробно</h3>'+buyHTML(R,{hide:o.hide,report:true})+'</div>';
+    h+='<tr class="'+(x.ok?'':'no')+'"><td>'+x.name+'</td><td>'+rub(x.need)+'</td><td>'+pay+(x.alt?' *':'')+'</td></tr>'});
+  h+='</tbody></table></div>'+(items.some(function(x){return x.alt})?'<p class="muted">* Платёж для схемы, на которую пока не хватает взноса, рассчитан при полном нужном взносе. Чтобы им воспользоваться, суммы на счёте должно хватать на этот взнос.</p>':'')+'<h3 class="rbt">Каждая схема подробно</h3>'+buyHTML(R,{hide:o.hide,report:true})+'</div>';
   return h}
-
 function extraHTML(c,o){
   var out={term:'',donut:'',cmp:'',tax:'',svCmp:'',svTax:''};
   if(!(c.loan>0))return out;

@@ -71,7 +71,7 @@ a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 html{background:#F6F1EA}
 body{background:#F6F1EA!important;color:#2A0F17}
 body::before{display:none}
-header,header.band{background:linear-gradient(160deg,#78192D 0%,#6B1527 40%,#560E20 100%)!important;color:#fff;clip-path:polygon(0 0,100% 0,100% calc(100% - 26px),0 100%);padding-bottom:58px!important;margin-bottom:-14px}
+header,header.band{background:linear-gradient(160deg,#78192D 0%,#6B1527 40%,#560E20 100%)!important;color:#fff;clip-path:polygon(0 0,100% 0,100% calc(100% - 26px),0 100%);padding-bottom:58px!important;margin-bottom:6px}
 header h1,header .brand,header .role,header .sub{color:#fff!important}
 header .brand{color:rgba(255,255,255,.85)!important}
 header .role,header .sub{color:rgba(255,255,255,.78)!important}
@@ -145,11 +145,13 @@ section.card>.btn{flex:none}
 .bs.best{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok)}.bs.no{opacity:.88}
 .bs .bsh{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.bs h3{margin:0;font-size:15px;line-height:1.3}
 .bs .bsb{font-size:11px;font-weight:700;color:var(--ok);background:var(--ok-bg);border-radius:99px;padding:3px 9px;white-space:nowrap}
-.bs .bsn{font-size:13px;color:var(--muted)}.bs dl{grid-template-columns:1fr auto}
+.bs .bsw{font-size:12.5px;line-height:1.45;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:9px 10px}.bs .bsw b{color:var(--warn,#c90)}.bs.no .bsh h3{opacity:.9}.bs .bsn{font-size:13px;color:var(--muted)}.bs dl{grid-template-columns:1fr auto}
+.bs .bsb.nb{color:var(--bad);background:var(--bad-bg)}
 .bs .bsx{align-self:flex-start;background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:7px 10px;font:600 12.5px var(--font-body);cursor:pointer}
 details.sub{border:1px dashed var(--line);border-radius:10px;padding:10px 12px}details.sub>summary{cursor:pointer;font-weight:700;font-size:14px}
 details.sub>*:not(summary){margin-top:10px}.bgrp{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px}
 
+.opn{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;padding:14px 16px;border:1.5px solid var(--gold);border-radius:12px;text-decoration:none;color:var(--ink);background:linear-gradient(160deg,var(--card2),transparent)}.opn b{display:block;font-size:15px;color:var(--gold);margin-bottom:2px}.opn span{font-size:13px;color:var(--muted)}.opn i{font-style:normal;font-size:22px;color:var(--gold)}
 .rbx{display:flex;flex-direction:column;gap:12px}.rbt{margin:8px 0 0;font-size:14px;font-weight:700}
 .rbwin{border:1.5px solid var(--ok);background:var(--ok-bg);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px}.rbwin .k{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ok)}.rbwin .n{font-size:18px;font-weight:700;line-height:1.25}.rbwin .v{font-size:14px;color:var(--ok);font-weight:600}
 .rbar{display:flex;flex-direction:column;gap:5px}.rbl{display:flex;justify-content:space-between;gap:10px;font-size:13.5px}.rbl span{min-width:0}.rbl b{white-space:nowrap}.rbt2{height:10px;border-radius:99px;background:var(--line);overflow:hidden}.rbt2 i{display:block;height:100%;border-radius:99px;background:#6B1527}.rbar.top .rbt2 i{background:var(--ok)}.rbar.no{opacity:.6}.rbar.no .rbt2 i{background:var(--muted)}.rbn{font-size:12px;color:var(--bad)}
@@ -298,6 +300,15 @@ function buyCompare(S,M){
   var Pg=num(S.bpr),rg=num(S.brr);
   if(Pg>0&&rg>0){var Gm=core({prog:'mkt',reg:'nsk',kids:kidsN,years:yrs,key:S.key,price:Pg,own:O,mat:0,mrate:S.brr,norm:S.norm,ddu:'Нет'});
     add({id:'G',name:'Ипотека с ремонтом от застройщика',price:Pg,note:'Цена с ремонтом, ставка '+pct(rg/100),need:Gm.needShow,pay1:Gm.pay,total:O+Gm.tot,ok:Gm.pvOk&&Gm.loan>=0,short:Gm.needShow-O,rows:[['Цена с ремонтом',Pg],['Минимальный взнос по условиям',Gm.needShow],['Ваши средства',O],['Кредит (цена минус ваши средства)',Math.max(Pg-O,0)],['Платёж в месяц',Gm.pay]]})}
+  if(!M.noAlt)out.forEach(function(x){
+    if(x.ok||!(x.short>0.5)||x.cash)return;
+    var R2=buyCompare(S,Object.assign({},M,{total:O+x.short,noAlt:true})),y=null;
+    R2.items.forEach(function(z){if(z.id===x.id)y=z});
+    if(!y||!y.ok)return;
+    var skip={'Цена для клиента':1,'Цена с ремонтом':1,'Ваши средства':1,'Минимальный взнос по условиям':1};
+    var head=[[y.rows[0][0],x.price],['Требуемый взнос',O+x.short],['Ваши средства',O],['Не хватает',x.short]];
+    var tail=y.rows.filter(function(r,i){return i>0&&!skip[r[0]]}).map(function(r){return [r[0]==='Кредит (цена минус ваши средства)'?'Кредит при полном взносе':r[0],r[1]]});
+    x.rows=head.concat(tail);x.pay1=y.pay1;x.pay2=y.pay2;x.pay1n=y.pay1n;x.pay2n=y.pay2n;x.total=y.total;x.alt=true;x.have=O;x.must=O+x.short});
   var best=null;out.forEach(function(x){if(x.ok&&(best===null||x.total<best.total))best=x});
   var cheap=best?best.total:0;
   out.forEach(function(x){x.over=x.total-x.price;x.delta=best?x.total-cheap:0});
@@ -309,10 +320,12 @@ function buyHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Boolean),h
   items.forEach(function(x){
     var cls='bs'+(best&&best.id===x.id?' best':'')+(x.ok?'':' no');
     h+='<div class="'+cls+'">';
-    h+='<div class="bsh"><h3>'+x.name+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+'</div>';
-    h+='<div class="bsn">'+x.note+'</div><dl>';
+    h+='<div class="bsh"><h3>'+x.name+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+(x.ok?'':'<span class="bsb nb">'+(x.short>0.5?'не хватает средств':'выше лимита')+'</span>')+'</div>';
+    h+='<div class="bsn">'+x.note+'</div>';
+    if(x.alt)h+='<div class="bsw"><b>Схема сейчас недоступна.</b> Платёж ниже рассчитан при взносе '+rub(x.must)+'. У вас '+rub(x.have)+'. Чтобы воспользоваться схемой, нужно найти ещё '+rub(x.short)+'.</div>';
+    h+='<dl>';
     x.rows.forEach(function(r){h+='<dt>'+r[0]+'</dt><dd>'+rub(r[1])+'</dd>'});
-    h+='<div class="sep"></div><dt><b>Всего потратит клиент</b></dt><dd>'+rub(x.total)+'</dd>';
+    h+='<div class="sep"></div><dt><b>Всего потратит клиент'+(x.alt?' (если найдёте недостающее)':'')+'</b></dt><dd>'+rub(x.total)+'</dd>';
     if(!x.cash)h+='<dt>Переплата сверх цены</dt><dd>'+rub(Math.max(x.over,0))+'</dd>';
     if(best&&x.ok&&best.id!==x.id)h+='<dt>Дороже лучшего варианта на</dt><dd>'+rub(x.delta)+'</dd>';
     h+='</dl>';
@@ -332,10 +345,9 @@ function buyReportHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Bool
     h+='<div class="rbar'+(x.ok?'':' no')+(best&&best.id===x.id?' top':'')+'"><div class="rbl"><span>'+x.name+'</span><b>'+rub(x.total)+'</b></div><div class="rbt2"><i style="width:'+w+'%"></i></div>'+(x.ok?'':'<div class="rbn">Не хватает '+rub(Math.max(x.short,0))+(x.limBad?' · выше лимита программы':'')+'</div>')+'</div>'});
   h+='<h3 class="rbt">Платежи и первоначальные суммы</h3><div class="rtab"><table><thead><tr><th>Схема</th><th>Взнос от</th><th>Платёж</th></tr></thead><tbody>';
   items.forEach(function(x){var pay=x.pay1?rub(x.pay1)+(x.pay2?' → '+rub(x.pay2):''):(x.pay2?rub(x.pay2):'—');
-    h+='<tr class="'+(x.ok?'':'no')+'"><td>'+x.name+'</td><td>'+rub(x.need)+'</td><td>'+pay+'</td></tr>'});
-  h+='</tbody></table></div><h3 class="rbt">Каждая схема подробно</h3>'+buyHTML(R,{hide:o.hide,report:true})+'</div>';
+    h+='<tr class="'+(x.ok?'':'no')+'"><td>'+x.name+'</td><td>'+rub(x.need)+'</td><td>'+pay+(x.alt?' *':'')+'</td></tr>'});
+  h+='</tbody></table></div>'+(items.some(function(x){return x.alt})?'<p class="muted">* Платёж для схемы, на которую пока не хватает взноса, рассчитан при полном нужном взносе. Чтобы им воспользоваться, суммы на счёте должно хватать на этот взнос.</p>':'')+'<h3 class="rbt">Каждая схема подробно</h3>'+buyHTML(R,{hide:o.hide,report:true})+'</div>';
   return h}
-
 function extraHTML(c,o){
   var out={term:'',donut:'',cmp:'',tax:''};
   if(!(c.loan>0))return out;
@@ -417,14 +429,14 @@ if(loan>0){
   H.term='<details class="vz-det"><summary>Платёж по срокам: 10, 15, 20, 25, 30 лет</summary><div class="vz-in">'+ex.term+'<p class="muted">Чем короче срок, тем выше платёж и меньше переплата.</p></div></details>';
   if(S.tax==='Да')H.tax='<details class="vz-det"><summary>Налоговый вычет при покупке</summary><div class="vz-in">'+ex.tax+'</div></details>';
 }
-var RB=buyCompare(S,M);if(loan>0||RB.items.length){var bh=buyReportHTML(RB,{hide:S.bhide});if(bh)H.buy='<section><h2>Все способы покупки: открытая математика</h2><p class="muted">Все схемы, которые мы рассматривали, рядом: цена, взнос, платежи, полная стоимость. Без скрытых условий: что дешевле, что проходит по вашим средствам и чего не хватает.</p>'+bh+'<p class="muted">Что учтено: скидки, взнос, платежи по этапам и проценты. Что не учтено: страховка, комиссии банка, налоги и расходы на оформление. Платёж после 15 лет — оценка по правилам с 1 октября 2026 года. Условия рассрочек и траншей подтверждает застройщик, ставки — банк.</p></section>'}
+var RB=buyCompare(S,M);if(loan>0||RB.items.length){var bh=buyReportHTML(RB,{hide:S.bhide});if(bh)H.buy='<section id="buy"><h2>Все способы покупки: открытая математика</h2><p class="muted">Все схемы, которые мы рассматривали, рядом: цена, взнос, платежи, полная стоимость. Без скрытых условий: что дешевле, что проходит по вашим средствам и чего не хватает.</p>'+bh+'<p class="muted">Что учтено: скидки, взнос, платежи по этапам и проценты. Что не учтено: страховка, комиссии банка, налоги и расходы на оформление. Платёж после 15 лет — оценка по правилам с 1 октября 2026 года. Условия рассрочек и траншей подтверждает застройщик, ставки — банк.</p></section>'}
 var ask='Хочу подбор объектов под этот расчёт.\nПрограмма: '+(mk?'ставка застройщика':it?'ИТ-ипотека':iz?'семейная ипотека, ИЖС':'семейная ипотека'+(M.ms?' (Москва, СПб)':'')+', детей: '+kids)+'\nОбъект: '+rub(T)+'\nВзнос: '+rub(total)+' ('+pct(T>0?total/T:0)+')'+(loan>0?'\nПлатёж: '+rub(pay)+' в месяц, ставка '+pct(eff)+', срок '+years+' лет':'');
 var cta=loan>0?'Хотите, я подберу объекты под платёж '+rub(pay)+' и ваш взнос?':'Хотите, я подберу объекты под ваш расчёт?';
 if(loan>0)H.top='<div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Подобрать объекты под этот платёж</a></div>';
 H.cta+='<section class="hl"><h2>Что дальше</h2><p class="who">'+cta+'</p><p class="muted">Проверю условия у застройщика и банка, покажу короткий список с честным разбором каждого объекта.</p><div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Оставить заявку на подбор</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div><p class="muted">Персональный расчёт подготовил Николай Калашников · в недвижимости с 2017 года, более 400 сделок</p></section>';
 H.foot+='<p class="muted">© 2026 Калашников Николай Анатольевич · KalashnikovEstate. Материалы и расчёты защищены авторским правом; копирование без разрешения запрещено.</p>';
 H.foot+='<p class="muted">Расчёт предварительный и не является офертой банка. Окончательные условия определяет банк. Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>';
-h=H.hero+H.st+(H.buy||'')+H.cmp+H.top+H.chips+H.comp+H.after+H.term+H.tax+H.cta+H.foot;
+h=H.hero+H.st+(H.buy?'<a class="opn" href="#buy"><span><b>Открытая математика</b>Все способы покупки рядом: платежи, взносы, переплата</span><i>↓</i></a>':'')+H.chips+(H.buy||'')+H.cmp+H.top+H.comp+H.after+H.term+H.tax+H.cta+H.foot;
 app.innerHTML=h;
 })();
 </script></body></html>
