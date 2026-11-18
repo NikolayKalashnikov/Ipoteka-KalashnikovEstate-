@@ -336,8 +336,9 @@ function buyCompare(S,M){
     add({id:'K'+n,name:nm,price:Pk,note:note,need:pvK,pay1:first,pay1n:'ближайший платёж',pay2:Km?Km.pay:0,pay2n:'ипотека после расчёта',total:total,
       ok:O>=pvK-0.5&&(!Km||Km.limOk)&&pr.over<=0.5,short:pvK-O,combo:Km&&Km.combo,rows:rows})});
   // E: траншевая
-  var rT=num(S.btr)/100,t1=String(S.bt1==null?'':S.bt1).trim(),t3=Math.round(num(S.bt3m));
-  if(rT>0&&t1&&t3>0){var parts=[t1+'@0'];if(num(S.bt2m)>0&&num(S.bt2)>0)parts.push(num(S.bt2)+'%@'+Math.round(num(S.bt2m)));parts.push('rest@'+t3);
+  var rT=num(S.btr)/100,t1=String(S.bt1==null?'':S.bt1).trim(),m2=Math.round(num(S.bt2m)),t3=Math.round(num(S.bt3m)),a2=num(S.bt2),u2=S.bt2u==='₽'?'':'%';
+  if(!(t3>0)&&m2>0){t3=m2;m2=0}
+  if(rT>0&&t1&&t3>0){var parts=[t1+'@0'];if(m2>0&&a2>0)parts.push(a2+u2+'@'+m2);parts.push('rest@'+t3);
     var Pe=priceAfter(pc_('bdis')),Lt=Pe-O,pvT=Pe*(num(S.btpv)>0?num(S.btpv)/100:(num(S.norm)||20.1)/100),T=trSched(Math.max(Lt,0),parts.join(','),N,rT);
     if(Lt>0&&T.ok){var rows=[['Цена для клиента',Pe],['Минимальный взнос по условиям',pvT],['Ваши средства',O],['Кредит (цена минус ваши средства)',Lt]];
       T.seg.forEach(function(g){rows.push(['Платёж, '+(g.from===g.to?g.from+'-й месяц':'месяцы '+g.from+'–'+g.to),g.pay])});
