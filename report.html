@@ -239,7 +239,30 @@ function trSched(L,txt,N,rate){var tr=[],bad=false;String(txt||'').split(/[;,]/)
   var cum=0,seg=[],interest=0;
   for(var i=0;i<tr.length-1;i++){cum+=tr[i].a;var months=tr[i+1].m-tr[i].m;if(months>0){var pay=cum*rate/12;seg.push({from:tr[i].m+1,to:tr[i+1].m,pay:pay,bal:cum});interest+=pay*months}}
   var lastM=tr[tr.length-1].m;return {ok:true,tr:tr,seg:seg,interest:interest,nAfter:Math.max(N-lastM,0),lastM:lastM}}
-var BK=['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay'];
+
+function instParse(txt,P,pv){var tk=[],re=/([^@]+?)@\s*(\d+)/g,m,s=String(txt||''),bad=false,last=0;
+  while((m=re.exec(s))!==null){var a=m[1].replace(/^[\s,;]+/,'').trim(),mo=Math.min(Math.round(num(m[2])),360);last=re.lastIndex;
+    if(!a){bad=true;continue}
+    var low=a.toLowerCase(),o={m:mo};
+    if(/^(rest|ост|ипот)/.test(low))o.rest=true;else if(/%$/.test(low))o.a=P*num(low.replace('%',''))/100;else o.a=num(a);
+    if(!o.rest&&!(o.a>0)){bad=true;continue}
+    tk.push(o)}
+  if(s.slice(last).replace(/[\s,;]/g,''))bad=true;
+  if(!tk.length)return {ok:false};
+  tk.sort(function(p,q){return p.m-q.m});
+  var fixed=0,restIdx=-1;tk.forEach(function(o,i){if(o.rest)restIdx=i;else fixed+=o.a});
+  var left=P-pv-fixed,rest=Math.max(left,0),auto=false;
+  if(restIdx<0&&left>0.5){tk.push({m:tk[tk.length-1].m,rest:true});auto=true;restIdx=tk.length-1}
+  var pays=[],rm=0;tk.forEach(function(o,i){if(o.rest){rm=o.m}else pays.push({m:o.m,a:o.a})});
+  if(restIdx<0)rest=0;
+  var endM=tk.reduce(function(a,o){return Math.max(a,o.m)},0);
+  return {ok:!bad,bad:bad,pays:pays,rest:restIdx<0?0:rest,restM:restIdx<0?0:tk[restIdx].m,endM:endM,fixed:fixed,auto:auto,over:left<-0.5?-left:0}}
+function instSim(pr,P,pv,iR){var bal=P-pv,int=0,first=0,byM={};pr.pays.forEach(function(x){byM[x.m]=(byM[x.m]||0)+x.a});
+  if(byM[0]){bal-=byM[0]}
+  var rows=[];
+  for(var t=1;t<=pr.endM;t++){var it=Math.max(bal,0)*iR/12;int+=it;if(t===1)first=it;var py=(byM[t]||0)+(t===pr.restM&&pr.rest>0?pr.rest:0);bal-=py}
+  return {interest:int,first:first,byM:byM}}
+var BK=['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay','kn1','kp1','ks1','kd1','ku1','ki1','ke1','kr1','kn2','kp2','ks2','kd2','ku2','ki2','ke2','kr2','kn3','kp3','ks3','kd3','ku3','ki3','ke3','kr3','kn4','kp4','ks4','kd4','ku4','ki4','ke4','kr4'];
 function buyCompare(S,M){
   var P0=num(S.price),O=M.total,yrs=M.years,N=yrs*12,rep=M.repair||0,kidsN=M.kids;
   var pc_=function(k){return num(S[k])/100};
@@ -273,19 +296,45 @@ function buyCompare(S,M){
       rows:[['Цена для клиента',Pq],['Взнос сразу',up],['Остаток в рассрочку',rest],['Платёж в месяц · '+mm+' мес',rest/mm]]})});
   // D: рассрочка до сдачи + ипотека
   var dpv=pc_('bdpv'),dm=Math.round(num(S.bdm)),dpay=(num(S.bdd)>0?num(S.bdd):1)/100;
-  if(dpv>0&&dm>0&&M.fam){var dD=pc_('bdis'),Pd=priceAfter(dD),pvD=Pd*dpv,inst=Pd-pvD,m1=inst*dpay,paid=Math.min(m1*dm,inst),rest2=inst-paid,ex=Math.max(O-pvD,0);
+  if(dpv>0&&dm>0&&M.fam){var dD=pc_('bdis'),Pd=priceAfter(dD),pvD=Pd*dpv,inst=Pd-pvD,m1=inst*dpay,paid=Math.min(m1*dm,inst),rest2=inst-paid,ex=Math.min(Math.max(O-pvD,0),Math.max(rest2,0));
     var Dm=rest2-ex>0.5?mkS({price:rest2,own:ex,norm:'0,001',subsidy:bsub>0?bsub:''}):null;
     add({id:'D',name:'Рассрочка до сдачи дома, затем ипотека',price:Pd,note:'Взнос '+pct(dpv)+', платёж '+pct(dpay)+' от остатка в месяц, '+dm+' мес; остаток '+rub(rest2)+' закрывает семейная ипотека',need:pvD,pay1:m1,pay1n:'в месяц до расчёта',pay2:Dm?Dm.pay:0,pay2n:'ипотека после расчёта',
       total:pvD+paid+ex+(Dm?Dm.tot:0),ok:O>=pvD-0.5&&(!Dm||Dm.limOk),short:pvD-O,combo:Dm&&Dm.combo,
       rows:[['Цена для клиента',Pd],['Взнос сразу',pvD],['Платёж в месяц · '+dm+' мес',m1],['Остаток закрывает ипотека',rest2],['Платёж по ипотеке потом',Dm?Dm.pay:0]]})}
   // S: поэтапная
   var spv=pc_('bsp'),stg=[[num(S.bs1m),pc_('bs1p')],[num(S.bs2m),pc_('bs2p')],[num(S.bs3m),pc_('bs3p')]].filter(function(g){return g[0]>0&&g[1]>0}),send=Math.round(num(S.bsend));
-  if(spv>0&&stg.length&&send>0&&M.fam){var Ps=priceAfter(pc_('bsd')),pvS=Ps*spv,sumS=stg.reduce(function(a,g){return a+g[1]},0)*Ps,restS=Ps-pvS-sumS,exS=Math.max(O-pvS,0),mp=num(S.bpay);
+  if(spv>0&&stg.length&&send>0&&M.fam){var Ps=priceAfter(pc_('bsd')),pvS=Ps*spv,sumS=stg.reduce(function(a,g){return a+g[1]},0)*Ps,restS=Ps-pvS-sumS,exS=Math.min(Math.max(O-pvS,0),Math.max(restS,0)),mp=num(S.bpay);
     var Sm=restS-exS>0.5?mkS({price:restS,own:exS,norm:'0,001',subsidy:bsub>0?bsub:''}):null;
     var rows=[['Цена для клиента',Ps],['Взнос сразу',pvS]];stg.forEach(function(g){rows.push(['Платёж на '+g[0]+'-м месяце',g[1]*Ps])});
     rows.push(['Остаток на '+send+'-м месяце закрывает ипотека',restS]);rows.push(['Платёж по ипотеке потом',Sm?Sm.pay:0]);if(mp>0)rows.splice(2,0,['Ежемесячно в рассрочку',mp]);
     add({id:'S',name:'Поэтапная рассрочка, затем ипотека',price:Ps,note:'Взнос '+pct(spv)+', этапы по графику, остаток '+rub(Math.max(restS,0))+' на '+send+'-м месяце',need:pvS,pay1:mp,pay1n:'ежемесячно',pay2:Sm?Sm.pay:0,pay2n:'ипотека после расчёта',
       total:pvS+sumS+exS+(Sm?Sm.tot:0)+mp*send,ok:O>=pvS-0.5&&(!Sm||Sm.limOk),short:pvS-O,combo:Sm&&Sm.combo,rows:rows})}
+  // K1..K4: конструктор рассрочки (график платежей, удорожание, процент на остаток, финал: деньги / семейная / рыночная ипотека)
+  [1,2,3,4].forEach(function(n){
+    var sTxt=String(S['ks'+n]||'').trim();if(!sTxt)return;
+    var dK=pc_('kd'+n),uK=pc_('ku'+n),iK=pc_('ki'+n),Pk=P0*(1-dK)*(1+uK)+rep,pvT=String(S['kp'+n]||'').trim();
+    var pvK=pvT?(/%$/.test(pvT)?Pk*num(pvT.replace('%',''))/100:num(pvT)):0;
+    var pr=instParse(sTxt,Pk,pvK);if(!pr.ok||Pk<=0)return;
+    var sim=instSim(pr,Pk,pvK,iK),e=S['ke'+n]||'cash',rest=pr.rest,Km=null,ex=0;
+    if(rest>0.5&&e==='fam'&&!M.fam)return;
+    if(rest>0.5&&e!=='cash'){ex=Math.min(Math.max(O-pvK,0),rest);
+      if(rest-ex>0.5)Km=e==='fam'?mkS({price:rest,own:ex,norm:'0,001',subsidy:bsub>0?bsub:''}):core({prog:'mkt',reg:'nsk',kids:kidsN,years:yrs,key:S.key,price:rest,own:ex,mat:0,mrate:(String(S['kr'+n]||'').trim()?S['kr'+n]:S.cmp),norm:'0,001',ddu:'Нет'})}
+    var tail=rest>0.5?(e==='cash'?rest:ex+(Km?Km.tot:0)):0;
+    var total=pvK+pr.fixed+sim.interest+tail;
+    var rows=[['Цена для клиента',Pk],['Взнос сразу',pvK]],mk={};
+    pr.pays.slice().sort(function(a,b){return a.m-b.m}).forEach(function(x){mk[x.m]=(mk[x.m]||0)+x.a});
+    var ms=Object.keys(mk).map(Number).sort(function(a,b){return a-b});
+    ms.slice(0,6).forEach(function(m){rows.push([m===0?'Доплата в день сделки':'Платёж на '+m+'-м месяце',mk[m]])});
+    if(ms.length>6)rows.push(['Ещё платежей: '+(ms.length-6),ms.slice(6).reduce(function(a,m){return a+mk[m]},0)]);
+    if(iK>0)rows.push(['Проценты на остаток, всего',sim.interest]);
+    if(rest>0.5)rows.push([e==='cash'?'Остаток на '+pr.restM+'-м месяце вносите сами':'Остаток на '+pr.restM+'-м месяце закрывает ипотека',rest]);
+    if(Km)rows.push(['Платёж по ипотеке потом',Km.pay]);
+    var first=ms.length?mk[ms[0]]:(e==='cash'?rest:0);
+    var nm=String(S['kn'+n]||'').trim()||('Своя рассрочка '+n);
+    var parts=['взнос '+rub(pvK)];if(dK>0)parts.push('скидка '+pct(dK));if(uK>0)parts.push('удорожание '+pct(uK));if(iK>0)parts.push(pct(iK)+' годовых на остаток');
+    var note='Взнос '+rub(pvK)+(dK>0?', скидка '+pct(dK):'')+(uK>0?', удорожание '+pct(uK):'')+(iK>0?', проценты '+pct(iK)+' годовых на остаток (платятся ежемесячно)':', без процентов')+(pr.auto?'. Остаток в графике не указан: он добавлен последним платежом':'')+(pr.over>0?'. Внимание: платежи по графику больше цены на '+rub(pr.over):'');
+    add({id:'K'+n,name:nm,price:Pk,note:note,need:pvK,pay1:first,pay1n:'ближайший платёж',pay2:Km?Km.pay:0,pay2n:'ипотека после расчёта',total:total,
+      ok:O>=pvK-0.5&&(!Km||Km.limOk)&&pr.over<=0.5,short:pvK-O,combo:Km&&Km.combo,rows:rows})});
   // E: траншевая
   var rT=num(S.btr)/100,t1=String(S.bt1==null?'':S.bt1).trim(),t3=Math.round(num(S.bt3m));
   if(rT>0&&t1&&t3>0){var parts=[t1+'@0'];if(num(S.bt2m)>0&&num(S.bt2)>0)parts.push(num(S.bt2)+'%@'+Math.round(num(S.bt2m)));parts.push('rest@'+t3);

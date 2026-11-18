@@ -212,7 +212,7 @@ details.card>.row2{display:grid}
 details.card>summary>.sv{max-width:46%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}details.card>summary>span:first-child{min-width:0}details.sub .row2{grid-template-columns:1fr 1fr!important;gap:8px}details.sub label{font-size:12.5px}.stp{display:flex;gap:10px;align-items:flex-start}.stp .sn{flex:none;width:26px;height:26px;border-radius:50%;background:var(--wine,#6B1527);color:var(--on-wine,#fff);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;margin-top:1px}.stp .sb{flex:1;min-width:0;display:flex;flex-direction:column;gap:8px}.stp .st{font-weight:700;font-size:14px}.sar{padding-left:8px;color:var(--muted);font-size:18px;line-height:1}
 .trprev{border:1px dashed var(--line);border-radius:8px;padding:9px 11px;font-size:13px;color:var(--muted)}.trprev b{color:var(--ink)}
 details.sub{border:1px dashed var(--line);border-radius:10px;padding:10px 12px}details.sub>summary{cursor:pointer;font-weight:700;font-size:14px}
-details.sub>*:not(summary){margin-top:10px}.bgrp{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+details.sub>*:not(summary){margin-top:10px}.svk{font-size:12px;font-weight:700;color:var(--ink);margin-left:8px}details.sub>summary{display:flex;justify-content:space-between;gap:8px}.bgrp{font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px}
 </style>
 
 <header class="band"><div class="inner"><div class="q" aria-hidden="true">“</div>
@@ -326,21 +326,28 @@ details.sub>*:not(summary){margin-top:10px}.bgrp{font-weight:700;font-size:12px;
     <span class="hint">Рыночная ставка для примера: средняя по новостройкам без субсидий на 5.11.2026 около 18,8 % (ключевая ставка ЦБ 14 %). Обновляйте под день расчёта. Аренду можно не вводить.</span>
     <div id="vzCmp"></div></details>
 
-    <details class="card" id="cBuy"><summary><span id="h-buy">Способы покупки: сравнение</span><span class="sv" id="svBuy"></span></summary>
-    <span class="hint">Считается по данным выше: цена, ваши средства, дети, срок. Впишите условия застройщика и банка — схема появится сама. Пустая схема не считается.</span>
-    <details class="sub"><summary>Условия застройщика и банка</summary>
-      <div class="bgrp">Скидки, %</div>
+    <details class="card" id="cDev"><summary><span>Условия застройщика</span></summary>
+<span class="hint">Скидки и субсидированная ставка. Пустое поле — условие не применяется.</span>
+<div class="bgrp">Скидки, %</div>
 <div class="row2"><div class="field"><label for="bdis">Ипотека с субсидией (старт продаж)</label><input type="text" id="bdis" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bnos">Ипотека без субсидии застройщика</label><input type="text" id="bnos" inputmode="decimal" autocomplete="off"></div></div><div class="row2"><div class="field"><label for="bcash">Оплата 100 % сразу</label><input type="text" id="bcash" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bsvo">Участник СВО (полный расчёт)</label><input type="text" id="bsvo" inputmode="decimal" autocomplete="off"></div></div>
       <div class="bgrp">Ставка с субсидией застройщика</div>
 <div class="row2"><div class="field"><label for="bsub">Ставка для ваших детей, %</label><input type="text" id="bsub" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="brr">Ставка при покупке с ремонтом, %</label><input type="text" id="brr" inputmode="decimal" autocomplete="off"></div></div><div class="field"><label for="bpr">Цена с ремонтом, ₽ (если застройщик предлагает)</label><input type="text" id="bpr" inputmode="decimal" autocomplete="off"></div>
       <div class="hint">Рыночная ставка и аренда берутся из блока «Сравнение с рыночной ипотекой» ниже.</div>
-      <div class="bgrp">Рассрочка без процентов</div>
+      </details>
+
+<details class="card" id="cInst"><summary><span>Рассрочки</span><span class="sv" id="svInst"></span></summary>
+<span class="hint">Три готовые схемы и конструктор: до четырёх своих рассрочек с любым графиком платежей, удорожанием, процентом на остаток и переходом на ипотеку.</span>
+<div class="bgrp">Рассрочка без процентов</div>
 <div class="row2"><div class="field"><label for="bim">Срок, мес</label><input type="text" id="bim" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bi1pv">Взнос, % (вариант 1)</label><input type="text" id="bi1pv" inputmode="decimal" autocomplete="off"></div></div><div class="row2"><div class="field"><label for="bi1d">Скидка, % (вариант 1)</label><input type="text" id="bi1d" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bi2pv">Взнос, % (вариант 2)</label><input type="text" id="bi2pv" inputmode="decimal" autocomplete="off"></div></div><div class="field"><label for="bi2d">Скидка, % (вариант 2)</label><input type="text" id="bi2d" inputmode="decimal" autocomplete="off"></div>
       <div class="bgrp">Рассрочка до сдачи дома, затем семейная ипотека</div>
 <div class="row2"><div class="field"><label for="bdpv">Взнос, %</label><input type="text" id="bdpv" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bdm">Месяцев до расчёта</label><input type="text" id="bdm" inputmode="decimal" autocomplete="off"></div></div><div class="field"><label for="bdd">Платёж в месяц, % от остатка</label><input type="text" id="bdd" inputmode="decimal" autocomplete="off"></div>
       <div class="bgrp">Поэтапная рассрочка</div>
 <div class="row2"><div class="field"><label for="bsp">Взнос, %</label><input type="text" id="bsp" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bsd">Скидка, %</label><input type="text" id="bsd" inputmode="decimal" autocomplete="off"></div></div><div class="row2"><div class="field"><label for="bs1m">1-й этап, месяц</label><input type="text" id="bs1m" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bs1p">1-й этап, %</label><input type="text" id="bs1p" inputmode="decimal" autocomplete="off"></div></div><div class="row2"><div class="field"><label for="bs2m">2-й этап, месяц</label><input type="text" id="bs2m" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bs2p">2-й этап, %</label><input type="text" id="bs2p" inputmode="decimal" autocomplete="off"></div></div><div class="row2"><div class="field"><label for="bs3m">3-й этап, месяц</label><input type="text" id="bs3m" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bs3p">3-й этап, %</label><input type="text" id="bs3p" inputmode="decimal" autocomplete="off"></div></div><div class="row2"><div class="field"><label for="bsend">Остаток на месяце</label><input type="text" id="bsend" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="bpay">Ежемесячно, ₽ (если есть)</label><input type="text" id="bpay" inputmode="decimal" autocomplete="off"></div></div>
-      <div class="bgrp">Траншевая ипотека — заполняйте по шагам сверху вниз</div>
+      <div class="bgrp">Конструктор: свои рассрочки</div>
+<details class="sub" id="kbox1"><summary><span>Своя рассрочка 1</span><span class="svk" id="svK1"></span></summary><div class="st">Шаблон</div><div class="seg" id="kt1" style="flex-wrap:wrap"></div><div class="field"><label for="kn1">Название (необязательно)</label><input type="text" id="kn1" inputmode="text" autocomplete="off" placeholder="Например: Рассрочка до сдачи"></div><div class="row2"><div class="field"><label for="kp1">Первый взнос: ₽ или %</label><input type="text" id="kp1" inputmode="text" autocomplete="off" placeholder="20% или 1500000"></div><div class="field"><label for="kd1">Скидка на цену, %</label><input type="text" id="kd1" inputmode="decimal" autocomplete="off"></div></div><div class="field"><label for="ks1">График платежей (сумма@месяц)</label><input type="text" id="ks1" inputmode="text" autocomplete="off" placeholder="20%@6, 20%@12, rest@24"></div><div class="hint">Пишите через запятую: <b>20%@6</b> — 20 % цены на 6-м месяце; <b>500000@3</b> — рублями; <b>rest@24</b> — остаток на 24-м месяце. Платёж в день сделки: <b>@0</b>.</div><div class="row2"><div class="field"><label for="ku1">Удорожание цены, %</label><input type="text" id="ku1" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="ki1">Процент на остаток, % годовых</label><input type="text" id="ki1" inputmode="decimal" autocomplete="off"></div></div><div class="st">Чем закрывается остаток</div><div class="seg" id="ke1" style="flex-wrap:wrap"></div><div class="field"><label for="kr1">Ставка рыночной ипотеки, % (пусто — из блока сравнения)</label><input type="text" id="kr1" inputmode="decimal" autocomplete="off"></div><div class="trprev" id="kv1"></div></details><details class="sub" id="kbox2"><summary><span>Своя рассрочка 2</span><span class="svk" id="svK2"></span></summary><div class="st">Шаблон</div><div class="seg" id="kt2" style="flex-wrap:wrap"></div><div class="field"><label for="kn2">Название (необязательно)</label><input type="text" id="kn2" inputmode="text" autocomplete="off" placeholder="Например: Рассрочка до сдачи"></div><div class="row2"><div class="field"><label for="kp2">Первый взнос: ₽ или %</label><input type="text" id="kp2" inputmode="text" autocomplete="off" placeholder="20% или 1500000"></div><div class="field"><label for="kd2">Скидка на цену, %</label><input type="text" id="kd2" inputmode="decimal" autocomplete="off"></div></div><div class="field"><label for="ks2">График платежей (сумма@месяц)</label><input type="text" id="ks2" inputmode="text" autocomplete="off" placeholder="20%@6, 20%@12, rest@24"></div><div class="hint">Пишите через запятую: <b>20%@6</b> — 20 % цены на 6-м месяце; <b>500000@3</b> — рублями; <b>rest@24</b> — остаток на 24-м месяце. Платёж в день сделки: <b>@0</b>.</div><div class="row2"><div class="field"><label for="ku2">Удорожание цены, %</label><input type="text" id="ku2" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="ki2">Процент на остаток, % годовых</label><input type="text" id="ki2" inputmode="decimal" autocomplete="off"></div></div><div class="st">Чем закрывается остаток</div><div class="seg" id="ke2" style="flex-wrap:wrap"></div><div class="field"><label for="kr2">Ставка рыночной ипотеки, % (пусто — из блока сравнения)</label><input type="text" id="kr2" inputmode="decimal" autocomplete="off"></div><div class="trprev" id="kv2"></div></details><details class="sub" id="kbox3"><summary><span>Своя рассрочка 3</span><span class="svk" id="svK3"></span></summary><div class="st">Шаблон</div><div class="seg" id="kt3" style="flex-wrap:wrap"></div><div class="field"><label for="kn3">Название (необязательно)</label><input type="text" id="kn3" inputmode="text" autocomplete="off" placeholder="Например: Рассрочка до сдачи"></div><div class="row2"><div class="field"><label for="kp3">Первый взнос: ₽ или %</label><input type="text" id="kp3" inputmode="text" autocomplete="off" placeholder="20% или 1500000"></div><div class="field"><label for="kd3">Скидка на цену, %</label><input type="text" id="kd3" inputmode="decimal" autocomplete="off"></div></div><div class="field"><label for="ks3">График платежей (сумма@месяц)</label><input type="text" id="ks3" inputmode="text" autocomplete="off" placeholder="20%@6, 20%@12, rest@24"></div><div class="hint">Пишите через запятую: <b>20%@6</b> — 20 % цены на 6-м месяце; <b>500000@3</b> — рублями; <b>rest@24</b> — остаток на 24-м месяце. Платёж в день сделки: <b>@0</b>.</div><div class="row2"><div class="field"><label for="ku3">Удорожание цены, %</label><input type="text" id="ku3" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="ki3">Процент на остаток, % годовых</label><input type="text" id="ki3" inputmode="decimal" autocomplete="off"></div></div><div class="st">Чем закрывается остаток</div><div class="seg" id="ke3" style="flex-wrap:wrap"></div><div class="field"><label for="kr3">Ставка рыночной ипотеки, % (пусто — из блока сравнения)</label><input type="text" id="kr3" inputmode="decimal" autocomplete="off"></div><div class="trprev" id="kv3"></div></details><details class="sub" id="kbox4"><summary><span>Своя рассрочка 4</span><span class="svk" id="svK4"></span></summary><div class="st">Шаблон</div><div class="seg" id="kt4" style="flex-wrap:wrap"></div><div class="field"><label for="kn4">Название (необязательно)</label><input type="text" id="kn4" inputmode="text" autocomplete="off" placeholder="Например: Рассрочка до сдачи"></div><div class="row2"><div class="field"><label for="kp4">Первый взнос: ₽ или %</label><input type="text" id="kp4" inputmode="text" autocomplete="off" placeholder="20% или 1500000"></div><div class="field"><label for="kd4">Скидка на цену, %</label><input type="text" id="kd4" inputmode="decimal" autocomplete="off"></div></div><div class="field"><label for="ks4">График платежей (сумма@месяц)</label><input type="text" id="ks4" inputmode="text" autocomplete="off" placeholder="20%@6, 20%@12, rest@24"></div><div class="hint">Пишите через запятую: <b>20%@6</b> — 20 % цены на 6-м месяце; <b>500000@3</b> — рублями; <b>rest@24</b> — остаток на 24-м месяце. Платёж в день сделки: <b>@0</b>.</div><div class="row2"><div class="field"><label for="ku4">Удорожание цены, %</label><input type="text" id="ku4" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="ki4">Процент на остаток, % годовых</label><input type="text" id="ki4" inputmode="decimal" autocomplete="off"></div></div><div class="st">Чем закрывается остаток</div><div class="seg" id="ke4" style="flex-wrap:wrap"></div><div class="field"><label for="kr4">Ставка рыночной ипотеки, % (пусто — из блока сравнения)</label><input type="text" id="kr4" inputmode="decimal" autocomplete="off"></div><div class="trprev" id="kv4"></div></details></details>
+
+<details class="card" id="cTr"><summary><span>Траншевая ипотека</span><span class="sv" id="svTr"></span></summary>
+<div class="hint">Банк выдаёт кредит частями: пока идут транши, платите только проценты на выданную часть. Заполняйте по шагам сверху вниз.</div>
       <div class="stp"><span class="sn">1</span><div class="sb"><div class="st">Выберите шаблон</div><div class="seg" id="btpl" style="flex-wrap:wrap"></div><div class="hint">Шаблон сам подставит шаги 3–5, потом их можно поправить.</div></div></div>
       <div class="sar">↓</div>
       <div class="stp"><span class="sn">2</span><div class="sb"><div class="st">Условия банка</div><div class="row2"><div class="field"><label for="btr">Ставка, % годовых</label><input type="text" id="btr" inputmode="decimal" autocomplete="off"></div><div class="field"><label for="btpv">Минимальный взнос, %</label><input type="text" id="btpv" inputmode="decimal" autocomplete="off"></div></div></div></div>
@@ -351,11 +358,15 @@ details.sub>*:not(summary){margin-top:10px}.bgrp{font-weight:700;font-size:12px;
       <div class="sar">↓</div>
       <div class="stp"><span class="sn">5</span><div class="sb"><div class="st">Остаток кредита</div><div class="field"><label for="bt3m">Выдаётся через сколько месяцев от сделки</label><input type="text" id="bt3m" inputmode="decimal" autocomplete="off"></div></div></div>
       <div class="trprev" id="trPrev"></div>
-      <div class="row2"><button class="btn ghost" id="bEx" type="button">Подставить пример</button><button class="btn ghost" id="bClr" type="button">Очистить условия</button></div>
-    </details>
-    <div id="vzBuy"></div>
-    <span class="hint">«В отчёте клиента» — выберите, какие схемы показать клиенту. Платёж после 15 лет оценочный. Условия рассрочек и траншей подтверждает застройщик.</span>
-  </details>
+      </details>
+
+<details class="card" id="cBuy"><summary><span id="h-buy">Способы покупки: сравнение</span><span class="sv" id="svBuy"></span></summary>
+<span class="hint">Считается по данным выше: цена, ваши средства, дети, срок. Условия — в блоках «Условия застройщика», «Рассрочки» и «Траншевая ипотека». Пустая схема не считается.</span>
+<div id="vzBuy"></div>
+<div class="row2"><button class="btn ghost" id="bEx" type="button">Подставить пример</button><button class="btn ghost" id="bClr" type="button">Очистить условия</button></div>
+    
+<span class="hint">«В отчёте клиента» — выберите, какие схемы показать клиенту. Платёж после 15 лет оценочный. Условия рассрочек и траншей подтверждает застройщик.</span>
+</details>
 
   <details class="card" id="cTax"><summary><span id="h-tax">Налоговый вычет</span><span class="sv" id="svTax"></span></summary><div id="vzTax"></div></details>
 
@@ -409,7 +420,7 @@ details.sub>*:not(summary){margin-top:10px}.bgrp{font-weight:700;font-size:12px;
 <script>
 (function(){
 'use strict';
-var DEF={reg:'nsk',izlim:6000000,itmkt:'21',itl:9000000,itmax:18000000,inc:'',ins:'',ovOwn:0,ovMode:'в процентах',ovPct:'10',ovRub:0,tax:'Нет',cmp:'18,8',rent:'',cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14',bim:'12',bdd:'1',bhide:'',btpl:''};
+var DEF={reg:'nsk',izlim:6000000,itmkt:'21',itl:9000000,itmax:18000000,inc:'',ins:'',ovOwn:0,ovMode:'в процентах',ovPct:'10',ovRub:0,tax:'Нет',cmp:'18,8',rent:'',cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14',bim:'12',bdd:'1',bhide:'',btpl:'',ke1:'cash',ke2:'cash',ke3:'cash',ke4:'cash'};
 var KEY='ke-calc-v1', S=Object.assign({},DEF);
 try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){S=Object.assign({},DEF,p);document.getElementById('sample').hidden=true;}}}catch(e){}
 
@@ -476,7 +487,7 @@ function core(S){
 function seg(id,opts,get,set){var el=$(id);el.innerHTML='';opts.forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o.t;b.dataset.v=o.v;
   b.addEventListener('click',function(){set(o.v);sync();calc();save()});el.appendChild(b)});
   el._get=get}
-function sync(){['prog','reg','kids','half','ddu','tax','ovMode','btpl'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
+function sync(){['prog','reg','kids','half','ddu','tax','ovMode','btpl','ke1','ke2','ke3','ke4'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
 function defYears(){var d=S.prog==='it'?15:(S.prog==='fam'&&S.reg==='izhs'?20:30);if([15,20,30].indexOf(Math.round(num(S.years)))>-1){S.years=d;fmtField('years')}}
 seg('prog',[{t:'Семейная',v:'fam'},{t:'ИТ-ипотека',v:'it'},{t:'Застройщик',v:'mkt'}],null,function(v){S.prog=v;defYears()});
 seg('reg',[{t:'Новосибирск',v:'nsk'},{t:'Москва, СПб',v:'msk'},{t:'ИЖС',v:'izhs'}],null,function(v){S.reg=v;defYears()});
@@ -485,18 +496,23 @@ seg('kids',[1,2,3,4,5].map(function(n){return{t:String(n),v:n}}),null,function(v
 seg('half',[{t:'Да',v:'Да'},{t:'Нет',v:'Нет'}],null,function(v){S.half=v});
 seg('tax',[{t:'Нет',v:'Нет'},{t:'Да',v:'Да'}],null,function(v){S.tax=v});
 seg('ddu',[{t:'Да, в ДДУ',v:'Да'},{t:'Нет, вторым договором',v:'Нет'}],null,function(v){S.ddu=v});
-var BKL=['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay'];
-var BSAMPLE={bdis:'',bnos:'7',bcash:'7',bsvo:'8',bsub:'',bim:'12',bi1pv:'70',bi1d:'5',bi2pv:'50',bi2d:'3',bdpv:'30',bdm:'34',bdd:'1',bsp:'30',bsd:'',bs1m:'6',bs1p:'10',bs2m:'12',bs2p:'20',bs3m:'18',bs3p:'10',bsend:'24',bpay:'',btr:'19,7',btpv:'20,1',bt1:'100000',bt2m:'9',bt2:'20',bt3m:'14',bpr:'',brr:'12,9'};
+var BKL=['kn1', 'kp1', 'ks1', 'kd1', 'ku1', 'ki1', 'kr1', 'kn2', 'kp2', 'ks2', 'kd2', 'ku2', 'ki2', 'kr2', 'kn3', 'kp3', 'ks3', 'kd3', 'ku3', 'ki3', 'kr3', 'kn4', 'kp4', 'ks4', 'kd4', 'ku4', 'ki4', 'kr4'].concat(['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay']);
+var BSAMPLE={kn1:'20 % + по 20 % каждые 6 мес',kp1:'20%',ks1:'20%@6, 20%@12, 20%@18, rest@24',ke1:'cash',bdis:'',bnos:'7',bcash:'7',bsvo:'8',bsub:'',bim:'12',bi1pv:'70',bi1d:'5',bi2pv:'50',bi2d:'3',bdpv:'30',bdm:'34',bdd:'1',bsp:'30',bsd:'',bs1m:'6',bs1p:'10',bs2m:'12',bs2p:'20',bs3m:'18',bs3p:'10',bsend:'24',bpay:'',btr:'19,7',btpv:'20,1',bt1:'100000',bt2m:'9',bt2:'20',bt3m:'14',bpr:'',brr:'12,9'};
 var BTPL={classic:{bt1:'100000',bt2m:'9',bt2:'20',bt3m:'14'},two:{bt1:'20%',bt2m:'',bt2:'',bt3m:'12'},big:{bt1:'10%',bt2m:'6',bt2:'10',bt3m:'18'}};
 seg('btpl',[{t:'Классика: 100 тыс → 20 % → остаток',v:'classic'},{t:'Два транша: 20 % → остаток',v:'two'},{t:'Большой последний',v:'big'}],null,function(v){S.btpl=v;Object.keys(BTPL[v]).forEach(function(k){S[k]=BTPL[v][k];fmtField(k)})});
+
+var KTPL={eq6:{kp:'20%',ks:'20%@6, 20%@12, 20%@18, rest@24',ke:'cash'},one:{kp:'50%',ks:'rest@12',ke:'cash'},mort:{kp:'30%',ks:'10%@6, 10%@12, rest@24',ke:'fam'},pct:{kp:'20%',ks:'rest@36',ke:'cash',ki:'8'}};
+[1,2,3,4].forEach(function(n){
+  seg('ke'+n,[{t:'Своими деньгами',v:'cash'},{t:'Семейная ипотека',v:'fam'},{t:'Рыночная ипотека',v:'mkt'}],null,function(v){S['ke'+n]=v});
+  seg('kt'+n,[{t:'20 % + по 20 % каждые 6 мес',v:'eq6'},{t:'50 % + остаток разом',v:'one'},{t:'Рассрочка → ипотека',v:'mort'},{t:'С процентом на остаток',v:'pct'}],null,function(v){var T=KTPL[v];['kp','ks','ki','ku','kd'].forEach(function(k){S[k+n]=T[k]||'';fmtField(k+n)});S['ke'+n]=T.ke;sync()})});
 $('bEx').addEventListener('click',function(){Object.keys(BSAMPLE).forEach(function(k){S[k]=BSAMPLE[k];fmtField(k)});S.btpl='classic';sync();calc();save()});
-$('bClr').addEventListener('click',function(){BKL.forEach(function(k){S[k]='';fmtField(k)});S.bim='12';S.bdd='1';fmtField('bim');fmtField('bdd');S.btpl='';S.bhide='';sync();calc();save()});
+$('bClr').addEventListener('click',function(){BKL.forEach(function(k){S[k]='';fmtField(k)});S.bim='12';S.bdd='1';[1,2,3,4].forEach(function(n){S['ke'+n]='cash'});fmtField('bim');fmtField('bdd');S.btpl='';S.bhide='';sync();calc();save()});
 $('vzBuy').addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.bsx');if(!b)return;var id=b.dataset.id,a=String(S.bhide||'').split(',').filter(Boolean),i=a.indexOf(id);if(i<0)a.push(id);else a.splice(i,1);S.bhide=a.join(',');calc();save()});
 
 
-var money=['price','rub','mat','own','years','rent','izlim','inc','ins','ovOwn','ovRub','itl','itmax'], dec=['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay','cmp','mrate','myrs','mafter','subsidy','area','norm','key','itmkt','ovPct'];
-function fmtField(id){var v=S[id];if(money.indexOf(id)>-1){$(id).value=(v===''||v==null)?'':nf.format(num(v))}else{$(id).value=String(v==null?'':v).replace('.',',')}}
-money.concat(dec).forEach(function(id){var el=$(id);fmtField(id);
+var TXT=['kn1', 'kp1', 'ks1', 'kn2', 'kp2', 'ks2', 'kn3', 'kp3', 'ks3', 'kn4', 'kp4', 'ks4'];var money=['price','rub','mat','own','years','rent','izlim','inc','ins','ovOwn','ovRub','itl','itmax'], dec=['kd1', 'ku1', 'ki1', 'kr1', 'kd2', 'ku2', 'ki2', 'kr2', 'kd3', 'ku3', 'ki3', 'kr3', 'kd4', 'ku4', 'ki4', 'kr4'].concat(['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay','cmp','mrate','myrs','mafter','subsidy','area','norm','key','itmkt','ovPct']);
+function fmtField(id){if(TXT.indexOf(id)>-1){$(id).value=String(S[id]==null?'':S[id]);return}var v=S[id];if(money.indexOf(id)>-1){$(id).value=(v===''||v==null)?'':nf.format(num(v))}else{$(id).value=String(v==null?'':v).replace('.',',')}}
+money.concat(dec,TXT).forEach(function(id){var el=$(id);fmtField(id);
   el.addEventListener('focus',function(){if(money.indexOf(id)>-1)el.value=String(num(el.value)||'').replace(/\s/g,'');el.select&&el.select()});
   el.addEventListener('input',function(){S[id]=el.value;calc();save()});
   el.addEventListener('blur',function(){S[id]=el.value;fmtField(id);calc();save()})});
@@ -514,7 +530,30 @@ function trSched(L,txt,N,rate){var tr=[],bad=false;String(txt||'').split(/[;,]/)
   var cum=0,seg=[],interest=0;
   for(var i=0;i<tr.length-1;i++){cum+=tr[i].a;var months=tr[i+1].m-tr[i].m;if(months>0){var pay=cum*rate/12;seg.push({from:tr[i].m+1,to:tr[i+1].m,pay:pay,bal:cum});interest+=pay*months}}
   var lastM=tr[tr.length-1].m;return {ok:true,tr:tr,seg:seg,interest:interest,nAfter:Math.max(N-lastM,0),lastM:lastM}}
-var BK=['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay'];
+
+function instParse(txt,P,pv){var tk=[],re=/([^@]+?)@\s*(\d+)/g,m,s=String(txt||''),bad=false,last=0;
+  while((m=re.exec(s))!==null){var a=m[1].replace(/^[\s,;]+/,'').trim(),mo=Math.min(Math.round(num(m[2])),360);last=re.lastIndex;
+    if(!a){bad=true;continue}
+    var low=a.toLowerCase(),o={m:mo};
+    if(/^(rest|ост|ипот)/.test(low))o.rest=true;else if(/%$/.test(low))o.a=P*num(low.replace('%',''))/100;else o.a=num(a);
+    if(!o.rest&&!(o.a>0)){bad=true;continue}
+    tk.push(o)}
+  if(s.slice(last).replace(/[\s,;]/g,''))bad=true;
+  if(!tk.length)return {ok:false};
+  tk.sort(function(p,q){return p.m-q.m});
+  var fixed=0,restIdx=-1;tk.forEach(function(o,i){if(o.rest)restIdx=i;else fixed+=o.a});
+  var left=P-pv-fixed,rest=Math.max(left,0),auto=false;
+  if(restIdx<0&&left>0.5){tk.push({m:tk[tk.length-1].m,rest:true});auto=true;restIdx=tk.length-1}
+  var pays=[],rm=0;tk.forEach(function(o,i){if(o.rest){rm=o.m}else pays.push({m:o.m,a:o.a})});
+  if(restIdx<0)rest=0;
+  var endM=tk.reduce(function(a,o){return Math.max(a,o.m)},0);
+  return {ok:!bad,bad:bad,pays:pays,rest:restIdx<0?0:rest,restM:restIdx<0?0:tk[restIdx].m,endM:endM,fixed:fixed,auto:auto,over:left<-0.5?-left:0}}
+function instSim(pr,P,pv,iR){var bal=P-pv,int=0,first=0,byM={};pr.pays.forEach(function(x){byM[x.m]=(byM[x.m]||0)+x.a});
+  if(byM[0]){bal-=byM[0]}
+  var rows=[];
+  for(var t=1;t<=pr.endM;t++){var it=Math.max(bal,0)*iR/12;int+=it;if(t===1)first=it;var py=(byM[t]||0)+(t===pr.restM&&pr.rest>0?pr.rest:0);bal-=py}
+  return {interest:int,first:first,byM:byM}}
+var BK=['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay','kn1','kp1','ks1','kd1','ku1','ki1','ke1','kr1','kn2','kp2','ks2','kd2','ku2','ki2','ke2','kr2','kn3','kp3','ks3','kd3','ku3','ki3','ke3','kr3','kn4','kp4','ks4','kd4','ku4','ki4','ke4','kr4'];
 function buyCompare(S,M){
   var P0=num(S.price),O=M.total,yrs=M.years,N=yrs*12,rep=M.repair||0,kidsN=M.kids;
   var pc_=function(k){return num(S[k])/100};
@@ -548,19 +587,45 @@ function buyCompare(S,M){
       rows:[['Цена для клиента',Pq],['Взнос сразу',up],['Остаток в рассрочку',rest],['Платёж в месяц · '+mm+' мес',rest/mm]]})});
   // D: рассрочка до сдачи + ипотека
   var dpv=pc_('bdpv'),dm=Math.round(num(S.bdm)),dpay=(num(S.bdd)>0?num(S.bdd):1)/100;
-  if(dpv>0&&dm>0&&M.fam){var dD=pc_('bdis'),Pd=priceAfter(dD),pvD=Pd*dpv,inst=Pd-pvD,m1=inst*dpay,paid=Math.min(m1*dm,inst),rest2=inst-paid,ex=Math.max(O-pvD,0);
+  if(dpv>0&&dm>0&&M.fam){var dD=pc_('bdis'),Pd=priceAfter(dD),pvD=Pd*dpv,inst=Pd-pvD,m1=inst*dpay,paid=Math.min(m1*dm,inst),rest2=inst-paid,ex=Math.min(Math.max(O-pvD,0),Math.max(rest2,0));
     var Dm=rest2-ex>0.5?mkS({price:rest2,own:ex,norm:'0,001',subsidy:bsub>0?bsub:''}):null;
     add({id:'D',name:'Рассрочка до сдачи дома, затем ипотека',price:Pd,note:'Взнос '+pct(dpv)+', платёж '+pct(dpay)+' от остатка в месяц, '+dm+' мес; остаток '+rub(rest2)+' закрывает семейная ипотека',need:pvD,pay1:m1,pay1n:'в месяц до расчёта',pay2:Dm?Dm.pay:0,pay2n:'ипотека после расчёта',
       total:pvD+paid+ex+(Dm?Dm.tot:0),ok:O>=pvD-0.5&&(!Dm||Dm.limOk),short:pvD-O,combo:Dm&&Dm.combo,
       rows:[['Цена для клиента',Pd],['Взнос сразу',pvD],['Платёж в месяц · '+dm+' мес',m1],['Остаток закрывает ипотека',rest2],['Платёж по ипотеке потом',Dm?Dm.pay:0]]})}
   // S: поэтапная
   var spv=pc_('bsp'),stg=[[num(S.bs1m),pc_('bs1p')],[num(S.bs2m),pc_('bs2p')],[num(S.bs3m),pc_('bs3p')]].filter(function(g){return g[0]>0&&g[1]>0}),send=Math.round(num(S.bsend));
-  if(spv>0&&stg.length&&send>0&&M.fam){var Ps=priceAfter(pc_('bsd')),pvS=Ps*spv,sumS=stg.reduce(function(a,g){return a+g[1]},0)*Ps,restS=Ps-pvS-sumS,exS=Math.max(O-pvS,0),mp=num(S.bpay);
+  if(spv>0&&stg.length&&send>0&&M.fam){var Ps=priceAfter(pc_('bsd')),pvS=Ps*spv,sumS=stg.reduce(function(a,g){return a+g[1]},0)*Ps,restS=Ps-pvS-sumS,exS=Math.min(Math.max(O-pvS,0),Math.max(restS,0)),mp=num(S.bpay);
     var Sm=restS-exS>0.5?mkS({price:restS,own:exS,norm:'0,001',subsidy:bsub>0?bsub:''}):null;
     var rows=[['Цена для клиента',Ps],['Взнос сразу',pvS]];stg.forEach(function(g){rows.push(['Платёж на '+g[0]+'-м месяце',g[1]*Ps])});
     rows.push(['Остаток на '+send+'-м месяце закрывает ипотека',restS]);rows.push(['Платёж по ипотеке потом',Sm?Sm.pay:0]);if(mp>0)rows.splice(2,0,['Ежемесячно в рассрочку',mp]);
     add({id:'S',name:'Поэтапная рассрочка, затем ипотека',price:Ps,note:'Взнос '+pct(spv)+', этапы по графику, остаток '+rub(Math.max(restS,0))+' на '+send+'-м месяце',need:pvS,pay1:mp,pay1n:'ежемесячно',pay2:Sm?Sm.pay:0,pay2n:'ипотека после расчёта',
       total:pvS+sumS+exS+(Sm?Sm.tot:0)+mp*send,ok:O>=pvS-0.5&&(!Sm||Sm.limOk),short:pvS-O,combo:Sm&&Sm.combo,rows:rows})}
+  // K1..K4: конструктор рассрочки (график платежей, удорожание, процент на остаток, финал: деньги / семейная / рыночная ипотека)
+  [1,2,3,4].forEach(function(n){
+    var sTxt=String(S['ks'+n]||'').trim();if(!sTxt)return;
+    var dK=pc_('kd'+n),uK=pc_('ku'+n),iK=pc_('ki'+n),Pk=P0*(1-dK)*(1+uK)+rep,pvT=String(S['kp'+n]||'').trim();
+    var pvK=pvT?(/%$/.test(pvT)?Pk*num(pvT.replace('%',''))/100:num(pvT)):0;
+    var pr=instParse(sTxt,Pk,pvK);if(!pr.ok||Pk<=0)return;
+    var sim=instSim(pr,Pk,pvK,iK),e=S['ke'+n]||'cash',rest=pr.rest,Km=null,ex=0;
+    if(rest>0.5&&e==='fam'&&!M.fam)return;
+    if(rest>0.5&&e!=='cash'){ex=Math.min(Math.max(O-pvK,0),rest);
+      if(rest-ex>0.5)Km=e==='fam'?mkS({price:rest,own:ex,norm:'0,001',subsidy:bsub>0?bsub:''}):core({prog:'mkt',reg:'nsk',kids:kidsN,years:yrs,key:S.key,price:rest,own:ex,mat:0,mrate:(String(S['kr'+n]||'').trim()?S['kr'+n]:S.cmp),norm:'0,001',ddu:'Нет'})}
+    var tail=rest>0.5?(e==='cash'?rest:ex+(Km?Km.tot:0)):0;
+    var total=pvK+pr.fixed+sim.interest+tail;
+    var rows=[['Цена для клиента',Pk],['Взнос сразу',pvK]],mk={};
+    pr.pays.slice().sort(function(a,b){return a.m-b.m}).forEach(function(x){mk[x.m]=(mk[x.m]||0)+x.a});
+    var ms=Object.keys(mk).map(Number).sort(function(a,b){return a-b});
+    ms.slice(0,6).forEach(function(m){rows.push([m===0?'Доплата в день сделки':'Платёж на '+m+'-м месяце',mk[m]])});
+    if(ms.length>6)rows.push(['Ещё платежей: '+(ms.length-6),ms.slice(6).reduce(function(a,m){return a+mk[m]},0)]);
+    if(iK>0)rows.push(['Проценты на остаток, всего',sim.interest]);
+    if(rest>0.5)rows.push([e==='cash'?'Остаток на '+pr.restM+'-м месяце вносите сами':'Остаток на '+pr.restM+'-м месяце закрывает ипотека',rest]);
+    if(Km)rows.push(['Платёж по ипотеке потом',Km.pay]);
+    var first=ms.length?mk[ms[0]]:(e==='cash'?rest:0);
+    var nm=String(S['kn'+n]||'').trim()||('Своя рассрочка '+n);
+    var parts=['взнос '+rub(pvK)];if(dK>0)parts.push('скидка '+pct(dK));if(uK>0)parts.push('удорожание '+pct(uK));if(iK>0)parts.push(pct(iK)+' годовых на остаток');
+    var note='Взнос '+rub(pvK)+(dK>0?', скидка '+pct(dK):'')+(uK>0?', удорожание '+pct(uK):'')+(iK>0?', проценты '+pct(iK)+' годовых на остаток (платятся ежемесячно)':', без процентов')+(pr.auto?'. Остаток в графике не указан: он добавлен последним платежом':'')+(pr.over>0?'. Внимание: платежи по графику больше цены на '+rub(pr.over):'');
+    add({id:'K'+n,name:nm,price:Pk,note:note,need:pvK,pay1:first,pay1n:'ближайший платёж',pay2:Km?Km.pay:0,pay2n:'ипотека после расчёта',total:total,
+      ok:O>=pvK-0.5&&(!Km||Km.limOk)&&pr.over<=0.5,short:pvK-O,combo:Km&&Km.combo,rows:rows})});
   // E: траншевая
   var rT=num(S.btr)/100,t1=String(S.bt1==null?'':S.bt1).trim(),t3=Math.round(num(S.bt3m));
   if(rT>0&&t1&&t3>0){var parts=[t1+'@0'];if(num(S.bt2m)>0&&num(S.bt2)>0)parts.push(num(S.bt2)+'%@'+Math.round(num(S.bt2m)));parts.push('rest@'+t3);
@@ -748,7 +813,12 @@ function calc(){
 
   var tot=M.tot;
   var ex=extraHTML(M,{cmp:num(S.cmp),rent:num(S.rent)});
-  var RB=buyCompare(S,M);(function(){var t1=String(S.bt1||'').trim(),b=[],m2=num(S.bt2m),p2=num(S.bt2),m3=num(S.bt3m);if(!t1||!(m3>0)){$('trPrev').innerHTML='Заполните шаги 2, 3 и 5: здесь появится схема выдачи траншей.';return}b.push('<b>'+(/%$/.test(t1)?t1:rub(num(t1)))+'</b> в день сделки');if(m2>0&&p2>0)b.push('<b>'+p2+' %</b> кредита через <b>'+m2+' мес</b>');b.push('остаток через <b>'+m3+' мес</b>');$('trPrev').innerHTML='Схема: '+b.join(' → ')+'. Дальше платёж по основному долгу.'})();$('vzBuy').innerHTML=buyHTML(RB,{hide:S.bhide});$('svBuy').textContent=RB.best?'дешевле: '+RB.best.name.toLowerCase():'';$('svCmp').textContent=ex.svCmp;$('svTax').textContent=ex.svTax;$('vzTerm').innerHTML=ex.term;$('vzDonut').innerHTML=ex.donut;$('vzCmp').innerHTML=ex.cmp;$('vzTax').innerHTML=ex.tax;
+  var RB=buyCompare(S,M);[1,2,3,4].forEach(function(n){var s=String(S['ks'+n]||'').trim(),el=$('kv'+n),sv=$('svK'+n);if(!el)return;
+    if(!s){el.innerHTML='Заполните график платежей: схема появится в сравнении.';sv.textContent='';return}
+    var itk=RB.items.filter(function(x){return x.id==='K'+n})[0];
+    if(!itk){var chk=instParse(s,1e6,0);el.innerHTML=chk.ok?'Схема не считается: для семейной ипотеки нужна семейная программа.':'Не удалось разобрать график. Формат: <b>20%@6, 20%@12, rest@24</b> (сумма@месяц).';sv.textContent='проверьте';return}
+    el.innerHTML='Всего потратит клиент: <b>'+rub(itk.total)+'</b>'+(itk.ok?'':' · <b>недоступна: '+(itk.short>0.5?'не хватает взноса':'проверьте график или лимит')+'</b>');sv.textContent=rub(itk.total)});
+  (function(){var c=RB.items.filter(function(x){return /^(R1|R2|D|S|K\d)$/.test(x.id)}).length;$('svInst').textContent=c?('схем: '+c):'';var tr=RB.items.filter(function(x){return x.id==='E'||x.id==='E2'}).length;$('svTr').textContent=tr?'считается':''})();(function(){var t1=String(S.bt1||'').trim(),b=[],m2=num(S.bt2m),p2=num(S.bt2),m3=num(S.bt3m);if(!t1||!(m3>0)){$('trPrev').innerHTML='Заполните шаги 2, 3 и 5: здесь появится схема выдачи траншей.';return}b.push('<b>'+(/%$/.test(t1)?t1:rub(num(t1)))+'</b> в день сделки');if(m2>0&&p2>0)b.push('<b>'+p2+' %</b> кредита через <b>'+m2+' мес</b>');b.push('остаток через <b>'+m3+' мес</b>');$('trPrev').innerHTML='Схема: '+b.join(' → ')+'. Дальше платёж по основному долгу.'})();$('vzBuy').innerHTML=buyHTML(RB,{hide:S.bhide});$('svBuy').textContent=RB.best?'дешевле: '+RB.best.name.toLowerCase():'';$('svCmp').textContent=ex.svCmp;$('svTax').textContent=ex.svTax;$('vzTerm').innerHTML=ex.term;$('vzDonut').innerHTML=ex.donut;$('vzCmp').innerHTML=ex.cmp;$('vzTax').innerHTML=ex.tax;
   $('cTerm').hidden=$('cDonut').hidden=$('cCmp').hidden=$('cTax').hidden=!(loan>0);
   $('cOver').hidden=!(T>0);
   renderOver(M);
@@ -770,7 +840,7 @@ $('copy').addEventListener('click',function(){
   function fallback(){var t=document.createElement('textarea');t.value=last;t.setAttribute('readonly','');t.style.cssText='position:fixed;opacity:0;top:0';document.body.appendChild(t);t.select();var ok=false;try{ok=document.execCommand('copy')}catch(e){}document.body.removeChild(t);m.textContent=ok?'Расчёт скопирован. Вставьте в мессенджер.':'Не удалось скопировать. Выделите текст расчёта вручную.'}
   try{navigator.clipboard.writeText(last).then(function(){m.textContent='Расчёт скопирован. Вставьте в мессенджер.'},fallback)}catch(e){fallback()}
 });
-$('reset').addEventListener('click',function(){S=Object.assign({},DEF);money.concat(dec).forEach(fmtField);sync();calc();try{localStorage.removeItem(KEY)}catch(e){}$('sample').hidden=false;$('copyMsg').textContent='';$('cname').value=''});
+$('reset').addEventListener('click',function(){S=Object.assign({},DEF);money.concat(dec,TXT).forEach(fmtField);sync();calc();try{localStorage.removeItem(KEY)}catch(e){}$('sample').hidden=false;$('copyMsg').textContent='';$('cname').value=''});
 $('cname').value=S.cname||'';
 $('cname').addEventListener('input',function(){S.cname=$('cname').value;save()});
 $('mkrep').addEventListener('click',function(){
