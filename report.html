@@ -276,6 +276,11 @@ function buyCompare(S,M){
     var rows=[['Цена для клиента',price],['Минимальный взнос по условиям',X.needShow],['Ваши средства',O],['Кредит (цена минус ваши средства)',Math.max(price-O,0)],['Платёж в месяц',X.pay]];
     if(X.after)rows.push(['Платёж после 15 лет (оценка)',X.after.pay]);
     return add({id:id,name:name,price:price,note:note+(X.combo?'. Комбо: часть сверх лимита по рыночной ставке':''),need:X.needShow,pay1:X.pay,pay2:X.after?X.after.pay:null,pay2n:'после 15 лет',total:O+X.tot,ok:X.pvOk&&X.limOk&&X.loan>=0,short:X.needShow-O,rows:rows,limBad:!X.limOk,combo:X.combo,loan:Math.max(price-O,0)})}
+  // MAIN: выбранная программа вверху калькулятора (то, что в шапке отчёта), с полной раскладкой
+  if(!M.noAlt&&M.loan>0&&M.pay>0){var aft=M.after,mkMain=M.mk;
+    var rowsM=[['Цена для клиента',M.T],['Минимальный взнос по условиям',M.needShow],['Ваши средства',O],['Кредит (цена минус ваши средства)',M.loan],['Платёж в месяц',M.pay]];
+    if(aft)rowsM.push([mkMain?'Платёж после льготного периода':'Платёж после '+aft.y+' лет (оценка)',aft.pay]);
+    add({id:'MAIN',name:'Ваш расчёт: '+M.name,price:M.T,note:(mkMain&&num(S.mpay)>0&&aft)?'Платёж '+rub(num(S.mpay))+' в льготный период, затем ставка '+pct(aft.rate):'Ставка '+pct(M.eff),need:M.needShow,pay1:M.pay,pay2:aft?aft.pay:null,pay2n:aft?(mkMain?'после льготного периода':'после '+aft.y+' лет'):'',total:O+M.tot,ok:!!(M.pvOk&&M.limOk&&M.loan>=0),short:Math.max(M.needShow-O,0),rows:rowsM,limBad:!M.limOk,combo:M.cur&&M.cur.hi>0,loan:M.loan})}
   // A: семейная с субсидией застройщика
   var bsub=num(S.bsub);
   if(M.fam&&bsub>0){var dA=pc_('bdis'),apvT=String(S.bapv==null?'':S.bapv).trim(),apvN=apvT===''?'':(num(apvT)>0?apvT:'0,000001');famItem('A','Семейная ипотека с субсидией застройщика',priceAfter(dA),bsub,'Ставка '+pct(bsub/100)+(dA>0?', скидка '+pct(dA):'')+(apvT!==''?(num(apvT)>0?', минимальный взнос '+pct(num(apvT)/100):', без первоначального взноса'):''),apvN)}
@@ -422,8 +427,18 @@ function extraHTML(c,o){
 }
 
 var app=document.getElementById('app'),S=null;
+var PEND=false;
 try{var d=new URLSearchParams(location.search).get('d');
-  d=d.replace(/-/g,'+').replace(/_/g,'/');S=JSON.parse(decodeURIComponent(escape(atob(d))))}catch(e){S=null}
+  if(d.charAt(0)==='z'){
+    var pre='kz|'+d+'|';
+    if(window.name.indexOf(pre)===0){S=JSON.parse(window.name.slice(pre.length));window.name=''}
+    else if(window.DecompressionStream){PEND=true;
+      var b=atob(d.slice(1).replace(/-/g,'+').replace(/_/g,'/')),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
+      var ds=new DecompressionStream('deflate-raw'),w=ds.writable.getWriter();w.write(u);w.close();
+      new Response(ds.readable).arrayBuffer().then(function(buf){window.name=pre+new TextDecoder().decode(buf);location.reload()},function(){app.innerHTML='<section><h2>Ссылка не открылась</h2><p>Расчёт не удалось прочитать. Попросите отправить ссылку ещё раз.</p></section>'})}
+  }else{d=d.replace(/-/g,'+').replace(/_/g,'/');S=JSON.parse(decodeURIComponent(escape(atob(d))))}
+}catch(e){S=null}
+if(PEND){app.innerHTML='<section><p>Загружаю расчёт…</p></section>';return}
 if(!S||typeof S!=='object'||!num(S.price)){
   app.innerHTML='<section><h2>Ссылка не открылась</h2><p>Расчёт не удалось прочитать. Попросите отправить ссылку ещё раз.</p><div class="btns"><a class="btn" href="tel:+79130019041">Позвонить +7 913 001 90 41</a></div></section>';return}
 var M=core(S), mk=M.mk,it=M.it,iz=M.iz,fam=M.fam,kids=M.kids,rate=M.rate,limit=M.limit,half=M.half,sub=M.sub,eff=M.eff,price=M.price,ddu=M.ddu,repairAll=M.repairAll,repair=M.repair,T=M.T,mat=M.mat,own=M.own,total=M.total,years=M.years,n=M.n,need=M.needShow,loan=M.loan,pay=M.pay,fixedWhole=M.fixedWhole,pvOk=M.pvOk,limOk=M.limOk,after=M.after,tot=M.tot,cur=M.cur;
