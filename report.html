@@ -207,7 +207,9 @@ function core(S){
     if(it){lo=Math.min(L,IT_L);hi=Math.max(L-IT_L,0);plo=pm(eff/12,k,lo);phi=pm(itm/12,k,hi);f=plo+phi;tot=f*k}
     else{f=pm(eff/12,k,L);tot=f*k;
       if(mk){var sy=Math.min(Math.max(Math.round(num(S.myrs))||0,0),t);
-        if(sy>0&&sy<t){var rm=num(S.mafter)/100,b=ba(eff/12,k,sy*12,L),ap=pm(rm/12,k-sy*12,b);tot=f*sy*12+ap*(k-sy*12);a={bal:b,rate:rm,pay:ap,p:ap,k:sy*12,sy:sy,y:sy}}}
+        if(sy>0&&sy<t){var rm=num(S.mafter)/100,mp=num(S.mpay),b,ap;
+          if(mp>0){b=L;for(var jj=0;jj<sy*12;jj++){b=Math.max(b-Math.max(mp-b*rm/12,0),0)}f=mp}else b=ba(eff/12,k,sy*12,L);
+          ap=pm(rm/12,k-sy*12,b);tot=f*sy*12+ap*(k-sy*12);a={bal:b,rate:rm,pay:ap,p:ap,k:sy*12,sy:sy,y:sy}}}
       else if(step&&t>15){var ra=eff+0.04,rb=key+spread,rn=Math.min(ra,rb),b2=ba(eff/12,k,180,L),ap2=pm(rn/12,k-180,b2);tot=f*180+ap2*(k-180);a={bal:b2,rate:rn,pay:ap2,p:ap2,k:180,sy:15,y:15,ra:ra,rb:rb}}}
     return {f:f,a:a,tot:tot,lo:lo,hi:hi,plo:plo,phi:phi}
   }
@@ -224,7 +226,7 @@ function core(S){
     price:price,ddu:ddu,area:area,rpm:rpm,repairAll:repairAll,repair:repair,T:T,norm:norm,mat:mat,own:own,total:total,years:years,n:n,
     need:need,loan:loan,pay:cur.f,after:cur.a,tot:cur.tot,cur:cur,fixedWhole:fixedWhole,key:key,spread:spread,step:step,plan:plan,
     mrk:mrk,combo:combo,needShow:needShow,altNeed:altNeed,altPay:altPay,altL:altL,pvOk:total>=needShow-0.5,limOk:combo&&!it?loan>=0:(loan<=limit+0.5&&loan>=0),ins:num(S.ins),inc:num(S.inc),
-    name:mk?'Ипотека со ставкой застройщика':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
+    name:mk?'Рыночная ипотека':it?'ИТ-ипотека':iz?'Семейная ипотека · ИЖС':ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека · Новосибирск и регионы'};
 }
 
 /* === schemes: comparison of purchase methods (shared by calculator and report) === */
@@ -435,9 +437,9 @@ document.getElementById('sub').textContent=M.name+(M.combo?' · комбо':'')+
 var firstTxt=mk?(after?'первые '+after.sy+' '+(after.sy%10===1&&after.sy!==11?'год':(after.sy%10>=2&&after.sy%10<=4&&(after.sy<10||after.sy>20)?'года':'лет')):'весь срок'):(after?'первые 15 лет':'весь срок');
 function row(a,b){return '<dt>'+a+'</dt><dd>'+b+'</dd>'}
 var h='',H={hero:'',st:'',cmp:'',top:'',chips:'',comp:'',after:'',term:'',tax:'',cta:'',foot:''};
-if(loan>0)H.hero+='<div class="hero"><div class="k">'+(M.combo?'Комбо-ипотека · ':'')+'Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>'+(cur.hi>0?'Ставки':'Ставка')+' <b>'+(cur.hi>0?pct(eff)+' + '+pct(it?M.itm:M.mrk):pct(eff))+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
+if(loan>0)H.hero+='<div class="hero"><div class="k">'+(M.combo?'Комбо-ипотека · ':'')+'Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>'+((mk&&num(S.mpay)>0&&after)?'Ставка после':(cur.hi>0?'Ставки':'Ставка'))+' <b>'+((mk&&num(S.mpay)>0&&after)?pct(after.rate):(cur.hi>0?pct(eff)+' + '+pct(it?M.itm:M.mrk):pct(eff)))+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
 var pvShare=T>0?total/T:0, needShare=T>0?need/T:0, ch=[];
-if(mk){ch.push(['Программа','Ставка от застройщика'],['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После субсидии',after?pct(after.rate):'ставка не меняется'])}
+if(mk){ch.push(['Программа','Рыночная ипотека'],(num(S.mpay)>0&&after)?['Платёж в льготный период',rub(num(S.mpay))+' · '+after.sy+' лет']:['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После льготного периода',after?pct(after.rate):'ставка не меняется'])}
 else if(it){ch.push(['Программа','ИТ-ипотека'],['Ставка льготной части',pct(eff)+' · весь срок'],['Ставка сверх '+rub(IT_L),cur.hi>0?pct(M.itm):'не нужна'],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['Лимит кредита',rub(limit)+' всего'],['Срок',years+' лет'])}
 else{ch.push(['Программа',iz?'Семейная ипотека · ИЖС':(M.ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека')]);
   if(!iz)ch.push(['Детей в семье',kids>=5?'5 и более':String(kids)]);
@@ -468,12 +470,12 @@ H.comp+='<section><h2>Из чего состоит расчёт</h2><dl>'+r.join
 if(loan>0){
   var a=[];
   if(after){
-    a.push(row(mk?'После субсидии ('+after.sy+' лет)':'После 15 лет','')+'',row('Остаток долга',rub(after.bal)),row('Ставка',pct(after.rate)),row('Платёж в месяц',rub(after.pay)));
+    a.push(row(mk?'После льготного периода ('+after.sy+' лет)':'После 15 лет','')+'',row('Остаток долга',rub(after.bal)),row('Ставка',pct(after.rate)),row('Платёж в месяц',rub(after.pay)));
     a.push('<div class="sep"></div>');
   }
   a.push(row('Всего банку за срок',rub(tot)),row('из них проценты',rub(tot-loan)));
   if(fixedWhole&&!after)a.unshift(row('Ставка',pct(eff)+' на весь срок'),row('Платёж в месяц',rub(pay)+' · не меняется'),'<div class="sep"></div>');
-  H.after+='<section><h2>'+(after?'Что будет дальше':(fixedWhole?'Ставка на весь срок':'Итого за срок'))+'</h2><dl>'+a.join('')+'</dl>'+(it?'<p class="muted">Ставка льготной части действует весь срок кредита и не повышается.</p>':fixedWhole?'<p class="muted">Взнос от 50 % стоимости: ставка не выше 6 % действует на весь срок кредита и после 15 лет не повышается.</p>':after?'<p class="muted">'+(mk?'Ставка после субсидии указана по условиям застройщика и может отличаться.':'Ставка после 15 лет оценочная. Она рассчитана по правилам программы, действующим с 1 октября 2026 года (ставка по договору + 4 п.п. или ключевая + 3 п.п., что меньше). Законодательство и ключевая ставка ЦБ могут измениться, тогда изменится и платёж.')+'</p>':'')+'</section>';
+  H.after+='<section><h2>'+(after?'Что будет дальше':(fixedWhole?'Ставка на весь срок':'Итого за срок'))+'</h2><dl>'+a.join('')+'</dl>'+(it?'<p class="muted">Ставка льготной части действует весь срок кредита и не повышается.</p>':fixedWhole?'<p class="muted">Взнос от 50 % стоимости: ставка не выше 6 % действует на весь срок кредита и после 15 лет не повышается.</p>':after?'<p class="muted">'+(mk?'Ставка после льготного периода указана по условиям застройщика и может отличаться.':'Ставка после 15 лет оценочная. Она рассчитана по правилам программы, действующим с 1 октября 2026 года (ставка по договору + 4 п.п. или ключевая + 3 п.п., что меньше). Законодательство и ключевая ставка ЦБ могут измениться, тогда изменится и платёж.')+'</p>':'')+'</section>';
 }
 var ex=extraHTML(M,{cmp:num(S.cmp!=null&&S.cmp!==''?S.cmp:'18,8'),rent:num(S.rent)});
 if(loan>0){
