@@ -610,7 +610,7 @@ function buyCompare(S,M){
   var bsub=num(S.bsub);
   if(M.fam&&bsub>0){var dA=pc_('bdis'),apvT=String(S.bapv==null?'':S.bapv).trim(),apvN=apvT===''?'':(num(apvT)>0?apvT:'0,000001');famItem('A','Семейная ипотека с субсидией застройщика',priceAfter(dA),bsub,'Ставка '+pct(bsub/100)+(dA>0?', скидка '+pct(dA):'')+(apvT!==''?(num(apvT)>0?', минимальный взнос '+pct(num(apvT)/100):', без первоначального взноса'):''),apvN)}
   // B: семейная без субсидии застройщика
-  if(M.fam){var dB=pc_('bnos'),bp=M.rate;famItem('B','Семейная ипотека по ставке программы',priceAfter(dB),'','Ставка '+pct(bp)+(dB>0?', скидка '+pct(dB)+' за расчёт без субсидирования':''))}
+  if(M.fam){var dB=pc_('bnos'),bp=M.rate;famItem('B','Семейная ипотека без субсидии застройщика',priceAfter(dB),'','Ставка '+pct(bp)+(dB>0?', скидка '+pct(dB)+' за расчёт без субсидирования':''))}
   // IT
   // F: обычная (рыночная)
   var mr=num(S.cmp)/100;
@@ -684,6 +684,9 @@ function buyCompare(S,M){
   if(Pg>0&&rg>0){var Gm=core({prog:'mkt',reg:'nsk',kids:kidsN,years:yrs,key:S.key,price:Pg,own:O,mat:0,mrate:S.brr,norm:S.norm,ddu:'Нет'});
     var gNeed=gl>0?Math.max(Gm.needShow,Pg-gl):Gm.needShow,gOk=O>=gNeed-0.5&&Gm.loan>=0&&(gl<=0||Pg-O<=gl+0.5);
     add({id:'G',name:'Ипотека от застройщика со своей ставкой',price:Pg,note:'Ставка '+pct(rg/100)+(gl>0?', кредит не больше '+rub(gl)+' (остальное — взнос)':''),need:gNeed,pay1:Gm.pay,total:O+Gm.tot,ok:gOk,short:gNeed-O,rows:[['Цена для клиента',Pg],['Минимальный взнос по условиям',gNeed],['Ваши средства',O],['Кредит (цена минус ваши средства)',Math.max(Pg-O,0)],['Платёж в месяц',Gm.pay]]})}
+  // убрать дубль: схема, цифры которой совпадают с «Вашим расчётом» (тот же платёж и та же итоговая сумма)
+  var mainI=null;out.forEach(function(x){if(x.id==='MAIN')mainI=x});
+  if(mainI)out=out.filter(function(x){return x.id==='MAIN'||!(Math.abs(x.total-mainI.total)<1&&Math.abs((x.pay1||0)-(mainI.pay1||0))<1&&Math.abs((x.price||0)-(mainI.price||0))<1)});
   if(!M.noAlt)out.forEach(function(x){
     if(x.ok||!(x.short>0.5)||x.cash)return;
     var R2=buyCompare(S,Object.assign({},M,{total:O+x.short,noAlt:true})),y=null;
@@ -697,7 +700,6 @@ function buyCompare(S,M){
   var cheap=best?best.total:0;
   out.forEach(function(x){x.over=x.total-x.price;x.delta=best?x.total-cheap:0});
   return {items:out,best:best}}
-function nmH(x,b){var c=x.id==='MAIN'?'nm my':(b&&b.id===x.id?'nm bt':'');return c?'<span class="'+c+'">'+x.name+'</span>':x.name}
 function buyHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Boolean),h='';
   var items=R.items.filter(function(x){return !o.report||hide.indexOf(x.id)<0});
   if(!items.length)return '';
@@ -705,7 +707,7 @@ function buyHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Boolean),h
   items.forEach(function(x){
     var cls='bs'+(best&&best.id===x.id?' best':'')+(x.ok?'':' no');
     h+='<div class="'+cls+'">';
-    h+='<div class="bsh"><h3>'+nmH(x,best)+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+(x.ok?'':'<span class="bsb nb">'+(x.short>0.5?'не хватает средств':'выше лимита')+'</span>')+'</div>';
+    h+='<div class="bsh"><h3>'+x.name+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+(x.ok?'':'<span class="bsb nb">'+(x.short>0.5?'не хватает средств':'выше лимита')+'</span>')+'</div>';
     h+='<div class="bsn">'+x.note+'</div>';
     if(x.alt)h+='<div class="bsw"><b>Схема сейчас недоступна.</b> Платёж ниже рассчитан при взносе '+rub(x.must)+'. У вас '+rub(x.have)+'. Чтобы воспользоваться схемой, нужно найти ещё '+rub(x.short)+'.</div>';
     h+='<dl>';
@@ -723,14 +725,14 @@ function buyReportHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Bool
   var items=R.items.filter(function(x){return hide.indexOf(x.id)<0});if(!items.length)return '';
   var oks=items.filter(function(x){return x.ok}).sort(function(a,b){return a.total-b.total}),bad=items.filter(function(x){return !x.ok});
   var best=oks[0],max=0;items.forEach(function(x){if(x.total>max)max=x.total});
-  var h='<div class="rbx">';if(items.some(function(x){return x.id==='MAIN'}))h+='<div class="nmleg"><span class="nm my">Ваш расчёт</span><span class="nm bt">Самая выгодная схема</span></div>';
+  var h='<div class="rbx">';
   if(best){var second=oks[1];h+='<div class="rbwin"><div class="k">Дешевле всего из доступных вам схем</div><div class="n">'+best.name+'</div><div class="v">'+rub(best.total)+' за всё время'+(second?' · на '+rub(second.total-best.total)+' дешевле следующей':'')+'</div></div>'}
   h+='<h3 class="rbt">Сколько клиент заплатит всего</h3>';
   oks.concat(bad).forEach(function(x){var w=Math.max(4,Math.round(x.total/max*100));
-    h+='<div class="rbar'+(x.ok?'':' no')+(best&&best.id===x.id?' top':'')+'"><div class="rbl"><span>'+nmH(x,best)+'</span><b>'+rub(x.total)+'</b></div><div class="rbt2"><i style="width:'+w+'%"></i></div>'+(x.ok?'':'<div class="rbn">Не хватает '+rub(Math.max(x.short,0))+(x.limBad?' · выше лимита программы':'')+'</div>')+'</div>'});
+    h+='<div class="rbar'+(x.ok?'':' no')+(best&&best.id===x.id?' top':'')+'"><div class="rbl"><span>'+x.name+'</span><b>'+rub(x.total)+'</b></div><div class="rbt2"><i style="width:'+w+'%"></i></div>'+(x.ok?'':'<div class="rbn">Не хватает '+rub(Math.max(x.short,0))+(x.limBad?' · выше лимита программы':'')+'</div>')+'</div>'});
   h+='<h3 class="rbt">Платежи и первоначальные суммы</h3><div class="rtab"><table><thead><tr><th>Схема</th><th>Взнос от</th><th>Платёж</th></tr></thead><tbody>';
   items.forEach(function(x){var pay=x.pay1?rub(x.pay1)+(x.pay2?' → '+rub(x.pay2):''):(x.pay2?rub(x.pay2):'—');
-    h+='<tr class="'+(x.ok?'':'no')+'"><td>'+nmH(x,best)+'</td><td>'+rub(x.need)+'</td><td>'+pay+(x.alt?' *':'')+'</td></tr>'});
+    h+='<tr class="'+(x.ok?'':'no')+'"><td>'+x.name+'</td><td>'+rub(x.need)+'</td><td>'+pay+(x.alt?' *':'')+'</td></tr>'});
   h+='</tbody></table></div>'+(items.some(function(x){return x.alt})?'<p class="muted">* Платёж для схемы, на которую пока не хватает взноса, рассчитан при полном нужном взносе. Чтобы им воспользоваться, суммы на счёте должно хватать на этот взнос.</p>':'')+'<h3 class="rbt">Каждая схема подробно</h3>'+buyHTML(R,{hide:o.hide,report:true})+'</div>';
   return h}
 function extraHTML(c,o){
