@@ -141,6 +141,7 @@ section.card>.btn{flex:none}
 .vz-det[open] summary::after{content:"–"}
 .vz-in{margin-top:12px}
 
+.nm{display:inline;padding:1px 7px;border-radius:6px;-webkit-box-decoration-break:clone;box-decoration-break:clone;font-weight:700}.nm.my{background:rgba(217,180,90,.30);box-shadow:inset 0 0 0 1px rgba(217,180,90,.55)}.nm.bt{background:var(--ok-bg);box-shadow:inset 0 0 0 1px var(--ok)}.nmleg{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px}
 .bs{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .bs.best{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok)}.bs.no{opacity:.88}
 .bs .bsh{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.bs h3{margin:0;font-size:15px;line-height:1.3}
@@ -372,6 +373,7 @@ function buyCompare(S,M){
   var cheap=best?best.total:0;
   out.forEach(function(x){x.over=x.total-x.price;x.delta=best?x.total-cheap:0});
   return {items:out,best:best}}
+function nmH(x,b){var c=x.id==='MAIN'?'nm my':(b&&b.id===x.id?'nm bt':'');return c?'<span class="'+c+'">'+x.name+'</span>':x.name}
 function buyHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Boolean),h='';
   var items=R.items.filter(function(x){return !o.report||hide.indexOf(x.id)<0});
   if(!items.length)return '';
@@ -379,7 +381,7 @@ function buyHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Boolean),h
   items.forEach(function(x){
     var cls='bs'+(best&&best.id===x.id?' best':'')+(x.ok?'':' no');
     h+='<div class="'+cls+'">';
-    h+='<div class="bsh"><h3>'+x.name+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+(x.ok?'':'<span class="bsb nb">'+(x.short>0.5?'не хватает средств':'выше лимита')+'</span>')+'</div>';
+    h+='<div class="bsh"><h3>'+nmH(x,best)+'</h3>'+(best&&best.id===x.id?'<span class="bsb">дешевле всего</span>':'')+(x.ok?'':'<span class="bsb nb">'+(x.short>0.5?'не хватает средств':'выше лимита')+'</span>')+'</div>';
     h+='<div class="bsn">'+x.note+'</div>';
     if(x.alt)h+='<div class="bsw"><b>Схема сейчас недоступна.</b> Платёж ниже рассчитан при взносе '+rub(x.must)+'. У вас '+rub(x.have)+'. Чтобы воспользоваться схемой, нужно найти ещё '+rub(x.short)+'.</div>';
     h+='<dl>';
@@ -397,14 +399,14 @@ function buyReportHTML(R,o){o=o||{};var hide=(o.hide||'').split(',').filter(Bool
   var items=R.items.filter(function(x){return hide.indexOf(x.id)<0});if(!items.length)return '';
   var oks=items.filter(function(x){return x.ok}).sort(function(a,b){return a.total-b.total}),bad=items.filter(function(x){return !x.ok});
   var best=oks[0],max=0;items.forEach(function(x){if(x.total>max)max=x.total});
-  var h='<div class="rbx">';
+  var h='<div class="rbx">';if(items.some(function(x){return x.id==='MAIN'}))h+='<div class="nmleg"><span class="nm my">Ваш расчёт</span><span class="nm bt">Самая выгодная схема</span></div>';
   if(best){var second=oks[1];h+='<div class="rbwin"><div class="k">Дешевле всего из доступных вам схем</div><div class="n">'+best.name+'</div><div class="v">'+rub(best.total)+' за всё время'+(second?' · на '+rub(second.total-best.total)+' дешевле следующей':'')+'</div></div>'}
   h+='<h3 class="rbt">Сколько клиент заплатит всего</h3>';
   oks.concat(bad).forEach(function(x){var w=Math.max(4,Math.round(x.total/max*100));
-    h+='<div class="rbar'+(x.ok?'':' no')+(best&&best.id===x.id?' top':'')+'"><div class="rbl"><span>'+x.name+'</span><b>'+rub(x.total)+'</b></div><div class="rbt2"><i style="width:'+w+'%"></i></div>'+(x.ok?'':'<div class="rbn">Не хватает '+rub(Math.max(x.short,0))+(x.limBad?' · выше лимита программы':'')+'</div>')+'</div>'});
+    h+='<div class="rbar'+(x.ok?'':' no')+(best&&best.id===x.id?' top':'')+'"><div class="rbl"><span>'+nmH(x,best)+'</span><b>'+rub(x.total)+'</b></div><div class="rbt2"><i style="width:'+w+'%"></i></div>'+(x.ok?'':'<div class="rbn">Не хватает '+rub(Math.max(x.short,0))+(x.limBad?' · выше лимита программы':'')+'</div>')+'</div>'});
   h+='<h3 class="rbt">Платежи и первоначальные суммы</h3><div class="rtab"><table><thead><tr><th>Схема</th><th>Взнос от</th><th>Платёж</th></tr></thead><tbody>';
   items.forEach(function(x){var pay=x.pay1?rub(x.pay1)+(x.pay2?' → '+rub(x.pay2):''):(x.pay2?rub(x.pay2):'—');
-    h+='<tr class="'+(x.ok?'':'no')+'"><td>'+x.name+'</td><td>'+rub(x.need)+'</td><td>'+pay+(x.alt?' *':'')+'</td></tr>'});
+    h+='<tr class="'+(x.ok?'':'no')+'"><td>'+nmH(x,best)+'</td><td>'+rub(x.need)+'</td><td>'+pay+(x.alt?' *':'')+'</td></tr>'});
   h+='</tbody></table></div>'+(items.some(function(x){return x.alt})?'<p class="muted">* Платёж для схемы, на которую пока не хватает взноса, рассчитан при полном нужном взносе. Чтобы им воспользоваться, суммы на счёте должно хватать на этот взнос.</p>':'')+'<h3 class="rbt">Каждая схема подробно</h3>'+buyHTML(R,{hide:o.hide,report:true})+'</div>';
   return h}
 function extraHTML(c,o){
