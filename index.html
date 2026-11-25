@@ -263,13 +263,13 @@ body.hasfbar{padding-bottom:84px}
   <section class="card" id="mktCard" aria-labelledby="h-mkt" hidden>
     <h2 id="h-mkt">Рыночная ипотека</h2>
     <div class="row2">
-      <div class="field"><label for="mrate">Ставка в льготный период, %</label><input type="text" id="mrate" inputmode="decimal"></div>
+      <div class="field"><label for="mrate">Ставка первые годы, %</label><input type="text" id="mrate" inputmode="decimal"></div>
       <div class="field"><label for="myrs">Льготный период, лет</label><input type="text" id="myrs" inputmode="numeric"></div>
     </div>
-    <div class="field"><label for="mpay">Или платёж в льготный период, ₽/мес</label><input type="text" id="mpay" inputmode="numeric" placeholder="вместо ставки">
-      <span class="hint">Если застройщик фиксирует платёж (например, 10 000 ₽ два года), впишите его: тогда ставка в льготный период не нужна. Платёж долг не гасит.</span></div>
-    <div class="field"><label for="mafter">Ставка после льготного периода, %</label><input type="text" id="mafter" inputmode="decimal">
-      <span class="hint">Подходит любому заёмщику, дети не нужны. Лимита кредита нет. Если льготный период на весь срок, поставьте его равным сроку кредита. Ставку после него уточните у застройщика и банка.</span></div>
+    <div class="field"><label for="mpay">Или платёж первые годы, ₽/мес</label><input type="text" id="mpay" inputmode="numeric" placeholder="вместо ставки">
+      <span class="hint">Если застройщик фиксирует платёж (например, 10 000 ₽ два года), впишите его: тогда ставка первых лет не нужна. Платёж долг не гасит.</span></div>
+    <div class="field"><label for="mafter">Ставка после этого срока (рыночная), %</label><input type="text" id="mafter" inputmode="decimal">
+      <span class="hint">Подходит любому заёмщику, дети не нужны. Лимита кредита нет. Если ставка застройщика на весь срок, поставьте его равным сроку кредита. Ставку после него уточните у застройщика и банка.</span></div>
   </section>
 
   <section class="card" id="izCard" aria-labelledby="h-iz" hidden>
@@ -571,7 +571,7 @@ var _sync0=sync;sync=function(){_sync0();kui();tui()};
 /* === способ покупки (шаг 1) */
 var PM=[{t:'Семейная ипотека',v:'fam'},{t:'Рыночная ипотека',v:'mkt'},{t:'Рассрочка застройщика',v:'inst'}];
 var PMH={fam:'<b>Семейная ипотека</b>Заполните ниже по порядку: <ol><li>вид (семейная или ИТ) и регион;</li><li>дети, цена, свои деньги, срок.</li></ol>Результат сразу вверху и ниже.',
- mkt:'<b>Рыночная ипотека</b>Ниже в блоке «Рыночная ипотека» введите: <ol><li>ставку в льготный период (или платёж в ₽/мес, если застройщик его фиксирует);</li><li>сколько лет он действует;</li><li>ставку после. Пример: платёж 10 000 ₽, 2 года, потом 20 %.</li></ol>',
+ mkt:'<b>Рыночная ипотека</b>Ниже в блоке «Рыночная ипотека» введите: <ol><li>ставку первых лет (или платёж в ₽/мес, если застройщик его фиксирует);</li><li>сколько лет он действует;</li><li>ставку после. Пример: платёж 10 000 ₽, 2 года, потом 20 %.</li></ol>',
  inst:'<b>Рассрочка застройщика</b>Откройте блок «Рассрочки» и заполните «Своя рассрочка 1»: взнос, платежи по месяцам и чем закрывается остаток (ипотекой или наличными). Для типовых условий возьмите «Быстрый старт».',};
 var _ovHome=null,_instHome=null;
 function pmodeVal(){return S.prog==='mkt'?'mkt':'fam'}
@@ -654,8 +654,8 @@ function buyCompare(S,M){
   // MAIN: выбранная программа вверху калькулятора (то, что в шапке отчёта), с полной раскладкой
   if(!M.noAlt&&M.loan>0&&M.pay>0){var aft=M.after,mkMain=M.mk;
     var rowsM=[['Цена для клиента',M.T],['Минимальный взнос по условиям',M.needShow],['Ваши средства',O],['Кредит (цена минус ваши средства)',M.loan],['Платёж в месяц',M.pay]];
-    if(aft)rowsM.push([mkMain?'Платёж после льготного периода':'Платёж после '+aft.y+' лет (оценка)',aft.pay]);
-    add({id:'MAIN',name:'Ваш расчёт: '+M.name,price:M.T,note:(mkMain&&num(S.mpay)>0&&aft)?'Платёж '+rub(num(S.mpay))+' в льготный период, затем ставка '+pct(aft.rate):'Ставка '+pct(M.eff),need:M.needShow,pay1:M.pay,pay2:aft?aft.pay:null,pay2n:aft?(mkMain?'после льготного периода':'после '+aft.y+' лет'):'',total:O+M.tot,ok:!!(M.pvOk&&M.limOk&&M.loan>=0),short:Math.max(M.needShow-O,0),rows:rowsM,limBad:!M.limOk,combo:M.cur&&M.cur.hi>0,loan:M.loan})}
+    if(aft)rowsM.push([mkMain?'Платёж после смены ставки':'Платёж после '+aft.y+' лет (оценка)',aft.pay]);
+    add({id:'MAIN',name:'Ваш расчёт: '+M.name,price:M.T,note:(mkMain&&num(S.mpay)>0&&aft)?'Платёж '+rub(num(S.mpay))+' первые годы, затем ставка '+pct(aft.rate):'Ставка '+pct(M.eff),need:M.needShow,pay1:M.pay,pay2:aft?aft.pay:null,pay2n:aft?(mkMain?'после льготного периода':'после '+aft.y+' лет'):'',total:O+M.tot,ok:!!(M.pvOk&&M.limOk&&M.loan>=0),short:Math.max(M.needShow-O,0),rows:rowsM,limBad:!M.limOk,combo:M.cur&&M.cur.hi>0,loan:M.loan})}
   // A: семейная с субсидией застройщика
   var bsub=num(S.bsub);
   if(M.fam&&bsub>0){var dA=pc_('bdis'),apvT=String(S.bapv==null?'':S.bapv).trim(),apvN=apvT===''?'':(num(apvT)>0?apvT:'0,000001');famItem('A','Семейная ипотека с субсидией застройщика',priceAfter(dA),bsub,'Ставка '+pct(bsub/100)+(dA>0?', скидка '+pct(dA):'')+(apvT!==''?(num(apvT)>0?', минимальный взнос '+pct(num(apvT)/100):', без первоначального взноса'):''),apvN)}
@@ -860,7 +860,7 @@ function calc(){
   $('famCard').hidden=mk; $('regF').hidden=!fam; $('kidsF').hidden=!fam||iz; $('halfF').hidden=!fam||iz;
   $('mktCard').hidden=!mk; $('itCard').hidden=!it; $('izCard').hidden=!iz; $('afterCard').hidden=it; $('keyField').hidden=mk||it;
   $('h-fam').textContent=fam?'Семья и программа':'Рыночная ипотека';
-  $('progHint').textContent=mk?'Рыночная ипотека: можно указать льготный период (ставку или платёж) и ставку после него. Семейная ипотека отключена: дети и лимит кредита не учитываются.':(it?'ИТ-ипотека: 6 % на льготную часть, остальное по рыночной ставке. Лимиты настраиваются ниже. Дети не нужны.':'Ставка и лимит зависят от числа детей.');
+  $('progHint').textContent=mk?'Рыночная ипотека: можно указать условия первых лет (ставку или платёж) и рыночную ставку после них. Семейная ипотека отключена: дети и лимит кредита не учитываются.':(it?'ИТ-ипотека: 6 % на льготную часть, остальное по рыночной ставке. Лимиты настраиваются ниже. Дети не нужны.':'Ставка и лимит зависят от числа детей.');
   $('regHint').textContent=iz?'ИЖС и земля под ИЖС: ставка 6 % не зависит от числа детей. Единого лимита нет, впишите по банку.':(ms?'Москва, Санкт-Петербург, Московская и Ленинградская области: свои ставки и лимиты.':'Новосибирск и остальные регионы.');
   $('subLine').textContent=(M.combo?'Комбо-ипотека · ':'')+(mk?'Рыночная ипотека · для всех заёмщиков':(it?'ИТ-ипотека · условия 2026 года':(iz?'Семейная ипотека 6 % · ИЖС и земля под ИЖС':(ms?'Семейная ипотека · Москва, СПб, МО, ЛО · условия с 1 октября 2026':'Семейная ипотека · Новосибирск и регионы · условия с 1 октября 2026'))));
   $('lPrice').textContent=iz?'Стоимость дома или участка по договору, ₽':'Стоимость квартиры по договору, ₽';
@@ -906,7 +906,7 @@ function calc(){
   rows.push(['Итого взнос',rub(total)+' · '+pct(T>0?total/T:0)]);
   rows.push(['Сумма кредита',rub(Math.max(loan,0))]);
   if((it||cur.combo)&&loan>0){rows.push(['Льготная часть, '+pct(eff),rub(cur.lo)+' · '+rub(cur.plo)+'/мес']);if(cur.hi>0)rows.push(['Рыночная часть, '+pct(it?M.itm:M.mrk),rub(cur.hi)+' · '+rub(cur.phi)+'/мес'])}
-  else rows.push(mk&&num(S.mpay)>0&&after?['Платёж в льготный период','фиксированный']:['Ставка',pct(eff)+(fixedWhole?' · на весь срок':'')]);
+  else rows.push(mk&&num(S.mpay)>0&&after?['Платёж первые годы','фиксированный']:['Ставка',pct(eff)+(fixedWhole?' · на весь срок':'')]);
   if(fam&&!iz)rows.push(['Лимит кредита ('+kids+(kids===5?' и более':'')+' дет.)',rub(limit)]);
   else if(iz)rows.push(['Лимит кредита (по банку)',rub(limit)]);
   else if(it)rows.push(['Лимит: льготная часть / всего',rub(IT_L)+' / '+rub(IT_MAX)]);
@@ -918,7 +918,7 @@ function calc(){
   $('heroK').textContent='Платёж в месяц · '+(M.combo?'комбо-ипотека, ':'')+firstTxt;
   var spreadTxt=iz?'3,5':'3';
   if(after){$('afterDl').innerHTML=[[mk?'Остаток долга после субсидии':'Остаток долга на конец 15-го года',rub(after.bal)],[mk?'Ставка после субсидии':'Ставка после 15 лет',pct(after.rate)],[mk?'Платёж после субсидии':'Платёж после 15 лет',rub(after.pay)+' / мес']].map(function(r){var v=String(r[1]),i=v.indexOf(' · ');if(i>0)v=v.slice(0,i)+'<span class="sub">'+v.slice(i+3)+'</span>';return '<dt>'+r[0]+'</dt><dd>'+v+'</dd>'}).join('');
-    $('afterHint').textContent=mk?'Ставка после льготного периода взята из вашего ввода. Уточните её у застройщика и банка.':'Берётся меньшее из «ставка по договору + 4 п.п.» ('+pct(after.ra)+') и «ключевая + '+spreadTxt+' п.п.» ('+pct(after.rb)+'). Это оценка по правилам с 1 октября 2026 года: законодательство и ключевая ставка могут измениться, тогда изменится и платёж.';}
+    $('afterHint').textContent=mk?'Ставка после смены взята из вашего ввода. Уточните её у застройщика и банка.':'Берётся меньшее из «ставка по договору + 4 п.п.» ('+pct(after.ra)+') и «ключевая + '+spreadTxt+' п.п.» ('+pct(after.rb)+'). Это оценка по правилам с 1 октября 2026 года: законодательство и ключевая ставка могут измениться, тогда изменится и платёж.';}
   else{$('afterDl').innerHTML=mk?'<dt>Субсидия на весь срок</dt><dd>ставка не меняется</dd>':(fixedWhole?'<dt>Ставка '+pct(eff)+' на весь срок</dt><dd>платёж не меняется</dd>':'<dt>Срок до 15 лет</dt><dd>льгота на весь срок</dd>');$('afterHint').textContent=fixedWhole?'Взнос от 50 %: ставка не выше 6 % действует на весь срок кредита, после 15 лет она не повышается.':'';}
 
   var tot=M.tot;

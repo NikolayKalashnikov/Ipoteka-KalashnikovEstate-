@@ -346,8 +346,8 @@ function buyCompare(S,M){
   // MAIN: выбранная программа вверху калькулятора (то, что в шапке отчёта), с полной раскладкой
   if(!M.noAlt&&M.loan>0&&M.pay>0){var aft=M.after,mkMain=M.mk;
     var rowsM=[['Цена для клиента',M.T],['Минимальный взнос по условиям',M.needShow],['Ваши средства',O],['Кредит (цена минус ваши средства)',M.loan],['Платёж в месяц',M.pay]];
-    if(aft)rowsM.push([mkMain?'Платёж после льготного периода':'Платёж после '+aft.y+' лет (оценка)',aft.pay]);
-    add({id:'MAIN',name:'Ваш расчёт: '+M.name,price:M.T,note:(mkMain&&num(S.mpay)>0&&aft)?'Платёж '+rub(num(S.mpay))+' в льготный период, затем ставка '+pct(aft.rate):'Ставка '+pct(M.eff),need:M.needShow,pay1:M.pay,pay2:aft?aft.pay:null,pay2n:aft?(mkMain?'после льготного периода':'после '+aft.y+' лет'):'',total:O+M.tot,ok:!!(M.pvOk&&M.limOk&&M.loan>=0),short:Math.max(M.needShow-O,0),rows:rowsM,limBad:!M.limOk,combo:M.cur&&M.cur.hi>0,loan:M.loan})}
+    if(aft)rowsM.push([mkMain?'Платёж после смены ставки':'Платёж после '+aft.y+' лет (оценка)',aft.pay]);
+    add({id:'MAIN',name:'Ваш расчёт: '+M.name,price:M.T,note:(mkMain&&num(S.mpay)>0&&aft)?'Платёж '+rub(num(S.mpay))+' первые годы, затем ставка '+pct(aft.rate):'Ставка '+pct(M.eff),need:M.needShow,pay1:M.pay,pay2:aft?aft.pay:null,pay2n:aft?(mkMain?'после льготного периода':'после '+aft.y+' лет'):'',total:O+M.tot,ok:!!(M.pvOk&&M.limOk&&M.loan>=0),short:Math.max(M.needShow-O,0),rows:rowsM,limBad:!M.limOk,combo:M.cur&&M.cur.hi>0,loan:M.loan})}
   // A: семейная с субсидией застройщика
   var bsub=num(S.bsub);
   if(M.fam&&bsub>0){var dA=pc_('bdis'),apvT=String(S.bapv==null?'':S.bapv).trim(),apvN=apvT===''?'':(num(apvT)>0?apvT:'0,000001');famItem('A','Семейная ипотека с субсидией застройщика',priceAfter(dA),bsub,'Ставка '+pct(bsub/100)+(dA>0?', скидка '+pct(dA):'')+(apvT!==''?(num(apvT)>0?', минимальный взнос '+pct(num(apvT)/100):', без первоначального взноса'):''),apvN)}
@@ -524,7 +524,7 @@ function row(a,b){return '<dt>'+a+'</dt><dd>'+b+'</dd>'}
 var h='',H={hero:'',st:'',cmp:'',top:'',chips:'',comp:'',after:'',term:'',tax:'',cta:'',foot:''};
 if(loan>0)H.hero+='<div class="hero"><div class="k">'+(M.combo?'Комбо-ипотека · ':'')+'Платёж в месяц · '+firstTxt+'</div><div class="big">'+rub(pay)+'</div><div class="meta"><span>'+((mk&&num(S.mpay)>0&&after)?'Ставка после':(cur.hi>0?'Ставки':'Ставка'))+' <b>'+((mk&&num(S.mpay)>0&&after)?pct(after.rate):(cur.hi>0?pct(eff)+' + '+pct(it?M.itm:M.mrk):pct(eff)))+'</b></span><span>Срок <b>'+years+' лет</b></span><span>Кредит <b>'+rub(loan)+'</b></span></div></div>';
 var pvShare=T>0?total/T:0, needShare=T>0?need/T:0, ch=[];
-if(mk){ch.push(['Программа','Рыночная ипотека'],(num(S.mpay)>0&&after)?['Платёж в льготный период',rub(num(S.mpay))+' · '+after.sy+' лет']:['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После льготного периода',after?pct(after.rate):'ставка не меняется'])}
+if(mk){ch.push(['Программа','Рыночная ипотека'],(num(S.mpay)>0&&after)?['Платёж первые годы',rub(num(S.mpay))+' · '+after.sy+' лет']:['Ставка',pct(eff)+(after?' · '+after.sy+' лет':'')],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['После льготного периода',after?pct(after.rate):'ставка не меняется'])}
 else if(it){ch.push(['Программа','ИТ-ипотека'],['Ставка льготной части',pct(eff)+' · весь срок'],['Ставка сверх '+rub(IT_L),cur.hi>0?pct(M.itm):'не нужна'],['Взнос',pct(pvShare)+' · мин. '+pct(needShare)],['Лимит кредита',rub(limit)+' всего'],['Срок',years+' лет'])}
 else{ch.push(['Программа',iz?'Семейная ипотека · ИЖС':(M.ms?'Семейная ипотека · Москва, СПб, МО, ЛО':'Семейная ипотека')]);
   if(!iz)ch.push(['Детей в семье',kids>=5?'5 и более':String(kids)]);
@@ -555,7 +555,7 @@ H.comp+='<section><h2>Из чего состоит расчёт</h2><dl>'+r.join
 if(loan>0){
   var a=[];
   if(after){
-    a.push(row(mk?'После льготного периода ('+after.sy+' лет)':'После 15 лет','')+'',row('Остаток долга',rub(after.bal)),row('Ставка',pct(after.rate)),row('Платёж в месяц',rub(after.pay)));
+    a.push(row(mk?'Через '+after.sy+' лет ставка меняется на рыночную':'После 15 лет','')+'',row('Остаток долга',rub(after.bal)),row('Ставка',pct(after.rate)),row('Платёж в месяц',rub(after.pay)));
     a.push('<div class="sep"></div>');
   }
   a.push(row('Всего банку за срок',rub(tot)),row('из них проценты',rub(tot-loan)));
