@@ -157,12 +157,47 @@ details.sub>*:not(summary){margin-top:10px}.bgrp{font-weight:700;font-size:12px;
 .rbwin{border:1.5px solid var(--ok);background:var(--ok-bg);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:4px}.rbwin .k{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ok)}.rbwin .n{font-size:18px;font-weight:700;line-height:1.25}.rbwin .v{font-size:14px;color:var(--ok);font-weight:600}
 .rbar{display:flex;flex-direction:column;gap:5px}.rbl{display:flex;justify-content:space-between;gap:10px;font-size:13.5px}.rbl span{min-width:0}.rbl b{white-space:nowrap}.rbt2{height:10px;border-radius:99px;background:var(--line);overflow:hidden}.rbt2 i{display:block;height:100%;border-radius:99px;background:#6B1527}.rbar.top .rbt2 i{background:var(--ok)}.rbar.no{opacity:.6}.rbar.no .rbt2 i{background:var(--muted)}.rbn{font-size:12px;color:var(--bad)}
 .rtab{overflow-x:auto}.rtab table{width:100%;border-collapse:collapse;font-size:12.5px}.rtab th{text-align:left;color:var(--muted);font-weight:600;padding:6px 6px 6px 0;border-bottom:1px solid var(--line)}.rtab td{padding:8px 6px 8px 0;border-bottom:1px solid var(--line);vertical-align:top}.rtab tr.no td{opacity:.6}.rtab td:nth-child(2),.rtab td:nth-child(3){white-space:nowrap}
+
+/* === Кнопка PDF и печатная версия (A4) === */
+.pdfb{display:inline-flex;align-items:center;gap:8px;margin-top:14px;min-height:44px;padding:0 18px;border-radius:99px;border:1.5px solid rgba(255,255,255,.7);background:rgba(255,255,255,.12);color:#fff;font:700 14px var(--font-body);cursor:pointer}
+.pdfb:hover{background:rgba(255,255,255,.22)}.pdfb:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.pdfb2{width:100%}
+.prn{display:none}
+@page{size:A4;margin:14mm 12mm 18mm;@bottom-left{content:"KalashnikovEstate · Сомелье недвижимости · +7 913 001 90 41 · @NAKalashnikov";font:8pt Inter,Arial,sans-serif;color:#6F5A5E}@bottom-right{content:counter(page) " / " counter(pages);font:8pt Inter,Arial,sans-serif;color:#6F5A5E}}
+@media print{
+  html,body{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-size:10.5pt;line-height:1.45;padding:0!important;color:#2A0F17}
+  .wrap{max-width:none!important;width:100%;gap:10px}
+  header{margin:0 0 12px!important;padding:16px 18px!important;border-radius:10px;clip-path:none!important;background:linear-gradient(160deg,#78192D,#560E20)!important;color:#fff!important}
+  header .in{max-width:none!important}
+  header .q,header .qs{display:none!important}
+  header h1{font-size:26pt!important;margin:8px 0 4px!important;color:#fff!important}
+  header .brand,header .sub{color:#fff!important}
+  .pdfb,.pdfb2,.btns,.btn,.opn,.bsx,.vz-det summary::after,details>summary::after,details>summary::marker{display:none!important}
+  .prn{display:block}
+  section#buy{break-inside:auto!important;page-break-inside:auto!important}
+  section,.hero,.bs,.vz-det,.chip,.rbwin,table tr,.vz-win{break-inside:avoid;page-break-inside:avoid}
+  section,.hero{box-shadow:none!important}
+  h2{break-after:avoid;page-break-after:avoid}
+  .hero .big{font-size:40pt!important}
+  details>*{display:revert}
+  .rtab{overflow:visible!important}
+  a{color:inherit;text-decoration:none}
+  section.hl{display:none!important}
+  .pcta{border:2px solid #6B1527;border-radius:12px;padding:16px 18px;background:linear-gradient(160deg,#FBF7F2,#fff);break-inside:avoid}
+  .pcta h3{margin:0 0 6px;font:700 20pt var(--font-display);color:#6B1527;line-height:1.15}
+  .pcta p{margin:4px 0;font-size:11pt}
+  .pcta .pc{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;padding-top:10px;border-top:1px solid #E6DACE;font-weight:700;font-size:12pt;color:#6B1527}
+  .pcta .pc span{white-space:nowrap}
+}
 </style></head><body>
 <header><div class="in"><div class="q" aria-hidden="true">“</div>
   <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
   <div class="qs" aria-hidden="true">“</div>
   <h1 id="ttl">Расчёт ипотеки</h1>
   <div class="sub" id="sub"></div>
+  <button type="button" class="pdfb" id="pdfBtn" aria-label="Сохранить расчёт в PDF">⬇ Сохранить в PDF</button>
+  <div class="prn sub" id="pdate" style="margin-top:6px"></div>
 </div></header>
 <main class="wrap" id="app"></main>
 <script>
@@ -506,10 +541,22 @@ var RB=buyCompare(S,M);if(loan>0||RB.items.length){var bh=buyReportHTML(RB,{hide
 var ask='Хочу подбор объектов под этот расчёт.\nПрограмма: '+(mk?'ставка застройщика':it?'ИТ-ипотека':iz?'семейная ипотека, ИЖС':'семейная ипотека'+(M.ms?' (Москва, СПб)':'')+', детей: '+kids)+'\nОбъект: '+rub(T)+'\nВзнос: '+rub(total)+' ('+pct(T>0?total/T:0)+')'+(loan>0?'\nПлатёж: '+rub(pay)+' в месяц, ставка '+pct(eff)+', срок '+years+' лет':'');
 var cta=loan>0?'Хотите, я подберу объекты под платёж '+rub(pay)+' и ваш взнос?':'Хотите, я подберу объекты под ваш расчёт?';
 if(loan>0)H.top='<div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Подобрать объекты под этот платёж</a></div>';
-H.cta+='<section class="hl"><h2>Что дальше</h2><p class="who">'+cta+'</p><p class="muted">Проверю условия у застройщика и банка, покажу короткий список с честным разбором каждого объекта.</p><div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Оставить заявку на подбор</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div><p class="muted">Персональный расчёт подготовил Николай Калашников · в недвижимости с 2017 года, более 400 сделок</p></section>';
+H.cta+='<section class="hl"><h2>Что дальше</h2><p class="who">'+cta+'</p><p class="muted">Проверю условия у застройщика и банка, покажу короткий список с честным разбором каждого объекта.</p><div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Оставить заявку на подбор</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="https://t.me/NAKalashnikov" target="_blank" rel="noopener">Написать в Telegram</a><button type="button" class="btn ghost pdfb2" data-pdf="1">Сохранить расчёт в PDF</button><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div><p class="muted">Персональный расчёт подготовил Николай Калашников · в недвижимости с 2017 года, более 400 сделок</p></section>';
+H.foot+='<div class="pcta prn"><h3>Подберу объекты под этот расчёт</h3><p>Проверю условия у застройщика и банка и покажу короткий список с честным разбором каждого объекта. Без скрытых условий.</p><p>Николай Калашников · в недвижимости с 2017 года, более 400 сделок.</p><div class="pc"><span>☎ +7 913 001 90 41</span><span>Telegram @NAKalashnikov</span><span>nikolaykalashnikov.github.io/Ipoteka-KalashnikovEstate-</span></div></div>';
 H.foot+='<p class="muted">© 2026 Калашников Николай Анатольевич · KalashnikovEstate. Материалы и расчёты защищены авторским правом; копирование без разрешения запрещено.</p>';
 H.foot+='<p class="muted">Расчёт предварительный и не является офертой банка. Окончательные условия определяет банк. Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>';
 h=H.hero+H.st+(H.buy?'<a class="opn" href="#buy"><span><b>Открытая математика</b>Все способы покупки рядом: платежи, взносы, переплата</span><i>↓</i></a>':'')+H.chips+(H.buy||'')+H.cmp+H.top+H.comp+H.after+H.term+H.tax+H.cta+H.foot;
 app.innerHTML=h;
+})();
+
+(function(){
+  var saved=[];
+  function d(){var t=new Date();return ('0'+t.getDate()).slice(-2)+'.'+('0'+(t.getMonth()+1)).slice(-2)+'.'+t.getFullYear()}
+  var pd=document.getElementById('pdate');if(pd)pd.textContent='Расчёт от '+d()+' · KalashnikovEstate · +7 913 001 90 41';
+  var oldT=document.title;
+  window.addEventListener('beforeprint',function(){saved=[];document.querySelectorAll('details').forEach(function(x){saved.push([x,x.open]);x.open=true});document.title='Расчёт ипотеки '+d()+' · KalashnikovEstate'});
+  window.addEventListener('afterprint',function(){saved.forEach(function(s){s[0].open=s[1]});document.title=oldT});
+  function go(){try{window.print()}catch(e){alert('Откройте меню браузера и выберите «Печать» → «Сохранить как PDF»')}}
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#pdfBtn,[data-pdf]');if(b){e.preventDefault();go()}});
 })();
 </script></body></html>
