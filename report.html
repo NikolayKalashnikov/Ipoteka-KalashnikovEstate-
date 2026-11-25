@@ -190,6 +190,37 @@ details.sub>*:not(summary){margin-top:10px}.bgrp{font-weight:700;font-size:12px;
   .pcta .pc{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;padding-top:10px;border-top:1px solid #E6DACE;font-weight:700;font-size:12pt;color:#6B1527}
   .pcta .pc span{white-space:nowrap}
 }
+/* PDF для телефонов: те же правила, что для печати */
+.pdfroot{position:absolute;left:0;top:0;width:760px;z-index:-1;background:#fff;color:#2A0F17;font:14px/1.45 var(--font-body)}
+.pdfroot .wrap{display:flex;flex-direction:column;gap:14px}
+#pdfov{position:fixed;inset:0;z-index:9999;background:#fff;display:flex;align-items:center;justify-content:center;padding:24px;text-align:center}
+#pdfov .bx{max-width:360px;display:flex;flex-direction:column;gap:12px}
+#pdfov h3{font:700 24px var(--font-display);margin:0;color:#6B1527}
+#pdfov .btn{width:100%}
+.pdfroot{background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.pdfroot{font-size:10.5pt;line-height:1.45;padding:0!important;color:#2A0F17}
+.pdfroot .wrap{max-width:none!important;width:100%;gap:10px}
+.pdfroot header{margin:0 0 12px!important;padding:16px 18px!important;border-radius:10px;clip-path:none!important;background:linear-gradient(160deg,#78192D,#560E20)!important;color:#fff!important}
+.pdfroot header .in{max-width:none!important}
+.pdfroot header .q,.pdfroot header .qs{display:none!important}
+.pdfroot header h1{font-size:26pt!important;margin:8px 0 4px!important;color:#fff!important}
+.pdfroot header .brand,.pdfroot header .sub{color:#fff!important}
+.pdfroot .pdfb,.pdfroot .pdfb2,.pdfroot .btns,.pdfroot .btn,.pdfroot .opn,.pdfroot .bsx,.pdfroot .vz-det summary::after,.pdfroot details>summary::after,.pdfroot details>summary::marker{display:none!important}
+.pdfroot .prn{display:block}
+.pdfroot section#buy{break-inside:auto!important;page-break-inside:auto!important}
+.pdfroot section,.pdfroot .hero,.pdfroot .bs,.pdfroot .vz-det,.pdfroot .chip,.pdfroot .rbwin,.pdfroot table tr,.pdfroot .vz-win{break-inside:avoid;page-break-inside:avoid}
+.pdfroot section,.pdfroot .hero{box-shadow:none!important}
+.pdfroot h2{break-after:avoid;page-break-after:avoid}
+.pdfroot .hero .big{font-size:40pt!important}
+.pdfroot details>*{display:revert}
+.pdfroot .rtab{overflow:visible!important}
+.pdfroot a{color:inherit;text-decoration:none}
+.pdfroot section.hl{display:none!important}
+.pdfroot .pcta{border:2px solid #6B1527;border-radius:12px;padding:16px 18px;background:linear-gradient(160deg,#FBF7F2,#fff);break-inside:avoid}
+.pdfroot .pcta h3{margin:0 0 6px;font:700 20pt var(--font-display);color:#6B1527;line-height:1.15}
+.pdfroot .pcta p{margin:4px 0;font-size:11pt}
+.pdfroot .pcta .pc{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:10px;padding-top:10px;border-top:1px solid #E6DACE;font-weight:700;font-size:12pt;color:#6B1527}
+.pdfroot .pcta .pc span{white-space:nowrap}
 </style></head><body>
 <header><div class="in"><div class="q" aria-hidden="true">“</div>
   <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
@@ -558,5 +589,79 @@ app.innerHTML=h;
   window.addEventListener('afterprint',function(){saved.forEach(function(s){s[0].open=s[1]});document.title=oldT});
   function go(){try{window.print()}catch(e){alert('Откройте меню браузера и выберите «Печать» → «Сохранить как PDF»')}}
   document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#pdfBtn,[data-pdf]');if(b){e.preventDefault();go()}});
+})();
+
+(function(){
+  function mob(){return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)||(navigator.maxTouchPoints>1&&/Macintosh/.test(navigator.userAgent))}
+  function ld(u){return new Promise(function(ok,no){var s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=function(){no(new Error('load'))};document.head.appendChild(s)})}
+  function fname(){var t=new Date();return 'Расчёт ипотеки '+('0'+t.getDate()).slice(-2)+'.'+('0'+(t.getMonth()+1)).slice(-2)+'.'+t.getFullYear()+' KalashnikovEstate.pdf'}
+  function ov(html){var o=document.getElementById('pdfov');if(!o){o=document.createElement('div');o.id='pdfov';document.body.appendChild(o)}o.innerHTML='<div class="bx">'+html+'</div>';return o}
+  function close(){var o=document.getElementById('pdfov');if(o)o.remove()}
+  async function make(){
+    ov('<h3>Готовлю PDF…</h3><p class="muted">Это займёт несколько секунд.</p>');
+    var root;
+    try{
+      if(!window.html2canvas)await ld('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+      if(!(window.jspdf&&window.jspdf.jsPDF))await ld('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+      if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+      root=document.createElement('div');root.className='pdfroot';
+      var hd=document.querySelector('header').cloneNode(true),ap=document.getElementById('app').cloneNode(true);
+      root.appendChild(hd);root.appendChild(ap);
+      root.querySelectorAll('[id]').forEach(function(e){e.removeAttribute('id')});
+      root.querySelectorAll('details').forEach(function(d){d.open=true});
+      document.body.appendChild(root);
+      var blocks=[hd].concat(Array.prototype.slice.call(ap.children));
+      var PW=210,M=10,CW=PW-2*M,PH=297,TOP=10,BOT=16,CH=PH-TOP-BOT,K=CW/760,GAP=4;
+      var pages=[[]],used=0;
+      for(var i=0;i<blocks.length;i++){
+        if(!blocks[i].offsetHeight)continue;
+        var cv=await html2canvas(blocks[i],{scale:2,backgroundColor:'#ffffff',useCORS:true,logging:false});
+        if(!cv.width||!cv.height)continue;
+        var hmm=cv.height/2*K;
+        if(hmm<=CH){
+          if(used>0&&used+hmm>CH){pages.push([]);used=0}
+          pages[pages.length-1].push({cv:cv,y0:0,y1:cv.height,y:used,h:hmm});used+=hmm+GAP;
+        }else{
+          if(used>0){pages.push([]);used=0}
+          var perPx=Math.floor(CH/K*2),y=0;
+          var bt=blocks[i].getBoundingClientRect().top,cuts=[];
+          blocks[i].querySelectorAll(':scope>*,.rbx>*').forEach(function(e){var r=e.getBoundingClientRect();if(r.height>0)cuts.push(Math.round((r.bottom-bt)*2)+4)});
+          cuts.sort(function(a,b){return a-b});
+          while(y<cv.height){var y1=Math.min(cv.height,y+perPx);
+            if(y1<cv.height){var best=0;cuts.forEach(function(c){if(c>y+perPx*0.45&&c<=y+perPx)best=c});if(best)y1=Math.min(best,cv.height)}if(used>0){pages.push([]);used=0}
+            pages[pages.length-1].push({cv:cv,y0:y,y1:y1,y:0,h:(y1-y)/2*K});used=(y1-y)/2*K+GAP;y=y1}
+        }
+      }
+      var pdf=new window.jspdf.jsPDF({unit:'mm',format:'a4',compress:true});
+      for(var p=0;p<pages.length;p++){
+        if(p>0)pdf.addPage();
+        pages[p].forEach(function(it){
+          var c=document.createElement('canvas');c.width=it.cv.width;c.height=it.y1-it.y0;
+          var cx=c.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,c.width,c.height);cx.drawImage(it.cv,0,it.y0,it.cv.width,c.height,0,0,c.width,c.height);
+          pdf.addImage(c.toDataURL('image/jpeg',0.92),'JPEG',M,TOP+it.y,CW,it.h,undefined,'FAST');
+        });
+        var ft=document.createElement('div');ft.style.cssText='position:absolute;left:0;top:0;z-index:-1;width:760px;background:#fff;display:flex;justify-content:space-between;font:12px Inter,Arial,sans-serif;color:#6F5A5E;border-top:1px solid #E6DACE;padding:6px 0';
+        ft.innerHTML='<span>KalashnikovEstate · Сомелье недвижимости · +7 913 001 90 41 · @NAKalashnikov</span><span>'+(p+1)+' / '+pages.length+'</span>';
+        document.body.appendChild(ft);
+        var fc=await html2canvas(ft,{scale:2,backgroundColor:'#ffffff',logging:false});ft.remove();
+        pdf.addImage(fc.toDataURL('image/jpeg',0.92),'JPEG',M,PH-BOT+3,CW,fc.height/2*K);
+      }
+      var blob=pdf.output('blob'),name=fname(),file=new File([blob],name,{type:'application/pdf'}),url=URL.createObjectURL(blob);
+      root.remove();
+      var canShare=!!(navigator.canShare&&navigator.canShare({files:[file]}));
+      ov('<h3>PDF готов</h3><p class="muted">'+(canShare?'Нажмите «Сохранить / отправить» и выберите «Сохранить в Файлы» или мессенджер.':'Нажмите «Скачать PDF». Если файл не скачался, нажмите «Открыть» и сохраните его из браузера.')+'</p>'
+        +(canShare?'<button class="btn" id="pdfShare" type="button">Сохранить / отправить</button>':'')
+        +'<a class="btn'+(canShare?' ghost':'')+'" id="pdfDl" href="'+url+'" download="'+name+'">Скачать PDF</a><a class="btn ghost" href="'+url+'" target="_blank" rel="noopener">Открыть</a><button class="btn ghost" id="pdfX" type="button">Закрыть</button>');
+      var sb=document.getElementById('pdfShare');if(sb)sb.addEventListener('click',function(){navigator.share({files:[file],title:'Расчёт ипотеки'}).catch(function(){})});
+      document.getElementById('pdfX').addEventListener('click',close);
+      window.__pdfBlob=blob;
+    }catch(e){
+      if(root)root.remove();try{console.log('PDFERR',e&&e.stack||e)}catch(_){}
+      ov('<h3>Не получилось сделать PDF</h3><p class="muted">Откройте эту ссылку в обычном браузере (Safari или Chrome), а не внутри мессенджера, и повторите. Либо в меню браузера выберите «Поделиться» → «Печать» → «Сохранить как PDF».</p><button class="btn" id="pdfX" type="button">Закрыть</button>');
+      document.getElementById('pdfX').addEventListener('click',close);
+    }
+  }
+  document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('#pdfBtn,[data-pdf]');if(b&&mob()){e.preventDefault();e.stopImmediatePropagation();make()}},true);
+  window.__makePdf=make;
 })();
 </script></body></html>
