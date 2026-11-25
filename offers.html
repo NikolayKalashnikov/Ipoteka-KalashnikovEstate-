@@ -1,0 +1,140 @@
+<title>Предложения ноября</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap">
+<style>
+/* Идея: тёмная витрина «винной карты» сомелье: крупная цифра предложения, под ней условия; цвет метки — тип предложения. */
+:root{
+  --bg:#150a0d; --surface:#21121a; --surface2:#2a1620; --line:#3a2330;
+  --fg:#f5ede7; --muted:#b9a8a6; --accent:#d6344c; --accent-ink:#ffffff; --gold:#d3ad72;
+  --t-ipo:#e0546a; --t-ras:#d3ad72; --t-ski:#6cc5a4;
+  --serif:"Playfair Display",Georgia,"Times New Roman",serif; --sans:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#faf5f2; --surface:#ffffff; --surface2:#f3e9e6; --line:#e5d6d1;
+  --fg:#2a1519; --muted:#6f5a5c; --accent:#8e1b2f; --accent-ink:#ffffff; --gold:#8a6420;
+  --t-ipo:#a8203a; --t-ras:#8a6420; --t-ski:#1d7a5c; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#faf5f2; --surface:#ffffff; --surface2:#f3e9e6; --line:#e5d6d1;
+  --fg:#2a1519; --muted:#6f5a5c; --accent:#8e1b2f; --accent-ink:#ffffff; --gold:#8a6420;
+  --t-ipo:#a8203a; --t-ras:#8a6420; --t-ski:#1d7a5c; color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 var(--sans);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px}
+.wrap{max-width:1080px;margin:0 auto}
+header{padding-block:28px 8px}
+.brand{font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);font-weight:600}
+h1{font:700 clamp(34px,8vw,60px)/1.05 var(--serif);margin:14px 0 10px;text-wrap:balance}
+.lead{color:var(--muted);max-width:60ch;margin:0 0 18px}
+.clock{display:inline-flex;gap:10px;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:600;font-size:14px}
+.clock b{color:var(--accent);font-size:18px;font-variant-numeric:tabular-nums}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 18px}
+.chips button{font:inherit;font-weight:600;font-size:14px;color:var(--fg);background:transparent;border:1px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chips button:focus-visible,.cta:focus-visible,.copy:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.dev{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.tags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid currentColor}
+.tag.ipo{color:var(--t-ipo)}.tag.ras{color:var(--t-ras)}.tag.ski{color:var(--t-ski)}
+h2{font:700 21px/1.25 var(--serif);margin:0;text-wrap:balance}
+.big{font:700 clamp(30px,7vw,38px)/1.05 var(--serif);color:var(--gold)}
+.big small{display:block;font:500 13px/1.4 var(--sans);color:var(--muted);margin-top:6px}
+ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+li{padding-left:16px;position:relative;color:var(--fg)}
+li::before{content:"";position:absolute;left:0;top:.7em;width:7px;height:1px;background:var(--gold)}
+.rates{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-variant-numeric:tabular-nums;margin:0}
+.rates dt{color:var(--muted)}.rates dd{margin:0;font-weight:700}
+.until{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px;margin-top:auto}
+.until b{color:var(--fg)}
+.act{display:flex;gap:8px;flex-wrap:wrap}
+.cta{background:var(--accent);color:var(--accent-ink);text-decoration:none;font-weight:700;font-size:14px;padding:10px 16px;border-radius:10px}
+.copy{font:inherit;font-weight:600;font-size:14px;background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:10px;padding:10px 14px;cursor:pointer}
+.me{margin-top:34px;display:grid;grid-template-columns:1fr;gap:14px;background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:22px}
+.me h3{font:700 22px/1.2 var(--serif);margin:0}
+.me p{margin:0;color:var(--muted);max-width:62ch}
+.contacts{display:flex;flex-wrap:wrap;gap:8px 22px;font-weight:600}
+.contacts a{color:var(--fg)}
+.fine{margin-top:22px;color:var(--muted);font-size:12.5px;max-width:80ch}
+.empty{display:none;color:var(--muted);padding:24px 0}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .2s}.card:hover{border-color:var(--gold)}}
+</style>
+
+<div class="wrap">
+<header>
+  <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
+  <h1>Предложения ноября</h1>
+  <p class="lead">Что действует у новосибирских застройщиков: ставки, рассрочки и скидки. Я посчитаю, какое из предложений действительно выгодно именно вам, и покажу всю математику.</p>
+  <div class="clock" id="clock">Условия ноября 2026</div>
+</header>
+
+<div class="chips" role="group" aria-label="Фильтр предложений">
+  <button type="button" data-f="all" aria-pressed="true">Все</button>
+  <button type="button" data-f="ipo" aria-pressed="false">Ипотека</button>
+  <button type="button" data-f="ras" aria-pressed="false">Рассрочка</button>
+  <button type="button" data-f="ski" aria-pressed="false">Скидки</button>
+</div>
+
+<div class="grid" id="grid"></div>
+<p class="empty" id="empty">В этой категории пока нет предложений.</p>
+
+<section class="me" aria-label="Расчёт под вас">
+  <h3>Посчитаю под ваш взнос и платёж</h3>
+  <p>Напишите цену квартиры, сколько есть на взнос и какой платёж комфортен. Верну отчёт: все способы покупки рядом, платёж, переплата и что выгоднее.</p>
+  <div class="contacts">
+    <span>Телефон: <b id="ph">+7 913 001 90 41</b></span>
+    <a href="https://t.me/NAKalashnikov" target="_blank" rel="noopener">Telegram @NAKalashnikov</a>
+    <a href="https://t.me/kalashnikovsommelier" target="_blank" rel="noopener">Канал «Сомелье недвижимости»</a>
+    <a href="https://kalashnikovestate.ru/" target="_blank" rel="noopener">Открыть калькулятор</a>
+  </div>
+</section>
+
+<p class="fine">Сведения из рабочего дайджеста застройщиков за ноябрь 2026 года. Это не публичная оферта: цены, ставки, наличие квартир и сроки подтверждает застройщик. Платёж зависит от планировки, срока ипотеки, банка и вашего взноса. Подарки и акции с пометкой «не суммируется» нельзя совмещать со скидками.</p>
+<p class="fine">© 2026 Калашников Николай Анатольевич · KalashnikovEstate · Сомелье недвижимости</p>
+</div>
+
+<script>
+var OFFERS=[
+ {dev:'ГК СОЮЗ',t:'Рассрочка до конца ноября',tags:['ras'],big:'взнос 500 000 ₽',bn:'платёж 50 000, 60 000 или 70 000 ₽ в месяц (зависит от планировки)',lines:['Подходит, если нет крупной суммы на старт','Платёж фиксируется по выбранной планировке'],until:'до конца ноября',hot:true},
+ {dev:'ГК СОЮЗ',t:'Чёрная пятница',tags:['ski'],big:'до 500 000 ₽',bn:'скидка на квартиру',lines:['Скидка уже отражена в прайсе на базовые условия и на 100 % оплату','Цену сравнивайте по таблице застройщика'],until:'акция ноября'},
+ {dev:'ГК СОЮЗ',t:'Семейная ипотека на 30 лет',tags:['ipo'],rates:[['1 ребёнок','9,99 %'],['2 ребёнка','7,99 %'],['3 ребёнка','5,99 %'],['4 ребёнка','3,99 %'],['5 детей','1,99 %']],lines:['Ставки с субсидией застройщика','Для сравнения: базовая ставка 13,9 % с удорожанием 13 %'],until:'ноябрь'},
+ {dev:'МЕТА',t:'Ипотека 10 % для всех на весь срок',tags:['ipo'],big:'10 % годовых',bn:'кредит до 6 млн ₽, остальное — первый взнос',lines:['Проекты: «Ясный берег» и «Квартал 54» (все квартиры, кроме 1С)','Пример: квартира 7,78 млн ₽, взнос 1,78 млн ₽, платёж от 52 655 ₽ в месяц на 30 лет'],until:'ноябрь'},
+ {dev:'МЕТА',t:'Скидки на квартиры',tags:['ski'],big:'до 2 000 000 ₽',bn:'скидка на квартиру',lines:['Трейд-ин: оценка за 3 дня и быстрый выход на сделку','Размер скидки зависит от квартиры, уточняйте по лотам'],until:'ноябрь'},
+ {dev:'МЕТА · Ясный берег',t:'Паркинг в подарок и скидка на ремонт',tags:['ski'],big:'паркинг в подарок',bn:'дом 32: скидка равна стоимости парковочного места',lines:['Действует при 100 % оплате или ипотеке без субсидированной ставки','Скидка 50 % на ремонт: во всех домах проекта на квартиры 3С и больше, в доме 19 на любую квартиру','Не суммируется с другими скидками и акциями'],until:'ноябрь'},
+ {dev:'Первый Строительный',t:'Ставка ниже на 2,1 п.п.',tags:['ipo'],rates:[['1 ребёнок','7,9 % (было 10 %), до 6 млн ₽'],['2 ребёнка','5,9 % (было 8 %), до 8 млн ₽'],['3 ребёнка','3,9 % (было 6 %), до 10 млн ₽']],lines:['Семейная ипотека на 30 лет','Во всех ЖК, кроме «Дом в Мичуринском»'],until:'ноябрь'},
+ {dev:'Первый Строительный',t:'Рассрочка',tags:['ras'],big:'взнос 30 %',bn:'платёж 1/100 от суммы рассрочки в месяц',lines:['Во всех ЖК, полный расчёт до конца строительства','«Дом в Мичуринском»: взнос 10 %, платёж 10 000 ₽ в месяц'],until:'ноябрь'},
+ {dev:'Расцветай на Бугринской роще',t:'Сниженные ставки семейной ипотеки',tags:['ipo'],rates:[['1 ребёнок','от 7,3 %'],['2 ребёнка','от 6 %'],['3 ребёнка','от 4,5 %'],['4 ребёнка','от 3 %'],['5 детей','1,5 %']],lines:['Ставка зависит от банка: Альфа-Банк, Дом.РФ, ВТБ, Совкомбанк','Назову банк с лучшей ставкой под вашу семью'],until:'ноябрь'},
+ {dev:'Новый Мир',t:'Рассрочка в сданных домах без процентов',tags:['ras'],big:'0 % переплаты',bn:'на полгода или 12 месяцев',lines:['Сданные дома, готовы к заселению','Есть акционные предложения по отдельным квартирам'],until:'ноябрь'},
+ {dev:'Новый Мир',t:'Накопи на первый взнос',tags:['ras','ipo'],big:'взнос 500 000 ₽',bn:'без ежемесячных платежей: внести весь взнос за 6 месяцев',lines:['Проект «Беринг 3»','Частичный взнос: «Беринг 2», «Оскар 2», «Оскар 3»'],until:'ноябрь'},
+ {dev:'Новосибирский квартал · Фламинго',t:'Готовые квартиры без первоначального взноса',tags:['ipo'],big:'взнос 0 ₽',bn:'ипотека с субсидированной ставкой',lines:['3Екв с подчистовой отделкой, 58,2 м²: 7 391 400 ₽, ставка 6 % для семьи с тремя детьми','2Екв с подчистовой отделкой, 45,1 м²: 5 502 200 ₽, ставка 10 % для семьи с одним ребёнком','Платёж рассчитаю под ваш срок'],until:'ноябрь'},
+ {dev:'СМСС · Лэнд Лорд',t:'Апартаменты: скидка или кладовая',tags:['ski'],big:'скидка 10 %',bn:'на закрытый пул юнитов',lines:['Или кладовая за 50 000 ₽ при покупке апартаментов от 30 м²','Скидка и кладовая не суммируются'],until:'ноябрь'}
+];
+var TG={ipo:'Ипотека',ras:'Рассрочка',ski:'Скидки'};
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function plain(o){var p=[o.dev+' · '+o.t];if(o.big)p.push(o.big+(o.bn?' — '+o.bn:''));if(o.rates)o.rates.forEach(function(r){p.push(r[0]+': '+r[1])});o.lines.forEach(function(l){p.push('• '+l)});p.push('Действует: '+o.until);p.push('Посчитаю под вас: https://t.me/NAKalashnikov — Николай Калашников, KalashnikovEstate');return p.join('\n')}
+var grid=document.getElementById('grid');
+OFFERS.forEach(function(o,i){
+  var c=document.createElement('article');c.className='card';c.dataset.tags=o.tags.join(' ');
+  var h='<div class="top"><div class="dev">'+esc(o.dev)+'</div><div class="tags">'+o.tags.map(function(t){return '<span class="tag '+t+'">'+TG[t]+'</span>'}).join('')+'</div></div><h2>'+esc(o.t)+'</h2>';
+  if(o.big)h+='<div class="big">'+esc(o.big)+(o.bn?'<small>'+esc(o.bn)+'</small>':'')+'</div>';
+  if(o.rates)h+='<dl class="rates">'+o.rates.map(function(r){return '<dt>'+esc(r[0])+'</dt><dd>'+esc(r[1])+'</dd>'}).join('')+'</dl>';
+  h+='<ul>'+o.lines.map(function(l){return '<li>'+esc(l)+'</li>'}).join('')+'</ul>';
+  h+='<div class="until">Действует: <b>'+esc(o.until)+'</b></div>';
+  var msg='Здравствуйте, Николай! Хочу посчитать предложение: '+o.dev+' — '+o.t;
+  h+='<div class="act"><a class="cta" target="_blank" rel="noopener" href="https://t.me/NAKalashnikov?text='+encodeURIComponent(msg)+'">Посчитать под меня</a><button type="button" class="copy" data-i="'+i+'">Скопировать</button></div>';
+  c.innerHTML=h;grid.appendChild(c)});
+document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){
+  var t=plain(OFFERS[+b.dataset.i]);
+  function ok(){var o=b.textContent;b.textContent='Скопировано';setTimeout(function(){b.textContent=o},1600)}
+  try{navigator.clipboard.writeText(t).then(ok,function(){b.textContent='Не получилось'})}catch(e){b.textContent='Не получилось'}})});
+var chips=document.querySelectorAll('.chips button');
+chips.forEach(function(b){b.addEventListener('click',function(){
+  chips.forEach(function(x){x.setAttribute('aria-pressed',String(x===b))});
+  var f=b.dataset.f,n=0;document.querySelectorAll('.card').forEach(function(c){var show=f==='all'||c.dataset.tags.split(' ').indexOf(f)>-1;c.hidden=!show;if(show)n++});
+  document.getElementById('empty').style.display=n?'none':'block'})});
+(function(){var el=document.getElementById('clock');try{
+  var end=new Date('2026-11-30T23:59:59+07:00'),d=Math.ceil((end-new Date())/864e5);
+  if(d>=0&&d<=40)el.innerHTML='До конца ноября: <b>'+d+'</b> '+(d%10===1&&d!==11?'день':(d%10>=2&&d%10<=4&&(d<10||d>20)?'дня':'дней'));
+  else if(d<0)el.textContent='Предложения ноября завершены: актуальные условия уточняйте'}catch(e){}})();
+</script>

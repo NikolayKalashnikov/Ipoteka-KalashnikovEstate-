@@ -15,7 +15,7 @@
 <meta property="og:locale" content="ru_RU">
 <meta property="og:title" content="Расчёт ипотеки · Николай Калашников">
 <meta property="og:description" content="Персональный расчёт ипотеки: платёж, взнос и условия программы.">
-<meta property="og:image" content="https://nikolaykalashnikov.github.io/calc-ipoteka.KalashnikovEstate/og-image.jpg">
+<meta property="og:image" content="https://kalashnikovestate.ru/og-image.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -23,7 +23,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Расчёт ипотеки · Николай Калашников">
 <meta name="twitter:description" content="Персональный расчёт ипотеки: платёж, взнос и условия программы.">
-<meta name="twitter:image" content="https://nikolaykalashnikov.github.io/calc-ipoteka.KalashnikovEstate/og-image.jpg">
+<meta name="twitter:image" content="https://kalashnikovestate.ru/og-image.jpg">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -544,6 +544,7 @@ else{
 H.st+=st.map(function(s){return '<div class="status '+s[0]+'"><span>'+(s[0]==='ok'?'✔':'⚠')+'</span><span>'+s[1]+'<br><span class="t">'+s[2]+'</span></span></div>'}).join('');
 var r=[row('Стоимость квартиры',rub(price))];
 if(repair>0)r.push(row('Ремонт в договоре',rub(repair)),row('Итого объект',rub(T)));
+if(M.area>0){r.push(row('Площадь',String(M.area).replace('.',',')+' м²'),row('Цена за м²'+(repairAll>0?' без ремонта':''),rub(price/M.area)));if(repairAll>0)r.push(row('Цена за м² с ремонтом',rub((price+repairAll)/M.area)))}
 r.push('<div class="sep"></div>',row('Первоначальный взнос',rub(total)+' · '+pct(T>0?total/T:0)));
 if(mat>0)r.push(row('из них маткапитал',rub(mat)));
 if(own>0)r.push(row('из них свои средства',rub(own)));
@@ -573,7 +574,7 @@ var ask='Хочу подбор объектов под этот расчёт.\n�
 var cta=loan>0?'Хотите, я подберу объекты под платёж '+rub(pay)+' и ваш взнос?':'Хотите, я подберу объекты под ваш расчёт?';
 if(loan>0)H.top='<div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Подобрать объекты под этот платёж</a></div>';
 H.cta+='<section class="hl"><h2>Что дальше</h2><p class="who">'+cta+'</p><p class="muted">Проверю условия у застройщика и банка, покажу короткий список с честным разбором каждого объекта.</p><div class="btns"><a class="btn" href="card.html?t=podbor&calc='+encodeURIComponent(ask)+'#zayavka">Оставить заявку на подбор</a><a class="btn ghost" href="tel:+79130019041">Позвонить +7 913 001 90 41</a><a class="btn ghost" href="https://t.me/NAKalashnikov" target="_blank" rel="noopener">Написать в Telegram</a><button type="button" class="btn ghost pdfb2" data-pdf="1">Сохранить расчёт в PDF</button><a class="btn ghost" href="card.html">Обо мне и условиях сотрудничества</a></div><p class="muted">Персональный расчёт подготовил Николай Калашников · в недвижимости с 2017 года, более 400 сделок</p></section>';
-H.foot+='<div class="pcta prn"><h3>Подберу объекты под этот расчёт</h3><p>Проверю условия у застройщика и банка и покажу короткий список с честным разбором каждого объекта. Без скрытых условий.</p><p>Николай Калашников · в недвижимости с 2017 года, более 400 сделок.</p><div class="pc"><span>☎ +7 913 001 90 41</span><span>Telegram @NAKalashnikov</span><span>nikolaykalashnikov.github.io/Ipoteka-KalashnikovEstate-</span></div></div>';
+H.foot+='<div class="pcta prn"><h3>Подберу объекты под этот расчёт</h3><p>Проверю условия у застройщика и банка и покажу короткий список с честным разбором каждого объекта. Без скрытых условий.</p><p>Николай Калашников · в недвижимости с 2017 года, более 400 сделок.</p><div class="pc"><span>☎ +7 913 001 90 41</span><span>Telegram @NAKalashnikov</span><span>kalashnikovestate.ru</span></div></div>';
 H.foot+='<p class="muted">© 2026 Калашников Николай Анатольевич · KalashnikovEstate. Материалы и расчёты защищены авторским правом; копирование без разрешения запрещено.</p>';
 H.foot+='<p class="muted">Расчёт предварительный и не является офертой банка. Окончательные условия определяет банк. Калашников Николай Анатольевич · KalashnikovEstate · Новосибирск</p>';
 h=H.hero+H.st+(H.buy?'<a class="opn" href="#buy"><span><b>Открытая математика</b>Все способы покупки рядом: платежи, взносы, переплата</span><i>↓</i></a>':'')+H.chips+(H.buy||'')+H.cmp+H.top+H.comp+H.after+H.term+H.tax+H.cta+H.foot;
