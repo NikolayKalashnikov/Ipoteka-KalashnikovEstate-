@@ -202,6 +202,9 @@ details.card>.row2{display:grid}
 .ovt{font-size:11.5px;table-layout:fixed}.ovt td,.ovt th{padding-left:4px;padding-right:0}.ovt td:first-child,.ovt th:first-child{padding-left:0;padding-right:6px;width:31%}.ovt td{white-space:nowrap;letter-spacing:-.2px}.ovt th{font-size:11px;line-height:1.2;vertical-align:bottom}
 @media(max-width:400px){.seg button{font-size:13px;padding:6px 2px}}
 
+.modeseg{display:grid;grid-template-columns:1fr 1fr;gap:8px}.modeseg button{padding:12px 8px;line-height:1.25}
+.mhint{margin-top:10px;padding:11px 12px;border-radius:10px;background:var(--card2,rgba(0,0,0,.04));font-size:13.5px;line-height:1.5}.mhint b{display:block;margin-bottom:3px}.mhint ol{margin:4px 0 0;padding-left:18px}
+#cMore .card{box-shadow:none;margin-top:10px;border:1px solid var(--line)}
 .nm{display:inline;padding:1px 7px;border-radius:6px;-webkit-box-decoration-break:clone;box-decoration-break:clone;font-weight:700}.nm.my{background:rgba(217,180,90,.30);box-shadow:inset 0 0 0 1px rgba(217,180,90,.55)}.nm.bt{background:var(--ok-bg);box-shadow:inset 0 0 0 1px var(--ok)}.nmleg{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px}
 .bs{border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:8px}
 .bs.best{border-color:var(--ok);box-shadow:0 0 0 1px var(--ok)}.bs.no{opacity:.88}
@@ -234,7 +237,13 @@ details.sub>*:not(summary){margin-top:10px}.krows{display:flex;flex-direction:co
 
   <div id="statuses" style="display:flex;flex-direction:column;gap:8px"></div>
 
-  <section class="card" aria-labelledby="h-prog">
+  <section class="card" id="modeCard" aria-labelledby="h-mode" hidden style="display:none">
+    <h2 id="h-mode">Как клиент покупает</h2>
+    <div class="seg modeseg" id="pmode" role="group" aria-labelledby="h-mode"></div>
+    <div class="mhint" id="pmodeHint"></div>
+  </section>
+
+  <section class="card" id="progCard" aria-labelledby="h-prog">
     <h2 id="h-prog">Программа</h2>
     <div class="seg" id="prog" role="group" aria-labelledby="h-prog"></div>
     <span class="hint" id="progHint"></span>
@@ -329,6 +338,8 @@ details.sub>*:not(summary){margin-top:10px}.krows{display:flex;flex-direction:co
     <span class="hint">Рыночная ставка для примера: средняя по новостройкам без субсидий на 5.11.2026 около 18,8 % (ключевая ставка ЦБ 14 %). Обновляйте под день расчёта. Аренду можно не вводить.</span>
     <div id="vzCmp"></div></details>
 
+    <details class="card" id="cMore"><summary><span>Другие способы для сравнения</span></summary>
+<span class="hint">Необязательно. Что здесь заполнено, появится в сравнении «Способы покупки» и в отчёте клиенту. Блок «Кэшбэк застройщика»: сравнение «по прайсу» и «с завышением».</span>
     <details class="card" id="cDev"><summary><span>Условия застройщика</span></summary>
 <span class="hint">Скидки и субсидированная ставка. Пустое поле — условие не применяется.</span>
 <div class="bgrp">Скидки, %</div>
@@ -365,6 +376,7 @@ details.sub>*:not(summary){margin-top:10px}.krows{display:flex;flex-direction:co
       <div class="stp"><span class="sn">5</span><div class="sb"><div class="st">Транш 3 — последний (если есть)</div><div class="field"><label for="bt3m">Через сколько месяцев</label><input type="text" id="bt3m" inputmode="decimal" autocomplete="off" placeholder="мес."></div><div class="hint">Сумма — весь остаток кредита, считается сама. Если траншей два — оставьте пустым.</div></div></div>
       <div class="trprev" id="trPrev"></div>
       </details>
+    </details>
 
 <details class="card" id="cBuy"><summary><span id="h-buy">Способы покупки: сравнение</span><span class="sv" id="svBuy"></span></summary>
 <span class="hint">Считается по данным выше: цена, ваши средства, дети, срок. Условия — в блоках «Условия застройщика», «Рассрочки» и «Траншевая ипотека». Пустая схема не считается.</span>
@@ -385,14 +397,16 @@ details.sub>*:not(summary){margin-top:10px}.krows{display:flex;flex-direction:co
   </details>
 
   <details class="card" id="cOver">
-    <summary>Завышение цены застройщиком (для вас)</summary>
-    <span class="hint">Во сколько клиенту обходится «взнос от застройщика»: цену в договоре поднимают, часть взноса закрывает рост цены, кредит и платёж растут. В отчёт клиенту этот блок не попадает.</span>
-    <div class="field"><label for="ovOwn">Свои деньги клиента на взнос, ₽</label><input type="text" id="ovOwn" inputmode="numeric"></div>
-    <div class="field"><span class="lbl" id="l-ov">Как завышают цену</span><div class="seg" id="ovMode" role="group" aria-labelledby="l-ov"></div></div>
+    <summary>Кэшбэк застройщика (завышение цены)</summary>
+    <span class="hint">Кэшбэк и завышение цены это одно и то же: застройщик поднимает цену в договоре (ДДУ), а недостающую часть взноса закрывает кэшбэком. Кредит и платёж при этом растут. Здесь видно, во сколько это обходится клиенту. Если у застройщика есть свой калькулятор кэшбэка, выберите «по цене ДДУ» и впишите цену ДДУ из него. В отчёт клиенту этот блок не попадает.</span>
+    <div class="field"><span class="lbl" id="l-ovs">Что платит клиент</span><div class="seg" id="ovScen" role="group" aria-labelledby="l-ovs"></div></div>
+    <div class="field" hidden><label for="ovOwn">Свои деньги клиента, ₽ (пусто: из «Взнос и срок»)</label><input type="text" id="ovOwn" inputmode="numeric"></div>
+    <div class="field"><span class="lbl" id="l-ov">Как задано завышение</span><div class="seg" id="ovMode" role="group" aria-labelledby="l-ov"></div></div>
     <div class="row2">
-      <div class="field"><label for="ovPct">Завышение, % от цены</label><input type="text" id="ovPct" inputmode="decimal"></div>
+      <div class="field"><label for="ovPct">Завышение цены (коэффициент), %</label><input type="text" id="ovPct" inputmode="decimal"></div>
       <div class="field"><label for="ovRub">Завышение, ₽</label><input type="text" id="ovRub" inputmode="numeric"></div>
     </div>
+    <div class="field"><label for="ovDdu">Цена по ДДУ из калькулятора застройщика, ₽</label><input type="text" id="ovDdu" inputmode="numeric" placeholder="для режима «по цене ДДУ»"></div>
     <div id="vzOver"></div>
   </details>
 
@@ -426,7 +440,7 @@ details.sub>*:not(summary){margin-top:10px}.krows{display:flex;flex-direction:co
 <script>
 (function(){
 'use strict';
-var DEF={reg:'nsk',izlim:6000000,itmkt:'21',itl:9000000,itmax:18000000,inc:'',ins:'',ovOwn:0,ovMode:'в процентах',ovPct:'10',ovRub:0,tax:'Нет',cmp:'18,8',rent:'',cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14',bim:'12',bdd:'1',bhide:'',btpl:'',ke1:'cash',ke2:'cash',ke3:'cash',ke4:'cash'};
+var DEF={reg:'nsk',izlim:6000000,itmkt:'21',itl:9000000,itmax:18000000,inc:'',ins:'',ovOwn:0,pmode:'',ovScen:'part',ovMode:'авто',ovPct:'10',ovRub:0,ovDdu:'',tax:'Нет',cmp:'18,8',rent:'',cname:'',prog:'fam',mrate:'10',myrs:'3',mafter:'21',kids:2,half:'Нет',subsidy:'',price:11400000,ddu:'Да',area:'46',rub:24000,norm:'20,1',years:30,mat:728921.9,own:3775078.1,key:'14',bim:'12',bdd:'1',bhide:'',btpl:'',ke1:'cash',ke2:'cash',ke3:'cash',ke4:'cash'};
 var KEY='ke-calc-v1', S=Object.assign({},DEF);
 try{var raw=localStorage.getItem(KEY);if(raw){var p=JSON.parse(raw);if(p&&typeof p==='object'){S=Object.assign({},DEF,p);document.getElementById('sample').hidden=true;}}}catch(e){}
 
@@ -495,11 +509,12 @@ function core(S){
 function seg(id,opts,get,set){var el=$(id);el.innerHTML='';opts.forEach(function(o){var b=document.createElement('button');b.type='button';b.textContent=o.t;b.dataset.v=o.v;
   b.addEventListener('click',function(){set(o.v);sync();calc();save()});el.appendChild(b)});
   el._get=get}
-function sync(){['prog','reg','kids','half','ddu','tax','ovMode','btpl','ke1','ke2','ke3','ke4'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
+function sync(){['prog','reg','kids','half','ddu','tax','ovMode','ovScen','btpl','ke1','ke2','ke3','ke4'].forEach(function(id){var el=$(id);Array.prototype.forEach.call(el.children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v)===String(S[id]))})})}
 function defYears(){var d=S.prog==='it'?15:(S.prog==='fam'&&S.reg==='izhs'?20:30);if([15,20,30].indexOf(Math.round(num(S.years)))>-1){S.years=d;fmtField('years')}}
 seg('prog',[{t:'Семейная',v:'fam'},{t:'ИТ-ипотека',v:'it'},{t:'Рыночная',v:'mkt'}],null,function(v){S.prog=v;defYears()});
 seg('reg',[{t:'Новосибирск',v:'nsk'},{t:'Москва, СПб',v:'msk'},{t:'ИЖС',v:'izhs'}],null,function(v){S.reg=v;defYears()});
-seg('ovMode',[{t:'в процентах',v:'в процентах'},{t:'в рублях',v:'в рублях'}],null,function(v){S.ovMode=v});
+seg('ovScen',[{t:'Свои деньги, остальное кэшбэк',v:'part'},{t:'Взнос 0, всё кэшбэк',v:'zero'},{t:'Без завышения',v:'none'}],null,function(v){S.ovScen=v});
+seg('ovMode',[{t:'авто',v:'авто'},{t:'в процентах',v:'в процентах'},{t:'в рублях',v:'в рублях'},{t:'по цене ДДУ',v:'по цене ДДУ'}],null,function(v){S.ovMode=v});
 seg('kids',[1,2,3,4,5].map(function(n){return{t:String(n),v:n}}),null,function(v){S.kids=+v});
 seg('half',[{t:'Да',v:'Да'},{t:'Нет',v:'Нет'}],null,function(v){S.half=v});
 seg('tax',[{t:'Нет',v:'Нет'},{t:'Да',v:'Да'}],null,function(v){S.tax=v});
@@ -510,7 +525,7 @@ var BTPL={classic:{bt1:'100000',bt2m:'9',bt2:'20',bt2u:'%',bt3m:'14'},two:{bt1:'
 seg('btpl',[{t:'Классика: 100 тыс → 20 % → остаток',v:'classic'},{t:'Два транша: 20 % → остаток',v:'two'},{t:'Большой последний',v:'big'}],null,function(v){S.btpl=v;Object.keys(BTPL[v]).forEach(function(k){S[k]=BTPL[v][k];fmtField(k)})});
 
 
-(function(){var UM={"mpay": "₽", "bapv": "%", "brl": "₽", "bsub": "%", "bdis": "%", "bnos": "%", "bcash": "%", "bsvo": "%", "bi1pv": "%", "bi1d": "%", "bi2pv": "%", "bi2d": "%", "bdpv": "%", "bdd": "%", "bsp": "%", "bsd": "%", "bs1p": "%", "bs2p": "%", "bs3p": "%", "btr": "%", "btpv": "%", "brr": "%", "cmp": "%", "mrate": "%", "mafter": "%", "subsidy": "%", "norm": "%", "key": "%", "itmkt": "%", "ovPct": "%", "kd1": "%", "kd2": "%", "kd3": "%", "kd4": "%", "ku1": "%", "ku2": "%", "ku3": "%", "ku4": "%", "ki1": "%", "ki2": "%", "ki3": "%", "ki4": "%", "kr1": "%", "kr2": "%", "kr3": "%", "kr4": "%", "price": "₽", "rub": "₽", "mat": "₽", "own": "₽", "rent": "₽", "izlim": "₽", "inc": "₽", "ins": "₽", "ovOwn": "₽", "ovRub": "₽", "itl": "₽", "itmax": "₽", "bpr": "₽", "bpay": "₽", "bim": "мес", "bdm": "мес", "bs1m": "мес", "bs2m": "мес", "bs3m": "мес", "bsend": "мес", "bt2m": "мес", "bt3m": "мес", "years": "лет", "area": "м²"};Object.keys(UM).forEach(function(id){var el=$(id);if(!el||el.type==='hidden')return;var w=document.createElement('span');w.className='uw';w.dataset.u=UM[id];el.parentNode.insertBefore(w,el);w.appendChild(el)})})();
+(function(){var UM={"ovDdu": "₽", "mpay": "₽", "bapv": "%", "brl": "₽", "bsub": "%", "bdis": "%", "bnos": "%", "bcash": "%", "bsvo": "%", "bi1pv": "%", "bi1d": "%", "bi2pv": "%", "bi2d": "%", "bdpv": "%", "bdd": "%", "bsp": "%", "bsd": "%", "bs1p": "%", "bs2p": "%", "bs3p": "%", "btr": "%", "btpv": "%", "brr": "%", "cmp": "%", "mrate": "%", "mafter": "%", "subsidy": "%", "norm": "%", "key": "%", "itmkt": "%", "ovPct": "%", "kd1": "%", "kd2": "%", "kd3": "%", "kd4": "%", "ku1": "%", "ku2": "%", "ku3": "%", "ku4": "%", "ki1": "%", "ki2": "%", "ki3": "%", "ki4": "%", "kr1": "%", "kr2": "%", "kr3": "%", "kr4": "%", "price": "₽", "rub": "₽", "mat": "₽", "own": "₽", "rent": "₽", "izlim": "₽", "inc": "₽", "ins": "₽", "ovOwn": "₽", "ovRub": "₽", "itl": "₽", "itmax": "₽", "bpr": "₽", "bpay": "₽", "bim": "мес", "bdm": "мес", "bs1m": "мес", "bs2m": "мес", "bs3m": "мес", "bsend": "мес", "bt2m": "мес", "bt3m": "мес", "years": "лет", "area": "м²"};Object.keys(UM).forEach(function(id){var el=$(id);if(!el||el.type==='hidden')return;var w=document.createElement('span');w.className='uw';w.dataset.u=UM[id];el.parentNode.insertBefore(w,el);w.appendChild(el)})})();
 function tui(){var t=String(S.bt1==null?'':S.bt1).trim();$('bt1a').value=t.replace('%','').trim().replace('.',',');$('bt1u').value=(/%$/.test(t)||!t)?'%':'₽';$('bt2u').value=S.bt2u==='₽'?'₽':'%'}
 function bt1set(){var a=$('bt1a').value.trim(),u=$('bt1u').value;S.bt1=a?(a+(u==='%'?'%':'')):'';$('bt1').value=S.bt1;calc();save()}
 $('bt1a').addEventListener('input',bt1set);$('bt1u').addEventListener('change',bt1set);
@@ -541,12 +556,35 @@ function kui(){if(typeof KR==='undefined'||!KR)KR={};[1,2,3,4].forEach(function(
   function kp(){var a=$('kpa'+n).value.trim(),u=$('kpu'+n).value;S['kp'+n]=a?(a+(u==='%'?'%':'')):'';$('kp'+n).value=S['kp'+n];calc();save()}
   $('kpa'+n).addEventListener('input',kp);$('kpu'+n).addEventListener('change',kp)});
 var _sync0=sync;sync=function(){_sync0();kui();tui()};
+/* === способ покупки (шаг 1) */
+var PM=[{t:'Семейная ипотека',v:'fam'},{t:'Рыночная ипотека',v:'mkt'},{t:'Рассрочка застройщика',v:'inst'}];
+var PMH={fam:'<b>Семейная ипотека</b>Заполните ниже по порядку: <ol><li>вид (семейная или ИТ) и регион;</li><li>дети, цена, свои деньги, срок.</li></ol>Результат сразу вверху и ниже.',
+ mkt:'<b>Рыночная ипотека</b>Ниже в блоке «Рыночная ипотека» введите: <ol><li>ставку в льготный период (или платёж в ₽/мес, если застройщик его фиксирует);</li><li>сколько лет он действует;</li><li>ставку после. Пример: платёж 10 000 ₽, 2 года, потом 20 %.</li></ol>',
+ inst:'<b>Рассрочка застройщика</b>Откройте блок «Рассрочки» и заполните «Своя рассрочка 1»: взнос, платежи по месяцам и чем закрывается остаток (ипотекой или наличными). Для типовых условий возьмите «Быстрый старт».',};
+var _ovHome=null,_instHome=null;
+function pmodeVal(){return S.prog==='mkt'?'mkt':'fam'}
+function applyMode(){
+  var m=pmodeVal();
+  Array.prototype.forEach.call($('pmode').children,function(b){b.setAttribute('aria-pressed',String(b.dataset.v===m))});
+  $('pmodeHint').innerHTML=PMH[m]||'';
+  
+  $('progCard').hidden=false;
+  var cI=$('cInst'),cO=$('cOver'),cM=$('cMore'),res=$('cRes');
+  if(!_ovHome)_ovHome=cO.nextSibling;
+  if(m==='inst'){if(cI.parentNode!==res.parentNode)res.parentNode.insertBefore(cI,res);cI.open=true}
+  else if(cI.parentNode!==cM){var tr=$('cTr');cM.insertBefore(cI,tr)}
+  if(cO.parentNode!==cM)cM.appendChild(cO);
+  var om=S.ovMode||'авто',os=S.ovScen||'part';[['ovPct','в процентах'],['ovRub','в рублях'],['ovDdu','по цене ДДУ']].forEach(function(x){var fe=$(x[0]).closest('.field');if(fe)fe.hidden=(om!==x[1])||os==='none'});var fm=$('ovMode').closest('.field');if(fm)fm.hidden=(os==='none')
+}
+seg('pmode',PM,null,function(v){S.pmode=v});
+var _sync1=sync;sync=function(){_sync1();applyMode()};
+
 $('bEx').addEventListener('click',function(){Object.keys(BSAMPLE).forEach(function(k){S[k]=BSAMPLE[k];fmtField(k)});S.btpl='classic';sync();calc();save()});
 $('bClr').addEventListener('click',function(){BKL.forEach(function(k){S[k]='';fmtField(k)});S.bim='12';S.bdd='1';S.bt2u='%';[1,2,3,4].forEach(function(n){S['ke'+n]='cash'});fmtField('bim');fmtField('bdd');S.btpl='';S.bhide='';sync();calc();save()});
 $('vzBuy').addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.bsx');if(!b)return;var id=b.dataset.id,a=String(S.bhide||'').split(',').filter(Boolean),i=a.indexOf(id);if(i<0)a.push(id);else a.splice(i,1);S.bhide=a.join(',');calc();save()});
 
 
-var TXT=['kn1', 'kp1', 'ks1', 'kn2', 'kp2', 'ks2', 'kn3', 'kp3', 'ks3', 'kn4', 'kp4', 'ks4'];var money=['price','rub','mat','own','years','rent','izlim','inc','ins','ovOwn','ovRub','itl','itmax','brl','mpay'], dec=['kd1', 'ku1', 'ki1', 'kr1', 'kd2', 'ku2', 'ki2', 'kr2', 'kd3', 'ku3', 'ki3', 'kr3', 'kd4', 'ku4', 'ki4', 'kr4'].concat(['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay','cmp','mrate','myrs','mafter','subsidy','area','norm','key','itmkt','ovPct']);
+var TXT=['kn1', 'kp1', 'ks1', 'kn2', 'kp2', 'ks2', 'kn3', 'kp3', 'ks3', 'kn4', 'kp4', 'ks4'];var money=['price','rub','mat','own','years','rent','izlim','inc','ins','ovOwn','ovRub','ovDdu','itl','itmax','brl','mpay'], dec=['kd1', 'ku1', 'ki1', 'kr1', 'kd2', 'ku2', 'ki2', 'kr2', 'kd3', 'ku3', 'ki3', 'kr3', 'kd4', 'ku4', 'ki4', 'kr4'].concat(['bsub','bdis','bnos','bcash','bsvo','bi1pv','bi1d','bi2pv','bi2d','bim','bdpv','bdm','bdd','bsp','bsd','bs1m','bs1p','bs2m','bs2p','bs3m','bs3p','bsend','btr','btpv','bt1','bt2m','bt2','bt3m','bpr','brr','bpay','cmp','mrate','myrs','mafter','subsidy','area','norm','key','itmkt','ovPct']);
 function fmtField(id){if(TXT.indexOf(id)>-1){$(id).value=String(S[id]==null?'':S[id]);return}var v=S[id];if(money.indexOf(id)>-1){$(id).value=(v===''||v==null)?'':nf.format(num(v))}else{$(id).value=String(v==null?'':v).replace('.',',')}}
 money.concat(dec,TXT).forEach(function(id){var el=$(id);fmtField(id);
   el.addEventListener('focus',function(){if(money.indexOf(id)>-1)el.value=String(num(el.value)||'').replace(/\s/g,'');el.select&&el.select()});
@@ -760,33 +798,46 @@ function sg(x){return (x>0.5?'+':'')+nf.format(Math.round(x))}
 function renderOver(M){
   var el=$('vzOver');
   if(!(M.T>0)){el.innerHTML='';return}
-  var own=num(S.ovOwn), byPct=S.ovMode!=='в рублях';
-  var P2=byPct?M.T*(1+num(S.ovPct)/100):M.T+num(S.ovRub);
-  function sc(P,over){
-    var pv=Math.max(P*M.norm,P-M.limit,0), real=over?Math.min(own,pv):pv, L=Math.max(P-pv,0), pl=L>0?M.plan(M.years,L):{f:0,tot:0};
-    return {P:P,pv:pv,real:real,shown:pv-real,L:L,pay:pl.f,tot:pl.tot,inter:pl.tot-L,all:real+pl.tot,dev:real+L,lim:L>M.limit+0.5};
+  var scen=S.ovScen||'part', R=scen==='zero'?0:M.total, mode=S.ovMode||'авто', P=M.T;
+  var P2=P;
+  if(scen!=='none'){
+    if(mode==='в процентах')P2=P*(1+num(S.ovPct)/100);
+    else if(mode==='в рублях')P2=P+num(S.ovRub);
+    else if(mode==='по цене ДДУ'&&num(S.ovDdu)>0)P2=num(S.ovDdu);
+    else P2=M.norm<1?Math.max((P-R)/(1-M.norm),P):P}
+  function sc(Pc,over){
+    var pv=Math.max(Pc*M.norm,Pc-M.limit,0), real=over?Math.min(R,pv):pv, L=Math.max(Pc-pv,0), pl=L>0?M.plan(M.years,L):{f:0,tot:0};
+    return {P:Pc,pv:pv,real:real,shown:pv-real,L:L,pay:pl.f,tot:pl.tot,inter:pl.tot-L,all:real+pl.tot,dev:real+L,lim:L>M.limit+0.5};
   }
-  var a=sc(M.T,false), b=sc(P2,true);
+  var a=sc(P,false), b=sc(P2,scen!=='none');
   var rows=[
-    ['Цена в договоре',a.P,b.P],
+    ['Цена в договоре (ДДУ)',a.P,b.P],
     ['Взнос по требованию банка',a.pv,b.pv],
-    ['Вносит клиент реально',a.real,b.real],
-    ['«Показывает» застройщик',a.shown,b.shown],
+    ['Вносит клиент реально'+(two?'':' (нужно)'),a.real,b.real],
+    ['Кэшбэк: эту часть взноса «показывает» застройщик',a.shown,b.shown],
     ['Сумма кредита',a.L,b.L],
     ['Платёж в месяц',a.pay,b.pay],
     ['Всего выплат банку',a.tot,b.tot],
     ['из них проценты',a.inter,b.inter],
     ['Всего потратит клиент',a.all,b.all],
-    ['Застройщик получит',a.dev,b.dev],
-    ['к цене по прайсу',a.dev-M.T,b.dev-M.T]
+    ['Застройщик получает (взнос клиента + кредит банка)',a.dev,b.dev],
+    ['к цене по прайсу',a.dev-P,b.dev-P]
   ];
-  var h='<table class="ovt"><thead><tr><th></th><th>По прайсу</th><th>С завышением</th><th>Разница</th></tr></thead><tbody>'+rows.map(function(r,i){
+  var two=scen!=='none';
+  var h='<table class="ovt"><thead><tr><th></th><th>'+(two?'По прайсу (без завышения)':'По прайсу')+'</th>'+(two?'<th>С завышением</th><th>Разница</th>':'')+'</tr></thead><tbody>'+rows.map(function(r,i){
     var strong=(i===8||i===5)?' class="st"':'';
-    return '<tr'+strong+'><td>'+r[0]+'</td><td>'+nf.format(Math.round(r[1]))+'</td><td>'+nf.format(Math.round(r[2]))+'</td><td>'+sg(r[2]-r[1])+'</td></tr>'}).join('')+'</tbody></table>';
-  if(a.lim||b.lim)h+='<p class="vz-n" style="color:var(--bad)">'+(b.lim?'С завышением':'По прайсу')+' кредит выходит за лимит программы.</p>';
-  var dAll=b.all-a.all;
-  h+='<p class="vz-n"><b>Вывод для клиента.</b> При своих '+rub(own)+' и завышении цены на '+rub(P2-M.T)+' ('+pct(M.T>0?P2/M.T-1:0)+') клиент вносит сейчас на '+rub(a.real-b.real)+' меньше, но кредит больше на '+rub(b.L-a.L)+', платёж выше на '+rub(b.pay-a.pay)+' в месяц, а всего за срок отдаёт на '+rub(Math.abs(dAll))+' '+(dAll>=0?'больше':'меньше')+'.</p>';
-  if(M.norm<1){var Ps=(M.T-own)/(1-M.norm);h+='<p class="vz-n">Чтобы застройщик получил цену по прайсу, цена в договоре должна быть '+rub(Ps)+' (завышение '+pct(Ps/M.T-1)+'). Верно, пока лимит кредита не ограничивает взнос.</p>'}
+    return '<tr'+strong+'><td>'+r[0]+'</td><td>'+nf.format(Math.round(r[1]))+'</td>'+(two?'<td>'+nf.format(Math.round(r[2]))+'</td><td>'+sg(r[2]-r[1])+'</td>':'')+'</tr>'}).join('')+'</tbody></table>';
+  if(a.real>M.total+0.5)h+='<p class="vz-n" style="color:var(--bad)">По прайсу клиенту нужно внести '+rub(a.real)+', а своих денег '+rub(M.total)+': не хватает '+rub(a.real-M.total)+'.</p>';
+  if(two&&b.dev<P-0.5)h+='<p class="vz-n" style="color:var(--bad)">Застройщик получит на '+rub(P-b.dev)+' меньше прайса: кредит ограничен лимитом программы '+rub(M.limit)+'. Чтобы получить цену прайса, клиент должен внести не менее '+rub(P-M.limit)+'.</p>';
+  if(a.lim||(two&&b.lim))h+='<p class="vz-n" style="color:var(--bad)">'+((two&&b.lim)?'С завышением':'По прайсу')+' кредит выходит за лимит программы.</p>';
+  if(!two){
+    h+='<p class="vz-n"><b>Без завышения.</b> Цена в договоре равна прайсу, взнос '+rub(a.pv)+' клиент вносит сам. Если своих денег меньше, чем нужно по требованию банка, выберите вариант с завышением.</p>';
+  }else{
+    var dAll=b.all-a.all;
+    h+='<p class="vz-n"><b>Как это работает.</b> Банк видит цену ДДУ '+rub(b.P)+' и требует взнос '+rub(b.pv)+'. Клиент вносит '+rub(b.real)+', а '+rub(b.shown)+' закрывает застройщик кэшбэком: эти деньги реально не платятся. Застройщик получает '+rub(b.dev)+' (взнос клиента плюс кредит банка), то есть '+(b.dev-P>=0?'на '+rub(b.dev-P)+' больше':'на '+rub(P-b.dev)+' меньше')+' прайса. Завышение цены как раз покрывает то, что застройщик не получил от клиента.</p>';
+    h+='<p class="vz-n"><b>Что это значит для клиента.</b> Сейчас он вносит на '+rub(a.real-b.real)+' меньше, но кредит больше на '+rub(b.L-a.L)+', платёж выше на '+rub(b.pay-a.pay)+' в месяц, а за весь срок он отдаёт на '+rub(Math.abs(dAll))+' '+(dAll>=0?'больше':'меньше')+', чем при покупке по прайсу.</p>';
+    if(mode!=='авто'&&M.norm<1){var Ps=Math.max((P-R)/(1-M.norm),P);h+='<p class="vz-n">Для справки: чтобы застройщик получил ровно цену по прайсу, цена в договоре должна быть '+rub(Ps)+' (завышение '+pct(Ps/P-1)+').</p>'}
+  }
   el.innerHTML=h;
 }
 function calc(){
@@ -892,7 +943,7 @@ $('cname').value=S.cname||'';
 $('cname').addEventListener('input',function(){S.cname=$('cname').value;save()});
 $('mkrep').addEventListener('click',function(){
   var m=$('copyMsg'),okT='Ссылка на отчёт скопирована. Отправьте её клиенту.';
-  var o={};Object.keys(S).forEach(function(k){var v=S[k];if(v!==''&&v!=null)o[k]=v});o.name=S.cname||'';o.date=new Date().toISOString().slice(0,10);delete o.cname;['ovOwn','ovMode','ovPct','ovRub'].forEach(function(k){delete o[k]});if(!o.name)delete o.name;
+  var o={};Object.keys(S).forEach(function(k){var v=S[k];if(v!==''&&v!=null)o[k]=v});o.name=S.cname||'';o.date=new Date().toISOString().slice(0,10);delete o.cname;['ovOwn','ovMode','ovPct','ovRub','ovDdu','pmode','ovScen'].forEach(function(k){delete o[k]});if(!o.name)delete o.name;
   var json=JSON.stringify(o);
   function b64(s){return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
   function plain(){return b64(unescape(encodeURIComponent(json)))}
