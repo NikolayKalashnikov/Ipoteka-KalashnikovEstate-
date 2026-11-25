@@ -414,7 +414,7 @@ body.quick #cMore,body.quick #cBuy,body.quick #cTerm,body.quick #cDonut,body.qui
     <summary>Кэшбэк застройщика (завышение цены)</summary>
     <span class="hint">Кэшбэк и завышение цены это одно и то же: застройщик поднимает цену в договоре (ДДУ), а недостающую часть взноса закрывает кэшбэком. Кредит и платёж при этом растут. Здесь видно, во сколько это обходится клиенту. Если у застройщика есть свой калькулятор кэшбэка, выберите «по цене ДДУ» и впишите цену ДДУ из него. В отчёт клиенту этот блок не попадает.</span>
     <div class="field"><span class="lbl" id="l-ovs">Что платит клиент</span><div class="seg" id="ovScen" role="group" aria-labelledby="l-ovs"></div></div>
-    <div class="field" hidden><label for="ovOwn">Свои деньги клиента, ₽ (пусто: из «Взнос и срок»)</label><input type="text" id="ovOwn" inputmode="numeric"></div>
+    <div class="field" id="ovOwnF"><label for="ovOwn">Сколько клиент реально вносит в ПВ, ₽</label><input type="text" id="ovOwn" inputmode="numeric" placeholder="пусто: все свои средства из «Взнос и срок»"><span class="hint">Если клиент хочет оставить часть денег себе (например, на ремонт), впишите только ту сумму, которую он вносит в ПВ. Остальное застройщик «показывает» кэшбэком.</span></div>
     <div class="field"><span class="lbl" id="l-ov">Как задано завышение</span><div class="seg" id="ovMode" role="group" aria-labelledby="l-ov"></div></div>
     <div class="row2">
       <div class="field"><label for="ovPct">Завышение цены (коэффициент), %</label><input type="text" id="ovPct" inputmode="decimal"></div>
@@ -528,8 +528,8 @@ function sync(){['prog','reg','kids','half','ddu','tax','ovMode','ovScen','btpl'
 function defYears(){var d=S.prog==='it'?15:(S.prog==='fam'&&S.reg==='izhs'?20:30);if([15,20,30].indexOf(Math.round(num(S.years)))>-1){S.years=d;fmtField('years')}}
 seg('prog',[{t:'Семейная',v:'fam'},{t:'ИТ-ипотека',v:'it'},{t:'Рыночная',v:'mkt'}],null,function(v){S.prog=v;defYears()});
 seg('reg',[{t:'Новосибирск',v:'nsk'},{t:'Москва, СПб',v:'msk'},{t:'ИЖС',v:'izhs'}],null,function(v){S.reg=v;defYears()});
-seg('ovScen',[{t:'Свои деньги, остальное кэшбэк',v:'part'},{t:'Взнос 0, всё кэшбэк',v:'zero'},{t:'Без завышения',v:'none'}],null,function(v){S.ovScen=v});
-seg('ovMode',[{t:'авто',v:'авто'},{t:'в процентах',v:'в процентах'},{t:'в рублях',v:'в рублях'},{t:'по цене ДДУ',v:'по цене ДДУ'}],null,function(v){S.ovMode=v});
+seg('ovScen',[{t:'Свои деньги, остальное кэшбэк',v:'part'},{t:'Взнос 0, всё кэшбэк',v:'zero'},{t:'Всё платит клиент',v:'none'}],null,function(v){S.ovScen=v});
+seg('ovMode',[{t:'авто',v:'авто'},{t:'без завышения',v:'без завышения'},{t:'в процентах',v:'в процентах'},{t:'в рублях',v:'в рублях'},{t:'по цене ДДУ',v:'по цене ДДУ'}],null,function(v){S.ovMode=v});
 seg('kids',[1,2,3,4,5].map(function(n){return{t:String(n),v:n}}),null,function(v){S.kids=+v});
 seg('half',[{t:'Да',v:'Да'},{t:'Нет',v:'Нет'}],null,function(v){S.half=v});
 seg('tax',[{t:'Нет',v:'Нет'},{t:'Да',v:'Да'}],null,function(v){S.tax=v});
@@ -589,7 +589,7 @@ function applyMode(){
   if(m==='inst'){if(cI.parentNode!==res.parentNode)res.parentNode.insertBefore(cI,res);cI.open=true}
   else if(cI.parentNode!==cM){var tr=$('cTr');cM.insertBefore(cI,tr)}
   if(cO.parentNode!==cM)cM.appendChild(cO);
-  var om=S.ovMode||'авто',os=S.ovScen||'part';[['ovPct','в процентах'],['ovRub','в рублях'],['ovDdu','по цене ДДУ']].forEach(function(x){var fe=$(x[0]).closest('.field');if(fe)fe.hidden=(om!==x[1])||os==='none'});var fm=$('ovMode').closest('.field');if(fm)fm.hidden=(os==='none')
+  var om=S.ovMode||'авто',os=S.ovScen||'part';[['ovPct','в процентах'],['ovRub','в рублях'],['ovDdu','по цене ДДУ']].forEach(function(x){var fe=$(x[0]).closest('.field');if(fe)fe.hidden=(om!==x[1])||os==='none'});var fo=$('ovOwnF');if(fo)fo.hidden=(os!=='part');var fm=$('ovMode').closest('.field');if(fm)fm.hidden=(os==='none')
 }
 seg('pmode',PM,null,function(v){S.pmode=v});
 var _sync1=sync;sync=function(){_sync1();applyMode()};
@@ -813,10 +813,11 @@ function sg(x){return (x>0.5?'+':'')+nf.format(Math.round(x))}
 function renderOver(M){
   var el=$('vzOver');
   if(!(M.T>0)){el.innerHTML='';return}
-  var scen=S.ovScen||'part', R=scen==='zero'?0:M.total, mode=S.ovMode||'авто', P=M.T;
+  var scen=S.ovScen||'part', R=scen==='zero'?0:(num(S.ovOwn)>0?num(S.ovOwn):M.total), mode=S.ovMode||'авто', P=M.T;
   var P2=P;
   if(scen!=='none'){
-    if(mode==='в процентах')P2=P*(1+num(S.ovPct)/100);
+    if(mode==='без завышения')P2=P;
+    else if(mode==='в процентах')P2=P*(1+num(S.ovPct)/100);
     else if(mode==='в рублях')P2=P+num(S.ovRub);
     else if(mode==='по цене ДДУ'&&num(S.ovDdu)>0)P2=num(S.ovDdu);
     else P2=M.norm<1?Math.max((P-R)/(1-M.norm),P):P}
@@ -843,14 +844,15 @@ function renderOver(M){
     var strong=(i===8||i===5)?' class="st"':'';
     return '<tr'+strong+'><td>'+r[0]+'</td><td>'+nf.format(Math.round(r[1]))+'</td>'+(two?'<td>'+nf.format(Math.round(r[2]))+'</td><td>'+sg(r[2]-r[1])+'</td>':'')+'</tr>'}).join('')+'</tbody></table>';
   if(a.real>M.total+0.5)h+='<p class="vz-n" style="color:var(--bad)">По прайсу клиенту нужно внести '+rub(a.real)+', а своих денег '+rub(M.total)+': не хватает '+rub(a.real-M.total)+'.</p>';
-  if(two&&b.dev<P-0.5)h+='<p class="vz-n" style="color:var(--bad)">Застройщик получит на '+rub(P-b.dev)+' меньше прайса: кредит ограничен лимитом программы '+rub(M.limit)+'. Чтобы получить цену прайса, клиент должен внести не менее '+rub(P-M.limit)+'.</p>';
+  if(two&&b.dev<P-0.5&&isFinite(M.limit)&&b.L>=M.limit-0.5)h+='<p class="vz-n" style="color:var(--bad)">Застройщик получит на '+rub(P-b.dev)+' меньше прайса: кредит ограничен лимитом программы '+rub(M.limit)+'. Чтобы получить цену прайса, клиент должен внести не менее '+rub(P-M.limit)+'.</p>';
   if(a.lim||(two&&b.lim))h+='<p class="vz-n" style="color:var(--bad)">'+((two&&b.lim)?'С завышением':'По прайсу')+' кредит выходит за лимит программы.</p>';
   if(!two){
-    h+='<p class="vz-n"><b>Без завышения.</b> Цена в договоре равна прайсу, взнос '+rub(a.pv)+' клиент вносит сам. Если своих денег меньше, чем нужно по требованию банка, выберите вариант с завышением.</p>';
+    h+='<p class="vz-n"><b>Всё платит клиент.</b> Цена в договоре равна прайсу, взнос '+rub(a.pv)+' клиент вносит сам. Если своих денег меньше, чем нужно по требованию банка, выберите вариант с завышением.</p>';
   }else{
     var dAll=b.all-a.all;
-    h+='<p class="vz-n"><b>Как это работает.</b> Банк видит цену ДДУ '+rub(b.P)+' и требует взнос '+rub(b.pv)+'. Клиент вносит '+rub(b.real)+', а '+rub(b.shown)+' закрывает застройщик кэшбэком: эти деньги реально не платятся. Застройщик получает '+rub(b.dev)+' (взнос клиента плюс кредит банка), то есть '+(b.dev-P>=0?'на '+rub(b.dev-P)+' больше':'на '+rub(P-b.dev)+' меньше')+' прайса. Завышение цены как раз покрывает то, что застройщик не получил от клиента.</p>';
-    h+='<p class="vz-n"><b>Что это значит для клиента.</b> Сейчас он вносит на '+rub(a.real-b.real)+' меньше, но кредит больше на '+rub(b.L-a.L)+', платёж выше на '+rub(b.pay-a.pay)+' в месяц, а за весь срок он отдаёт на '+rub(Math.abs(dAll))+' '+(dAll>=0?'больше':'меньше')+', чем при покупке по прайсу.</p>';
+    h+='<p class="vz-n"><b>Как это работает.</b> Банк видит цену ДДУ '+rub(b.P)+' и требует взнос '+rub(b.pv)+'. Клиент вносит '+rub(b.real)+', а '+rub(b.shown)+' закрывает застройщик кэшбэком: эти деньги реально не платятся. Застройщик получает '+rub(b.dev)+' (взнос клиента плюс кредит банка), то есть '+(b.dev-P>=0?'на '+rub(b.dev-P)+' больше':'на '+rub(P-b.dev)+' меньше')+' прайса. '+(b.P>P+0.5?'Завышение цены как раз покрывает то, что застройщик не получил от клиента.':'')+'</p>';
+    if(mode==='без завышения'&&b.shown>0.5)h+='<p class="vz-n"><b>Цена не завышена.</b> Кэшбэк '+rub(b.shown)+' застройщик оплачивает из своей маржи: он получит на '+rub(P-b.dev)+' меньше прайса. Для клиента это самый выгодный вариант, но проверьте, что застройщик согласен на такие условия.</p>';
+    h+='<p class="vz-n"><b>Что это значит для клиента.</b> Сейчас он вносит на '+rub(a.real-b.real)+' меньше'+(b.L-a.L>0.5?', но кредит больше на '+rub(b.L-a.L)+', платёж выше на '+rub(b.pay-a.pay)+' в месяц':'; кредит и платёж не меняются')+', а за весь срок он отдаёт на '+rub(Math.abs(dAll))+' '+(dAll>=0?'больше':'меньше')+', чем при покупке по прайсу.</p>';
     if(mode!=='авто'&&M.norm<1){var Ps=Math.max((P-R)/(1-M.norm),P);h+='<p class="vz-n">Для справки: чтобы застройщик получил ровно цену по прайсу, цена в договоре должна быть '+rub(Ps)+' (завышение '+pct(Ps/P-1)+').</p>'}
   }
   el.innerHTML=h;
