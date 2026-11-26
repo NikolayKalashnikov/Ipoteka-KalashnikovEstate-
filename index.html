@@ -224,6 +224,35 @@ details.sub>*:not(summary){margin-top:10px}.krows{display:flex;flex-direction:co
 body.quick #cMore,body.quick #cBuy,body.quick #cTerm,body.quick #cDonut,body.quick #cCmp,body.quick #cTax,body.quick #afterCard{display:none!important}
 </style>
 
+<style id="gateHide">body>*:not(#gate):not(script):not(style){display:none!important}</style>
+<style>
+#gate{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;background:linear-gradient(160deg,#78192D,#560E20);font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+#gate .gb{width:100%;max-width:340px;background:#fff;border-radius:18px;padding:26px 22px;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+#gate small{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6B1527;font-weight:700}
+#gate h1{font:700 24px Georgia,serif;color:#2A0F17;margin:8px 0 6px}
+#gate p{margin:0 0 14px;font-size:14px;color:#6F5A5E}
+#gate input{width:100%;box-sizing:border-box;font-size:18px;text-align:center;letter-spacing:.12em;padding:12px;border:1.5px solid #D9CBBE;border-radius:12px;outline:none}
+#gate input:focus{border-color:#6B1527;box-shadow:0 0 0 3px rgba(107,21,39,.18)}
+#gate button{width:100%;margin-top:12px;min-height:46px;border:0;border-radius:12px;background:#6B1527;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+#gate .er{min-height:18px;margin-top:8px;font-size:13px;color:#b3261e}
+</style>
+<div id="gate" role="dialog" aria-modal="true" aria-label="Вход"><form class="gb" id="gateF" autocomplete="off"><small>KalashnikovEstate</small><h1>Расчёт от сомелье</h1><p>Рабочий калькулятор. Введите пароль.</p><input id="gateP" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="Пароль" aria-label="Пароль"><button type="submit">Войти</button><div class="er" id="gateE" role="alert"></div><p style="margin:10px 0 0;font-size:12px">Клиентский отчёт открывается по вашей ссылке без пароля.</p></form></div>
+<script>
+(function(){
+  var SHA='be52ed705e596782b098910627cabaeaa022e27e9b1e437918d9071544842d69',FNV='c3df5d73',KEY='ke-auth',DAYS=1;
+  function fnv(s){var h=0x811c9dc5;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return ('00000000'+h.toString(16)).slice(-8)}
+  function ok(){try{var t=+localStorage.getItem(KEY);return t&&Date.now()-t<DAYS*864e5}catch(e){return false}}
+  function open(rem){var g=document.getElementById('gate'),s=document.getElementById('gateHide');if(g)g.remove();if(s)s.remove();if(rem){try{localStorage.setItem(KEY,String(Date.now()))}catch(e){}}window.dispatchEvent(new Event('resize'))}
+  if(ok()){open(false);return}
+  var f=document.getElementById('gateF'),p=document.getElementById('gateP'),e=document.getElementById('gateE');
+  setTimeout(function(){try{p.focus()}catch(_){}},50);
+  async function check(v){var s='ke|'+v;
+    if(window.crypto&&crypto.subtle&&window.TextEncoder){try{var b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));return Array.prototype.map.call(new Uint8Array(b),function(x){return ('0'+x.toString(16)).slice(-2)}).join('')===SHA}catch(_){}}
+    return fnv(s)===FNV}
+  f.addEventListener('submit',async function(ev){ev.preventDefault();var v=p.value.trim();if(!v)return;
+    if(await check(v)){open(true)}else{e.textContent='Неверный пароль';p.value='';p.focus()}});
+})();
+</script>
 <header class="band"><div class="inner"><div class="q" aria-hidden="true">“</div>
   <div class="brand">KalashnikovEstate · Сомелье недвижимости</div>
   <div class="qs" aria-hidden="true">“</div>
