@@ -79,6 +79,15 @@ input[type=range]{width:100%;accent-color:var(--wine);min-height:32px}
         <div class="seg" id="wm" role="group" aria-label="Водяной знак"><button type="button" data-v="1" aria-pressed="true">Стеклянный знак по центру</button><button type="button" data-v="0" aria-pressed="false">Без знака</button></div>
         <div class="seg" id="pl" role="group" aria-label="Подложка"><button type="button" data-v="0" aria-pressed="true">Без плашки</button><button type="button" data-v="1" aria-pressed="false">С плашкой</button></div>
         <label for="wmo" class="hint" id="wmoL">Прозрачность: чем правее, тем заметнее знак</label><input id="wmo" type="range" min="10" max="100" value="50"></div>
+      <div class="field"><label for="ot">Заголовок на фото (по желанию)</label><input id="ot" type="text" maxlength="70" placeholder="Например: ЖК «Название»">
+        <label for="od" class="lbl" style="margin-top:6px">Описание на фото</label><textarea id="od" maxlength="400" placeholder="Каждая строка отдельно. Строка с «-» в начале станет пунктом списка:
+- Сдача в 2027 году
+- Закрытый двор без машин
+- От 6,2 млн ₽"></textarea>
+        <div class="seg" id="op" role="group" aria-label="Где разместить текст"><button type="button" data-v="b" aria-pressed="true">Внизу фото</button><button type="button" data-v="m" aria-pressed="false">По центру</button><button type="button" data-v="t" aria-pressed="false">Вверху фото</button></div>
+        <label for="oy" class="hint">Положение по высоте: вверх ↔ вниз</label><input id="oy" type="range" min="0" max="100" value="100">
+        <label for="os" class="hint">Размер текста</label><input id="os" type="range" min="60" max="150" value="100">
+        <label for="ow" class="hint">Ширина текста</label><input id="ow" type="range" min="40" max="100" value="100"></div>
       <div class="field"><label for="cap">Подпись внизу (по желанию)</label><textarea id="cap" maxlength="90" placeholder="Например: Участок 12 соток · Новосибирская область"></textarea></div>
       <div class="field"><label for="con">Контакты внизу</label><input id="con" type="text" value="+7 913 001 90 41 · Telegram @NAKalashnikov"></div>
       <div class="note">Настройки запоминаются в этом браузере.</div>
@@ -93,7 +102,7 @@ input[type=range]{width:100%;accent-color:var(--wine);min-height:32px}
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
-  var KEY='ke-photo-frame',st={pl:false,wm:true,wmo:50,fmt:'auto',fit:'cover',focus:50,cap:'',con:'+7 913 001 90 41 · Telegram @NAKalashnikov'};
+  var KEY='ke-photo-frame',st={os:100,ow:100,oy:100,ot:'',od:'',op:'b',pl:false,wm:true,wmo:50,fmt:'auto',fit:'cover',focus:50,cap:'',con:'+7 913 001 90 41 · Telegram @NAKalashnikov'};
   try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)Object.assign(st,s)}catch(e){}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
   var items=[],timer=0,gen=0;
@@ -165,6 +174,28 @@ input[type=range]{width:100%;accent-color:var(--wine);min-height:32px}
       ctx.font='600 '+Math.round(wf*0.2)+'px Inter,system-ui,sans-serif';ctx.fillStyle='rgba(255,255,255,'+(0.4*k+0.08)+')';
       spaced(ctx,'СОМЕЛЬЕ НЕДВИЖИМОСТИ',rx+rw/2,by2+bh-wf*0.28,wf*0.05,'center');
     }
+    var ot=(st.ot||'').trim(),od=(st.od||'').trim();
+    if(ot||od){
+      var pd=44*u,mw=(rw-2*pd)*st.ow/100,sz=st.os/100,tf=Math.round(66*u*sz),df=Math.round(34*u*sz),tl=[],dl=[],gap=Math.round(18*u),acc=Math.round(34*u);
+      ctx.textBaseline='alphabetic';ctx.textAlign='left';
+      if(ot){do{ctx.font='700 '+tf+'px "Cormorant Garamond",Georgia,serif';tl=wrap(ctx,ot,mw,99);if(tl.length>2)tf-=3}while(tl.length>2&&tf>30);tl=wrap(ctx,ot,mw,2)}
+      var th=tl.length*tf*1.08;
+      if(od){ctx.font='500 '+df+'px Inter,system-ui,sans-serif';var maxL=Math.max(1,Math.floor((rh*0.62-th-gap-acc-pd)/(df*1.38)));
+        od.split(/\n+/).forEach(function(p){p=p.trim();if(!p)return;var bl=/^[-•*]\s*/.test(p);p=p.replace(/^[-•*]\s*/,'');var ls=wrap(ctx,(bl?'•  ':'')+p,mw,99);ls.forEach(function(l,i){dl.push((bl&&i>0?'    ':'')+l)})});
+        if(dl.length>maxL){dl=dl.slice(0,maxL);var ll=dl[maxL-1];while(ll.length>1&&ctx.measureText(ll+'…').width>mw)ll=ll.slice(0,-1);dl[maxL-1]=ll+'…'}}
+      var dh=dl.length*df*1.38,bh2=pd+acc+th+(ot&&od?gap:0)+dh+pd;
+      var oy=st.oy,y0=ry+Math.max(0,rh-bh2)*oy/100,ys=Math.max(ry,y0-pd*0.8),ye=Math.min(ry+rh,y0+bh2+pd*0.8),sg=ctx.createLinearGradient(0,ys,0,ye);
+      if(oy>=80){sg.addColorStop(0,'rgba(24,6,12,0)');sg.addColorStop(.35,'rgba(24,6,12,.55)');sg.addColorStop(1,'rgba(24,6,12,.86)')}
+      else if(oy<=20){sg.addColorStop(0,'rgba(24,6,12,.86)');sg.addColorStop(.65,'rgba(24,6,12,.55)');sg.addColorStop(1,'rgba(24,6,12,0)')}
+      else{sg.addColorStop(0,'rgba(24,6,12,0)');sg.addColorStop(.25,'rgba(24,6,12,.62)');sg.addColorStop(.75,'rgba(24,6,12,.62)');sg.addColorStop(1,'rgba(24,6,12,0)')}
+      ctx.fillStyle=sg;ctx.fillRect(rx,ys,rw,ye-ys);
+      var cy2=y0+pd;
+      ctx.fillStyle=C.gold;ctx.fillRect(pd,cy2,Math.round(90*u),Math.round(4*u));cy2+=acc;
+      ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=10*u;
+      if(ot){ctx.fillStyle='#FFFFFF';ctx.font='700 '+tf+'px "Cormorant Garamond",Georgia,serif';tl.forEach(function(l,i){ctx.fillText(l,pd,cy2+tf*0.85+i*tf*1.08)});cy2+=th+(od?gap:0)}
+      if(od){ctx.fillStyle='rgba(255,255,255,.94)';ctx.font='500 '+df+'px Inter,system-ui,sans-serif';dl.forEach(function(l,i){ctx.fillText(l,pd,cy2+df*0.95+i*df*1.38)})}
+      ctx.shadowColor='transparent';ctx.shadowBlur=0;
+    }
     ctx.restore();
     // золотые линии
     ctx.fillStyle=C.gold;ctx.fillRect(0,topH-Math.round(3*u),W,Math.round(3*u));ctx.fillRect(0,H-botH,W,Math.round(3*u));
@@ -233,13 +264,14 @@ input[type=range]{width:100%;accent-color:var(--wine);min-height:32px}
   }
   function sched(){clearTimeout(timer);timer=setTimeout(render,120)}
   async function addFiles(list){
-    var arr=Array.prototype.slice.call(list).filter(function(f){return /^image\//.test(f.type)||/\.(heic|jpe?g|png|webp)$/i.test(f.name)});
+    var arr=Array.prototype.slice.call(list),bad=[];$('err').textContent='';
     for(var k=0;k<arr.length;k++){
       var f=arr[k],im=null;
       try{im=await createImageBitmap(f,{imageOrientation:'from-image'})}catch(e){
         try{im=await new Promise(function(ok,no){var u=URL.createObjectURL(f),i=new Image();i.onload=function(){ok(i)};i.onerror=no;i.src=u})}catch(e2){im=null}}
-      if(im)items.push({img:im,w:im.width||im.naturalWidth,h:im.height||im.naturalHeight});
+      if(im)items.push({img:im,w:im.width||im.naturalWidth,h:im.height||im.naturalHeight});else bad.push(f.name||'файл');
     }
+    if(bad.length)$('err').textContent='Не удалось открыть: '+bad.join(', ')+'. Частая причина: формат HEIC в браузере не на iPhone. В настройках iPhone выберите «Фото → Перенос на Mac или ПК → Автоматически» или откройте программу в Safari.';
     sched();
   }
   // элементы управления
@@ -260,6 +292,11 @@ input[type=range]{width:100%;accent-color:var(--wine);min-height:32px}
   setPl(st.pl);$('pl').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;setPl(b.dataset.v==='1');save();sched()});
   setWm(st.wm);$('wm').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;setWm(b.dataset.v==='1');save();sched()});
   $('wmo').value=st.wmo;$('wmo').addEventListener('input',function(){st.wmo=+this.value;save();sched()});
+  $('ot').value=st.ot;$('ot').addEventListener('input',function(){st.ot=this.value;save();sched()});
+  $('od').value=st.od;$('od').addEventListener('input',function(){st.od=this.value;save();sched()});
+  function setOp(v){st.op=v;$('op').querySelectorAll('button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===v))})}
+  setOp(st.op);$('op').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;setOp(b.dataset.v);st.oy={b:100,m:50,t:0}[b.dataset.v];$('oy').value=st.oy;save();sched()});
+  ['oy','os','ow'].forEach(function(id){$(id).value=st[id];$(id).addEventListener('input',function(){st[id]=+this.value;if(id==='oy')setOp('x');save();sched()})});
   $('all').addEventListener('click',async function(){for(var i=0;i<items.length;i++){if(items[i].blob){await dl(items[i].blob,fname(i));await new Promise(function(r){setTimeout(r,450)})}}});
   window.__photoTool={add:addFiles,items:items};
 })();
