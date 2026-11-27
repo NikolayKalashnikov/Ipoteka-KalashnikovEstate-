@@ -90,6 +90,17 @@ body:not([data-mode="slide"]) .m-slide{display:none}
         <div class="field"><span class="lbl">Фон</span><div class="seg wrap" id="spl"><button type="button" data-v="g">Графит</button><button type="button" data-v="s">Серый</button><button type="button" data-v="l">Светлый</button><button type="button" data-v="e">Изумруд</button><button type="button" data-v="w">Бордо</button></div></div>
         <div class="field"><span class="lbl">Моё фото в слайде</span><div class="seg wrap" id="sbg"><button type="button" data-v="n">Без фото</button><button type="button" data-v="r">Справа, растворяется</button><button type="button" data-v="f">Тёмный фон</button></div><span class="hint">Фото берётся из загруженных выше, каждое станет отдельным слайдом. Без фото получится один слайд.</span></div>
         <div class="field"><label for="shs">Размер заголовка</label><input id="shs" type="range" min="60" max="140" value="100"></div>
+        <div class="field"><span class="lbl">Цвет заголовка</span><div class="seg" id="stc"><button type="button" data-v="g">Золото</button><button type="button" data-v="w">Белый</button></div></div>
+        <details class="grp"><summary>Положение: текст, свет, фото</summary>
+          <div class="field"><label for="sy">Текст: выше ↔ ниже</label><input id="sy" type="range" min="0" max="100" value="50"></div>
+          <div class="field"><label for="gx">Свечение фона: влево ↔ вправо</label><input id="gx" type="range" min="0" max="100" value="50"></div>
+          <div class="field"><label for="gy">Свечение фона: выше ↔ ниже</label><input id="gy" type="range" min="0" max="100" value="42"></div>
+          <div class="field"><label for="gr">Свечение фона: размер</label><input id="gr" type="range" min="30" max="160" value="85"></div>
+          <div class="field"><label for="px">Фото: влево ↔ вправо</label><input id="px" type="range" min="0" max="100" value="50"></div>
+          <div class="field"><label for="py">Фото: выше ↔ ниже</label><input id="py" type="range" min="0" max="100" value="50"></div>
+          <div class="field"><label for="ps">Фото: размер</label><input id="ps" type="range" min="60" max="200" value="100"></div>
+          <div class="field"><button type="button" class="btn ghost" id="posR">Сбросить положение</button></div>
+        </details>
         <div class="field"><span class="lbl">Финальный слайд «Спасибо за доверие»</span><div class="seg" id="fin"><button type="button" data-v="true">Добавлять в конец</button><button type="button" data-v="false">Не добавлять</button></div></div>
       </div>
       <div class="m-frame">
@@ -138,6 +149,8 @@ body:not([data-mode="slide"]) .m-slide{display:none}
         <div class="field"><span class="lbl">Где метка</span><div class="seg" id="lbp"><button type="button" data-v="tl">Слева сверху</button><button type="button" data-v="tr">Справа сверху</button></div></div>
         <div class="field"><label for="qr">Ссылка для QR-кода (канал, сайт, чат)</label><input id="qr" type="text" placeholder="https://t.me/ваш_канал"></div>
         <div class="field"><span class="lbl">Где QR-код</span><div class="seg wrap" id="qc"><button type="button" data-v="">Нет</button><button type="button" data-v="tl">&#8598;</button><button type="button" data-v="tr">&#8599;</button><button type="button" data-v="bl">&#8601;</button><button type="button" data-v="br">&#8600;</button></div></div>
+        <div class="field"><label for="qt">Подпись у QR-кода</label><input id="qt" type="text" maxlength="40" placeholder="Мой канал в Telegram"></div>
+        <div class="field"><span class="lbl">Где подпись</span><div class="seg" id="qp"><button type="button" data-v="u">Под QR</button><button type="button" data-v="s">Сбоку</button></div></div>
         <div class="field"><div class="seg wrap"><button type="button" id="bd">Тонкая золотая окантовка по краю</button></div></div>
       </details>
       <div class="field"><label for="cap">Подпись внизу (по желанию)</label><textarea id="cap" maxlength="90" placeholder="Например: Участок 12 соток · Новосибирская область"></textarea></div>
@@ -1781,7 +1794,7 @@ var qrcode = function() {
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
-  var KEY='ke-photo-frame',st={fin:true,mode:'frame',sk:'Разбор от сомелье',sh:'Как выбрать *квартиру*, чтобы не пожалеть',ss:'3 вещи, которые я проверяю в каждом доме',sb:'Смотреть до конца',sbg:'r',spl:'g',shs:100,lay:'1',tfront:true,lb:'',lbc:'g',lbp:'tl',qr:'',qc:'',bd:false,bx:'g',pt:'w',tf:'s',tg:false,tcp:false,dcp:false,mon:true,mc:'br',mx:100,my:100,ms:26,msh:'c',sty:'wine',os:100,ow:100,oy:100,ot:'',od:'',op:'b',pl:false,wm:true,wmo:50,fmt:'auto',fit:'cover',focus:50,cap:'',con:'+7 913 001 90 41 · Telegram @NAKalashnikov'};
+  var KEY='ke-photo-frame',st={sy:50,gx:50,gy:42,gr:85,px:50,py:50,ps:100,stc:'g',qt:'Мой канал в Telegram',qp:'u',fin:true,mode:'frame',sk:'Разбор от сомелье',sh:'Как выбрать *квартиру*, чтобы не пожалеть',ss:'3 вещи, которые я проверяю в каждом доме',sb:'Смотреть до конца',sbg:'r',spl:'g',shs:100,lay:'1',tfront:true,lb:'',lbc:'g',lbp:'tl',qr:'',qc:'',bd:false,bx:'g',pt:'w',tf:'s',tg:false,tcp:false,dcp:false,mon:true,mc:'br',mx:100,my:100,ms:26,msh:'c',sty:'wine',os:100,ow:100,oy:100,ot:'',od:'',op:'b',pl:false,wm:true,wmo:50,fmt:'auto',fit:'cover',focus:50,cap:'',con:'+7 913 001 90 41 · Telegram @NAKalashnikov'};
   try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)Object.assign(st,s)}catch(e){}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
   var items=[],frames=[],timer=0,gen=0;
@@ -1830,6 +1843,10 @@ var qrcode = function() {
     toks.forEach(function(t){var tw=tokW(ctx,t,fn);
       if(cur.length&&w+sp+tw>maxW){lines.push({toks:cur,w:w});cur=[t];w=tw}else{w+=(cur.length?sp:0)+tw;cur.push(t)}});
     if(cur.length)lines.push({toks:cur,w:w});return lines}
+  function rbal(ctx,toks,maxW,fn){
+    var base=rwrap(ctx,toks,maxW,fn),n=base.length;if(n<2)return base;
+    var lo=maxW*0.35,hi=maxW;for(var k=0;k<12;k++){var mid=(lo+hi)/2;if(rwrap(ctx,toks,mid,fn).length<=n)hi=mid;else lo=mid}
+    return rwrap(ctx,toks,hi,fn)}
   function drawLine(ctx,l,x,y,fn,col,hcol,glass,u){
     ctx.font=fn(false);var sp=ctx.measureText(' ').width;
     l.toks.forEach(function(t){t.forEach(function(p){ctx.font=fn(p.h);var c=p.h?hcol:col;
@@ -1969,11 +1986,24 @@ var qrcode = function() {
     }
     if((st.qr||'').trim()&&st.qc&&window.qrcode){
       try{var qq=window.qrcode(0,'M');qq.addData(st.qr.trim());qq.make();
-        var qn=qq.getModuleCount(),qs=Math.round(Math.max(rw*0.17,150*u)),qpad=qs*0.08,qm=28*u,qcell=(qs-2*qpad)/qn;
-        var qx=(st.qc==='tr'||st.qc==='br')?rx+rw-qm-qs:rx+qm,qy=(st.qc==='bl'||st.qc==='br')?ry+rh-qm-qs:ry+qm;
+        var qn=qq.getModuleCount(),qs=Math.round(Math.max(rw*0.17,150*u)),qpad=qs*0.08,qm=28*u,qcell=(qs-2*qpad)/qn,qgap=14*u;
+        var qcap=(st.qt||'').trim(),qpos=qcap?(st.qp||'u'):'n',qfs=Math.round(Math.max(qs*0.12,22*u)),qln=[],qcw=0,qph=0,qpw=0;
+        if(qpos!=='n'){ctx.font='700 '+qfs+'px Inter,system-ui,sans-serif';qln=wrap(ctx,qcap,qpos==='u'?qs*1.25:qs*1.3,qpos==='u'?2:3);
+          qln.forEach(function(l){qcw=Math.max(qcw,ctx.measureText(l).width)});qpw=qcw+qfs*1.2;qph=qln.length*qfs*1.25+qfs*0.8}
+        var qright=(st.qc==='tr'||st.qc==='br'),qbot=(st.qc==='bl'||st.qc==='br');
+        var qtw=qpos==='s'?qs+qgap+qpw:Math.max(qs,qpw),qth=qpos==='u'?qs+qgap+qph:Math.max(qs,qph);
+        var gx0=qright?rx+rw-qm-qtw:rx+qm,gy0=qbot?ry+rh-qm-qth:ry+qm,qx,qy,ppx=0,ppy=0;
+        if(qpos==='s'){qy=gy0+(qth-qs)/2;qx=qright?gx0+qpw+qgap:gx0;ppx=qright?gx0:gx0+qs+qgap;ppy=gy0+(qth-qph)/2}
+        else{qx=gx0+(qtw-qs)/2;qy=gy0;ppx=gx0+(qtw-qpw)/2;ppy=gy0+qs+qgap}
         ctx.save();rr(ctx,qx,qy,qs,qs,qs*0.07);ctx.shadowColor='rgba(0,0,0,.35)';ctx.shadowBlur=14*u;ctx.fillStyle='#FFFFFF';ctx.fill();ctx.restore();
         ctx.fillStyle='#1A0C11';
         for(var qa=0;qa<qn;qa++)for(var qb=0;qb<qn;qb++)if(qq.isDark(qa,qb))ctx.fillRect(Math.floor(qx+qpad+qb*qcell),Math.floor(qy+qpad+qa*qcell),Math.ceil(qcell),Math.ceil(qcell));
+        if(qpos!=='n'){
+          ctx.save();rr(ctx,ppx,ppy,qpw,qph,Math.min(qph/2,22*u));ctx.shadowColor='rgba(0,0,0,.35)';ctx.shadowBlur=12*u;ctx.fillStyle='rgba(20,8,12,.8)';ctx.fill();ctx.restore();
+          ctx.fillStyle='#FFFFFF';ctx.font='700 '+qfs+'px Inter,system-ui,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+          qln.forEach(function(l,i){ctx.fillText(l,ppx+qpw/2,ppy+qph/2+(i-(qln.length-1)/2)*qfs*1.25+qfs*0.04)});
+          ctx.textAlign='left';
+        }
       }catch(e){}
     }
     ctx.restore();
@@ -2028,12 +2058,14 @@ var qrcode = function() {
     };
     var pk=PLS[st.spl]?st.spl:'w';if(it.fin&&pk==='l')pk='g';
     var PL=PLS[pk],GOLD=PL.gold,GHI=PL.ghi,SER='"Cormorant Garamond",Georgia,serif',SAN='Inter,system-ui,sans-serif',cx=W/2;
-    var rg=ctx.createRadialGradient(cx,H*0.42,0,cx,H*0.42,Math.max(W,H)*0.85);
+    if(st.stc==='w'&&pk!=='l'){PL=Object.assign({},PL,{h0:'#FFFFFF',h1:'#FAF6EE',h2:'#EDE6DA',hl:'#E8C879'})}
+    var gcx=W*st.gx/100,gcy=H*st.gy/100,rg=ctx.createRadialGradient(gcx,gcy,0,gcx,gcy,Math.max(W,H)*st.gr/100);
     rg.addColorStop(0,PL.c0);rg.addColorStop(1,PL.c1);
     ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
     if(it.img&&st.sbg!=='n'){
       var oc=document.createElement('canvas');oc.width=W;oc.height=H;var o=oc.getContext('2d'),x0,y0,w0,h0;
-      if(st.sbg==='f'){x0=0;y0=0;w0=W;h0=H}else{x0=W*0.3;y0=H*0.14;w0=W*0.7;h0=H*0.78}
+      var pk2=st.ps/100,pdx=(st.px-50)/100*W,pdy=(st.py-50)/100*H;
+      if(st.sbg==='f'){w0=W*pk2;h0=H*pk2;x0=(W-w0)/2+pdx;y0=(H-h0)/2+pdy}else{w0=W*0.7*pk2;h0=H*0.78*pk2;x0=W*0.3+(W*0.7-w0)/2+pdx;y0=H*0.14+(H*0.78-h0)/2+pdy}
       var sc=Math.max(w0/it.w,h0/it.h);o.imageSmoothingQuality='high';
       o.drawImage(it.img,x0+(w0-it.w*sc)/2,y0+(h0-it.h*sc)/2,it.w*sc,it.h*sc);
       o.save();o.beginPath();o.rect(x0,y0,w0,h0);o.globalCompositeOperation='destination-in';
@@ -2070,14 +2102,14 @@ var qrcode = function() {
     var maxW=W*0.84,sk=(st.sk||'').trim().toUpperCase(),sh=(st.sh||'').trim(),ss=(st.ss||'').trim(),sb=(st.sb||'').trim();
     var hs=Math.round(118*u*st.shs/100),hl=[],avail=H*0.62;
     var htk=tokens(sh),hfn=function(){return '700 '+hs+'px '+SER};
-    function lay(){hl=sh?rwrap(ctx,htk,maxW,hfn):[]}
+    function lay(){hl=sh?rbal(ctx,htk,maxW,hfn):[]}
     lay();var guard=0;
     function total(){return (sk?30*u+44*u:0)+hl.length*hs*1.06+(sh?44*u:0)+(sh?18*u:0)+(ss?sl.length*42*u*1.4+(sb?50*u:0):0)+(sb?112*u:0)}
     var sl=[];ctx.font='400 '+Math.round(40*u)+'px '+SAN;
     var sfn=function(){return '400 '+Math.round(40*u)+'px '+SAN};
-    sl=ss?rwrap(ctx,tokens(ss),W*0.8,sfn):[];
+    sl=ss?rbal(ctx,tokens(ss),W*0.8,sfn):[];
     while(guard++<30&&hs>40&&(hl.length>4||total()>avail)){hs-=4;lay()}
-    var th=total(),y=Math.max(H*0.2,H*0.215+(avail-th)/2);
+    var th=total(),y=Math.max(H*0.16,H*0.2+(H*0.88-H*0.2-th)*st.sy/100);
     if(sk){ctx.fillStyle=GOLD;ctx.font='500 '+Math.round(30*u)+'px '+SAN;spaced(ctx,sk,cx,y+26*u,7*u,'center');y+=30*u+44*u}
     if(sh){
       var gg=ctx.createLinearGradient(0,y,0,y+hl.length*hs*1.06);gg.addColorStop(0,PL.h0);gg.addColorStop(.55,PL.h1);gg.addColorStop(1,PL.h2);
@@ -2199,6 +2231,11 @@ var qrcode = function() {
   segBind('fin','fin',function(v){return v==='true'});
   segBind('spl','spl');segBind('sbg','sbg');
   $('shs').value=st.shs;$('shs').addEventListener('input',function(){st.shs=+this.value;save();sched()});
+  segBind('stc','stc');segBind('qp','qp');
+  $('qt').value=st.qt;$('qt').addEventListener('input',function(){st.qt=this.value;save();sched()});
+  var POS={sy:50,gx:50,gy:42,gr:85,px:50,py:50,ps:100};
+  Object.keys(POS).forEach(function(id){$(id).value=st[id];$(id).addEventListener('input',function(){st[id]=+this.value;save();sched()})});
+  $('posR').addEventListener('click',function(){Object.keys(POS).forEach(function(id){st[id]=POS[id];$(id).value=POS[id]});save();sched()});
   $('lay').value=st.lay;$('lay').addEventListener('change',function(){st.lay=this.value;save();sched()});
   togBind('tfront','tfront');togBind('bd','bd');
   $('lb').value=st.lb;$('lb').addEventListener('input',function(){st.lb=this.value;save();sched()});
