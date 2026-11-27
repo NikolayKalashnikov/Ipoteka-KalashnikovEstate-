@@ -1,22 +1,22 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#6B1527">
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#34312F">
 <title>Фото в фирменной рамке</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap">
 <style>
 /* Раскладка: слева настройки, справа готовые кадры; на телефоне всё в одну колонку.
-   Палитра бренда: бордо, золото, сливочный фон. */
+   Оформление редактора нейтральное (графит и золото), бордо только на самих кадрах. */
 :root{
-  --bg:#F6F0E9;--card:#FFFFFF;--ink:#2A0F17;--mute:#6F5A5E;--line:#E4D8CB;
-  --wine:#6B1527;--wine-deep:#560E20;--gold:#B08D57;--on-wine:#FFFFFF;--ok:#2F6B45;
+  --bg:#F2F1EF;--card:#FFFFFF;--ink:#1F1D1E;--mute:#6A6663;--line:#DEDBD6;
+  --wine:#34312F;--wine-deep:#1F1D1E;--gold:#B08D57;--on-wine:#FFFFFF;--ok:#2F6B45;
   --font-display:'Cormorant Garamond',Georgia,'Times New Roman',serif;
   --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#1A0C11;--card:#26141B;--ink:#F6ECE3;--mute:#BBA7AC;--line:#432733;
-  --wine:#9A2A44;--wine-deep:#560E20;--gold:#C9A56A;--ok:#7CC49A;color-scheme:dark}}
+  --bg:#141213;--card:#1E1B1C;--ink:#F1EDE8;--mute:#A9A3A0;--line:#38343A;
+  --wine:#C9A56A;--wine-deep:#8A6B3A;--gold:#C9A56A;--on-wine:#1A1516;--ok:#7CC49A;color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#1A0C11;--card:#26141B;--ink:#F6ECE3;--mute:#BBA7AC;--line:#432733;
-  --wine:#9A2A44;--wine-deep:#560E20;--gold:#C9A56A;--ok:#7CC49A;color-scheme:dark}
+  --bg:#141213;--card:#1E1B1C;--ink:#F1EDE8;--mute:#A9A3A0;--line:#38343A;
+  --wine:#C9A56A;--wine-deep:#8A6B3A;--gold:#C9A56A;--on-wine:#1A1516;--ok:#7CC49A;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0}
 body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--font-body);padding-block:22px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -87,7 +87,7 @@ body:not([data-mode="slide"]) .m-slide{display:none}
         <div class="field"><label for="sh">Заголовок</label><textarea id="sh" maxlength="120" placeholder="Как выбрать *квартиру*, чтобы не пожалеть"></textarea><span class="hint">Слова в звёздочках выделятся светлым золотом.</span></div>
         <div class="field"><label for="ss">Подзаголовок</label><input id="ss" type="text" maxlength="90" placeholder="3 вещи, которые я проверяю в каждом доме"></div>
         <div class="field"><label for="sb">Текст кнопки (пусто: без кнопки)</label><input id="sb" type="text" maxlength="30" placeholder="Смотреть до конца"></div>
-        <div class="field"><span class="lbl">Фон</span><div class="seg wrap" id="spl"><button type="button" data-v="w">Бордо</button><button type="button" data-v="g">Графит</button></div></div>
+        <div class="field"><span class="lbl">Фон</span><div class="seg wrap" id="spl"><button type="button" data-v="g">Графит</button><button type="button" data-v="s">Серый</button><button type="button" data-v="l">Светлый</button><button type="button" data-v="e">Изумруд</button><button type="button" data-v="w">Бордо</button></div></div>
         <div class="field"><span class="lbl">Моё фото в слайде</span><div class="seg wrap" id="sbg"><button type="button" data-v="n">Без фото</button><button type="button" data-v="r">Справа, растворяется</button><button type="button" data-v="f">Тёмный фон</button></div><span class="hint">Фото берётся из загруженных выше, каждое станет отдельным слайдом. Без фото получится один слайд.</span></div>
         <div class="field"><label for="shs">Размер заголовка</label><input id="shs" type="range" min="60" max="140" value="100"></div>
         <div class="field"><span class="lbl">Финальный слайд «Спасибо за доверие»</span><div class="seg" id="fin"><button type="button" data-v="true">Добавлять в конец</button><button type="button" data-v="false">Не добавлять</button></div></div>
@@ -1781,7 +1781,7 @@ var qrcode = function() {
 <script>
 (function(){
   var $=function(i){return document.getElementById(i)};
-  var KEY='ke-photo-frame',st={fin:true,mode:'frame',sk:'Разбор от сомелье',sh:'Как выбрать *квартиру*, чтобы не пожалеть',ss:'3 вещи, которые я проверяю в каждом доме',sb:'Смотреть до конца',sbg:'r',spl:'w',shs:100,lay:'1',tfront:true,lb:'',lbc:'g',lbp:'tl',qr:'',qc:'',bd:false,bx:'g',pt:'w',tf:'s',tg:false,tcp:false,dcp:false,mon:true,mc:'br',mx:100,my:100,ms:26,msh:'c',sty:'wine',os:100,ow:100,oy:100,ot:'',od:'',op:'b',pl:false,wm:true,wmo:50,fmt:'auto',fit:'cover',focus:50,cap:'',con:'+7 913 001 90 41 · Telegram @NAKalashnikov'};
+  var KEY='ke-photo-frame',st={fin:true,mode:'frame',sk:'Разбор от сомелье',sh:'Как выбрать *квартиру*, чтобы не пожалеть',ss:'3 вещи, которые я проверяю в каждом доме',sb:'Смотреть до конца',sbg:'r',spl:'g',shs:100,lay:'1',tfront:true,lb:'',lbc:'g',lbp:'tl',qr:'',qc:'',bd:false,bx:'g',pt:'w',tf:'s',tg:false,tcp:false,dcp:false,mon:true,mc:'br',mx:100,my:100,ms:26,msh:'c',sty:'wine',os:100,ow:100,oy:100,ot:'',od:'',op:'b',pl:false,wm:true,wmo:50,fmt:'auto',fit:'cover',focus:50,cap:'',con:'+7 913 001 90 41 · Telegram @NAKalashnikov'};
   try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)Object.assign(st,s)}catch(e){}
   function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
   var items=[],frames=[],timer=0,gen=0;
@@ -2018,9 +2018,18 @@ var qrcode = function() {
   function drawSlide(fr){
     var it=fr[0],d=st.fmt==='auto'?DIMS['916']:DIMS[st.fmt],W=d[0],H=d[1],u=Math.min(W,H)/1080;
     var cv=document.createElement('canvas');cv.width=W;cv.height=H;var ctx=cv.getContext('2d');
-    var wine=st.spl!=='g',GOLD='#D9B97A',GHI='#F3DFAA',SER='"Cormorant Garamond",Georgia,serif',SAN='Inter,system-ui,sans-serif',cx=W/2;
+    var G1='#F3DFAA',G2='#D9B97A',G3='#C79F5A',BT0='#F7E7B8',BT1='#E5CA8A';
+    var PLS={
+      w:{c0:'#5E0F24',c1:'#1A0309',gold:G2,ghi:G1,h0:G1,h1:G2,h2:G3,hl:'#FFF4D6',sub:'#F3E6D6',vg:'rgba(0,0,0,.5)',scr:'rgba(18,3,9,.32)',scf:'rgba(18,3,9,.66)',b0:BT0,b1:BT1,bt:'#2A0F17',sh:'rgba(0,0,0,.45)'},
+      g:{c0:'#2C2428',c1:'#0E0B0C',gold:G2,ghi:G1,h0:G1,h1:G2,h2:G3,hl:'#FFF4D6',sub:'#F3E6D6',vg:'rgba(0,0,0,.5)',scr:'rgba(14,10,11,.32)',scf:'rgba(14,10,11,.66)',b0:BT0,b1:BT1,bt:'#241B1E',sh:'rgba(0,0,0,.45)'},
+      s:{c0:'#5C6067',c1:'#202226',gold:G2,ghi:G1,h0:G1,h1:G2,h2:G3,hl:'#FFFFFF',sub:'#ECEAE7',vg:'rgba(0,0,0,.42)',scr:'rgba(20,22,25,.3)',scf:'rgba(20,22,25,.62)',b0:BT0,b1:BT1,bt:'#25272B',sh:'rgba(0,0,0,.4)'},
+      e:{c0:'#0F4A3C',c1:'#04170F',gold:G2,ghi:G1,h0:G1,h1:G2,h2:G3,hl:'#FFF4D6',sub:'#EAF0EA',vg:'rgba(0,0,0,.5)',scr:'rgba(2,16,10,.3)',scf:'rgba(2,16,10,.64)',b0:BT0,b1:BT1,bt:'#08241A',sh:'rgba(0,0,0,.45)'},
+      l:{c0:'#FBF7F0',c1:'#E4D9C7',gold:'#9C7A3F',ghi:'#2A2427',h0:'#2A2427',h1:'#2A2427',h2:'#3A3235',hl:'#9C7A3F',sub:'#4A4144',vg:'rgba(110,90,60,.22)',scr:'rgba(251,247,240,.35)',scf:'rgba(251,247,240,.72)',b0:'#34302F',b1:'#1F1B1D',bt:'#F3E4BB',sh:'rgba(0,0,0,.12)'}
+    };
+    var pk=PLS[st.spl]?st.spl:'w';if(it.fin&&pk==='l')pk='g';
+    var PL=PLS[pk],GOLD=PL.gold,GHI=PL.ghi,SER='"Cormorant Garamond",Georgia,serif',SAN='Inter,system-ui,sans-serif',cx=W/2;
     var rg=ctx.createRadialGradient(cx,H*0.42,0,cx,H*0.42,Math.max(W,H)*0.85);
-    rg.addColorStop(0,wine?'#5E0F24':'#2C2428');rg.addColorStop(1,wine?'#1A0309':'#0E0B0C');
+    rg.addColorStop(0,PL.c0);rg.addColorStop(1,PL.c1);
     ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
     if(it.img&&st.sbg!=='n'){
       var oc=document.createElement('canvas');oc.width=W;oc.height=H;var o=oc.getContext('2d'),x0,y0,w0,h0;
@@ -2036,13 +2045,14 @@ var qrcode = function() {
       }
       o.restore();
       ctx.globalAlpha=st.sbg==='f'?1:0.92;ctx.drawImage(oc,0,0);ctx.globalAlpha=1;
-      ctx.fillStyle=st.sbg==='f'?'rgba(18,3,9,.66)':'rgba(18,3,9,.32)';ctx.fillRect(0,0,W,H);
+      ctx.fillStyle=st.sbg==='f'?PL.scf:PL.scr;ctx.fillRect(0,0,W,H);
     }
-    var vg2=ctx.createRadialGradient(cx,H/2,Math.min(W,H)*0.45,cx,H/2,Math.max(W,H)*0.85);vg2.addColorStop(0,'rgba(0,0,0,0)');vg2.addColorStop(1,'rgba(0,0,0,.5)');
+    var vg2=ctx.createRadialGradient(cx,H/2,Math.min(W,H)*0.45,cx,H/2,Math.max(W,H)*0.85);vg2.addColorStop(0,'rgba(0,0,0,0)');vg2.addColorStop(1,PL.vg);
     ctx.fillStyle=vg2;ctx.fillRect(0,0,W,H);
+    function ga(a){var n=parseInt(GOLD.slice(1),16);return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')'}
     function orn(y,half){
-      var g1=ctx.createLinearGradient(cx-half,0,cx-14*u,0);g1.addColorStop(0,'rgba(217,185,122,0)');g1.addColorStop(1,'rgba(217,185,122,.9)');
-      var g2=ctx.createLinearGradient(cx+14*u,0,cx+half,0);g2.addColorStop(0,'rgba(217,185,122,.9)');g2.addColorStop(1,'rgba(217,185,122,0)');
+      var g1=ctx.createLinearGradient(cx-half,0,cx-14*u,0);g1.addColorStop(0,ga(0));g1.addColorStop(1,ga(.9));
+      var g2=ctx.createLinearGradient(cx+14*u,0,cx+half,0);g2.addColorStop(0,ga(.9));g2.addColorStop(1,ga(0));
       ctx.lineWidth=Math.max(1.5,2*u);ctx.strokeStyle=g1;ctx.beginPath();ctx.moveTo(cx-half,y);ctx.lineTo(cx-14*u,y);ctx.stroke();
       ctx.strokeStyle=g2;ctx.beginPath();ctx.moveTo(cx+14*u,y);ctx.lineTo(cx+half,y);ctx.stroke();
       ctx.strokeStyle=GOLD;ctx.beginPath();ctx.moveTo(cx,y-8*u);ctx.lineTo(cx+8*u,y);ctx.lineTo(cx,y+8*u);ctx.lineTo(cx-8*u,y);ctx.closePath();ctx.stroke();
@@ -2070,21 +2080,21 @@ var qrcode = function() {
     var th=total(),y=Math.max(H*0.2,H*0.215+(avail-th)/2);
     if(sk){ctx.fillStyle=GOLD;ctx.font='500 '+Math.round(30*u)+'px '+SAN;spaced(ctx,sk,cx,y+26*u,7*u,'center');y+=30*u+44*u}
     if(sh){
-      var gg=ctx.createLinearGradient(0,y,0,y+hl.length*hs*1.06);gg.addColorStop(0,GHI);gg.addColorStop(.55,GOLD);gg.addColorStop(1,'#C79F5A');
-      ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=14*u;
-      hl.forEach(function(l,i){drawLine(ctx,l,cx-l.w/2,y+hs*0.82+i*hs*1.06,hfn,gg,'#FFF4D6',false,u)});
+      var gg=ctx.createLinearGradient(0,y,0,y+hl.length*hs*1.06);gg.addColorStop(0,PL.h0);gg.addColorStop(.55,PL.h1);gg.addColorStop(1,PL.h2);
+      ctx.shadowColor=PL.sh;ctx.shadowBlur=14*u;
+      hl.forEach(function(l,i){drawLine(ctx,l,cx-l.w/2,y+hs*0.82+i*hs*1.06,hfn,gg,PL.hl,false,u)});
       ctx.shadowColor='transparent';ctx.shadowBlur=0;
       y+=hl.length*hs*1.06+44*u;orn(y-18*u,230*u);y+=18*u;
     }
     if(ss){
-      sl.forEach(function(l,i){drawLine(ctx,l,cx-l.w/2,y+34*u+i*42*u*1.4,sfn,'#F3E6D6','#FFF4D6',false,u)});
+      sl.forEach(function(l,i){drawLine(ctx,l,cx-l.w/2,y+34*u+i*42*u*1.4,sfn,PL.sub,PL.hl,false,u)});
       y+=sl.length*42*u*1.4+(sb?50*u:0);
     }
     if(sb){
       ctx.font='700 '+Math.round(50*u)+'px '+SER;var bw=Math.min(W*0.8,ctx.measureText(sb).width+150*u),bh=112*u,bx=cx-bw/2;
-      var bg=ctx.createLinearGradient(0,y,0,y+bh);bg.addColorStop(0,'#F7E7B8');bg.addColorStop(1,'#E5CA8A');
+      var bg=ctx.createLinearGradient(0,y,0,y+bh);bg.addColorStop(0,PL.b0);bg.addColorStop(1,PL.b1);
       ctx.save();rr(ctx,bx,y,bw,bh,20*u);ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=20*u;ctx.shadowOffsetY=8*u;ctx.fillStyle=bg;ctx.fill();ctx.restore();
-      ctx.fillStyle='#2A0F17';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(sb,cx,y+bh/2+3*u);ctx.textAlign='left';ctx.textBaseline='alphabetic';
+      ctx.fillStyle=PL.bt;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(sb,cx,y+bh/2+3*u);ctx.textAlign='left';ctx.textBaseline='alphabetic';
     }
     if(st.bd){ctx.save();ctx.strokeStyle='rgba(201,165,106,.85)';ctx.lineWidth=Math.max(2,2.5*u);ctx.strokeRect(16*u,16*u,W-32*u,H-32*u);ctx.restore()}
     return cv;
